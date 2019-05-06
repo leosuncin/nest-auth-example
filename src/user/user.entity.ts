@@ -1,3 +1,5 @@
+import * as bcrypt from 'bcryptjs';
+import { Exclude } from 'class-transformer';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -6,7 +8,6 @@ import {
   UpdateDateColumn,
   BeforeInsert,
 } from 'typeorm';
-import * as bcrypt from 'bcryptjs';
 
 @Entity()
 export class User {
@@ -20,6 +21,7 @@ export class User {
   email: string;
 
   @Column()
+  @Exclude()
   password: string;
 
   @CreateDateColumn()
