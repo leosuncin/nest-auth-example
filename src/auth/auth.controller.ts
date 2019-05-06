@@ -6,9 +6,10 @@ import {
   Body,
   UseGuards,
   Req,
+  Res,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 
 import { AuthService } from './auth.service';
 import { SignUp } from './dto/sign-up.dto';
@@ -20,19 +21,28 @@ export class AuthController {
 
   @Post('register')
   @HttpCode(HttpStatus.OK)
-  async register(@Body() signup: SignUp) {
+  async register(@Body() signup: SignUp, @Res() resp: Response) {
     const user = await this.authService.register(signup);
+    const token = this.authService.signToken(user);
     delete user.password;
 
-    return user;
+    resp.setHeader('Authorization', `Bearer ${token}`);
+    resp.send(user);
+
+    return resp;
   }
 
   @Post('login')
   @UseGuards(AuthGuard('local'))
   @HttpCode(HttpStatus.OK)
-  async login(@Req() req: Request): Promise<User> {
+  async login(@Req() req: Request, @Res() resp: Response) {
     const { user } = req;
+    const token = this.authService.signToken(user);
+
     delete user.password;
-    return user as User;
+    resp.setHeader('Authorization', `Bearer ${token}`);
+    resp.send(user);
+
+    return resp;
   }
 }
