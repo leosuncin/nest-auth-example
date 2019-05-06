@@ -1,4 +1,8 @@
-import { Injectable, UnprocessableEntityException } from '@nestjs/common';
+import {
+  Injectable,
+  UnprocessableEntityException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
@@ -22,5 +26,23 @@ export class AuthService {
     }
 
     return this.userRepository.save(user);
+  }
+
+  async login(email: string, password: string): Promise<User> {
+    const user = await this.userRepository.findOne({ email });
+
+    if (!user) {
+      throw new UnauthorizedException(
+        `There isn't any user with email: ${email}`,
+      );
+    }
+
+    if (!(await user.checkPassword(password))) {
+      throw new UnauthorizedException(
+        `Wrong password for user with email: ${email}`,
+      );
+    }
+
+    return user;
   }
 }
