@@ -35,6 +35,16 @@ $ npm install
 $ cp .env.example .env
 ```
 
+## Database (development)
+
+```bash
+# start the database
+$ docker-compose up -d
+
+# run migrations
+$ npm run typeorm migration:run
+```
+
 ## Running the app
 
 ```bash
