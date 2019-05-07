@@ -1,0 +1,8 @@
+entity: User
+processor: ./user.processor.ts
+items:
+  john:
+    id: 1
+    name: John Doe
+    email: john@doe.me
+    password: 'Pa$$w0rd'
