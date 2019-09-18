@@ -7,13 +7,15 @@ import {
   UseGuards,
   Req,
   Res,
+  Get,
 } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
 import { Request, Response } from 'express';
 
 import { AuthService } from './auth.service';
 import { SignUp } from './dto/sign-up.dto';
 import { User } from 'src/user/user.entity';
+import { PassportGuard } from './guards/passport.guard';
+import { SessionGuard } from './guards/session.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -33,7 +35,7 @@ export class AuthController {
   }
 
   @Post('login')
-  @UseGuards(AuthGuard('local'))
+  @UseGuards(PassportGuard('local'))
   @HttpCode(HttpStatus.OK)
   async login(@Req() req: Request, @Res() resp: Response) {
     const user = req.user as User;
@@ -44,5 +46,11 @@ export class AuthController {
     resp.send(user);
 
     return resp;
+  }
+
+  @Get('/me')
+  @UseGuards(SessionGuard)
+  me(@Req() req: Request) {
+    return req.user || req.session.passport.user;
   }
 }

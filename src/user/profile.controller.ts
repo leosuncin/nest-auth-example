@@ -9,13 +9,13 @@ import {
   Put,
   Body,
 } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
 
 import { UserService } from './user.service';
 import { UserUpdate } from './dto/user-update.dto';
+import { PassportGuard } from '../auth/guards/passport.guard';
 
 @Controller('profile')
-@UseGuards(AuthGuard('jwt'))
+@UseGuards(PassportGuard('jwt'))
 @UseInterceptors(ClassSerializerInterceptor)
 export class ProfileController {
   constructor(private readonly userService: UserService) {}
