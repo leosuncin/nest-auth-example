@@ -5,6 +5,7 @@ import * as httpMocks from 'node-mocks-http';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { User } from '../user/user.entity';
+import { UserService } from '../user/user.service';
 
 describe('Auth Controller', () => {
   let controller: AuthController;
@@ -14,11 +15,18 @@ describe('Auth Controller', () => {
       controllers: [AuthController],
       providers: [
         AuthService,
+        UserService,
         {
           provide: getRepositoryToken(User),
           useValue: {
             count({ email }) {
               return Promise.resolve(email ? 0 : 1);
+            },
+            findOne(options: any) {
+              const test = Number.isFinite(options)
+                ? Boolean(options)
+                : Boolean(options.where.id);
+              return Promise.resolve(test ? new User() : null);
             },
             save(dto) {
               return Promise.resolve(dto);
@@ -65,6 +73,18 @@ describe('Auth Controller', () => {
     expect(resp._getData()).not.toHaveProperty('password');
   });
 
+  it('should fail to register a new user', () => {
+    expect.assertions(1);
+    const register = {
+      name: 'John Doe',
+      email: '',
+      password: 'Pa$$w0rd',
+    };
+    const resp = httpMocks.createResponse();
+
+    return expect(controller.register(register, resp)).rejects.toThrow();
+  });
+
   it('should log in an user', async () => {
     expect.assertions(3);
     const req = httpMocks.createRequest();
@@ -81,5 +101,20 @@ describe('Auth Controller', () => {
       'Bearer 6a6f686e40646f652e6d65',
     );
     expect(resp._getData()).not.toHaveProperty('password');
+  });
+
+  it('should got me logged', () => {
+    const user = { id: 1, name: 'John Doe', email: 'john@doe.me' };
+
+    expect(controller.me(httpMocks.createRequest({ user }))).toEqual(user);
+    expect(
+      controller.me(
+        httpMocks.createRequest({
+          session: {
+            passport: { user },
+          },
+        } as unknown),
+      ),
+    ).toEqual(user);
   });
 });

@@ -1,6 +1,7 @@
 import { HttpStatus, INestApplication, ValidationPipe } from '@nestjs/common';
 import { TestingModule, Test } from '@nestjs/testing';
 import * as faker from 'faker';
+import * as passport from 'passport';
 import * as supertest from 'supertest';
 
 import { AppModule } from '../src/app.module';
@@ -40,7 +41,11 @@ describe('AuthController (e2e)', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
-    app.useGlobalPipes(new ValidationPipe({ transform: true, whitelist: true }));
+    app.useGlobalPipes(
+      new ValidationPipe({ transform: true, whitelist: true }),
+    );
+    app.use(passport.initialize());
+    app.use(passport.session());
     await app.init();
 
     request = supertest(app.getHttpServer());
