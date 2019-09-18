@@ -22,7 +22,7 @@ export class ProfileController {
 
   @Get(':id')
   get(@Param('id', new ParseIntPipe()) id: number) {
-    return this.userService.findOne(id);
+    return this.userService.findOne({ where: { id } });
   }
 
   @Put(':id')

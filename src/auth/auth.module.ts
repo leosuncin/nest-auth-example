@@ -11,7 +11,7 @@ import { JwtStrategy } from './strategies/jwt.strategy';
   imports: [
     UserModule,
     JwtModule.register({
-      secretOrPrivateKey: process.env.APP_SECRET,
+      secret: process.env.APP_SECRET,
       signOptions: {
         expiresIn: '1d',
         algorithm: 'HS384',

@@ -1,40 +1,28 @@
-import {
-  Injectable,
-  UnprocessableEntityException,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 
 import { User } from '../user/user.entity';
 import { SignUp } from './dto/sign-up.dto';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
+import { UserService } from '../user/user.service';
 
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
+    private readonly userService: UserService,
     private readonly jwtService: JwtService,
   ) {}
 
-  async register(userData: SignUp): Promise<User> {
-    const user = Object.assign(new User(), userData);
-
-    if ((await this.userRepository.count({ email: userData.email })) > 0) {
-      throw new UnprocessableEntityException(
-        `The email «${userData.email}» is already register.`,
-      );
-    }
-
-    return this.userRepository.save(user);
+  async register(signUp: SignUp): Promise<User> {
+    return this.userService.create(signUp);
   }
 
   async login(email: string, password: string): Promise<User> {
-    const user = await this.userRepository.findOne({ email });
+    let user: User;
 
-    if (!user) {
+    try {
+      user = await this.userService.findOne({ where: { email } });
+    } catch (err) {
       throw new UnauthorizedException(
         `There isn't any user with email: ${email}`,
       );
@@ -50,9 +38,11 @@ export class AuthService {
   }
 
   async verifyPayload(payload: JwtPayload): Promise<User> {
-    const user = await this.userRepository.findOne({ email: payload.sub });
+    let user: User;
 
-    if (!user) {
+    try {
+      user = await this.userService.findOne({ where: { email: payload.sub } });
+    } catch (error) {
       throw new UnauthorizedException(
         `There isn't any user with email: ${payload.sub}`,
       );

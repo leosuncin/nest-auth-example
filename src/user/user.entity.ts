@@ -30,10 +30,14 @@ export class User {
   @UpdateDateColumn()
   updatedAt: Date;
 
+  constructor(data: Partial<User> = {}) {
+    Object.assign(this, data);
+  }
+
   @BeforeInsert()
-  async hashPassword() {
+  async setPassword(password: string) {
     const salt = await await bcrypt.genSalt();
-    this.password = await bcrypt.hash(this.password, salt);
+    this.password = await bcrypt.hash(password || this.password, salt);
   }
 
   async checkPassword(plainPassword: string) {

@@ -21,11 +21,11 @@ export class AuthController {
 
   @Post('register')
   @HttpCode(HttpStatus.OK)
-  async register(@Body() signup: SignUp, @Res() resp: Response) {
-    const user = await this.authService.register(signup);
+  async register(@Body() signUp: SignUp, @Res() resp: Response) {
+    const user = await this.authService.register(signUp);
     const token = this.authService.signToken(user);
-    delete user.password;
 
+    delete user.password;
     resp.setHeader('Authorization', `Bearer ${token}`);
     resp.send(user);
 
@@ -36,7 +36,7 @@ export class AuthController {
   @UseGuards(AuthGuard('local'))
   @HttpCode(HttpStatus.OK)
   async login(@Req() req: Request, @Res() resp: Response) {
-    const { user } = req;
+    const user = req.user as User;
     const token = this.authService.signToken(user);
 
     delete user.password;
