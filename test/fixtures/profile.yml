@@ -1,0 +1,9 @@
+entity: Profile
+items:
+  john_profile:
+    id: 1
+    phone: '(802) 698-1134'
+    birthday: 2 Oct 1981
+    website: '{{internet.url}}'
+    occupation: '{{name.jobTitle}}'
+    user: '@john'
