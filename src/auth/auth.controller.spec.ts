@@ -73,18 +73,6 @@ describe('Auth Controller', () => {
     expect(resp._getData()).not.toHaveProperty('password');
   });
 
-  it('should fail to register a new user', () => {
-    expect.assertions(1);
-    const register = {
-      name: 'John Doe',
-      email: '',
-      password: 'Pa$$w0rd',
-    };
-    const resp = httpMocks.createResponse();
-
-    return expect(controller.register(register, resp)).rejects.toThrow();
-  });
-
   it('should log in an user', async () => {
     expect.assertions(3);
     const req = httpMocks.createRequest();

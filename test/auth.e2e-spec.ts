@@ -1,5 +1,6 @@
 import { HttpStatus, INestApplication, ValidationPipe } from '@nestjs/common';
 import { TestingModule, Test } from '@nestjs/testing';
+import { useContainer } from 'class-validator';
 import * as faker from 'faker';
 import * as passport from 'passport';
 import * as supertest from 'supertest';
@@ -46,6 +47,9 @@ describe('AuthController (e2e)', () => {
     );
     app.use(passport.initialize());
     app.use(passport.session());
+
+    useContainer(app.select(AppModule), { fallbackOnErrors: true });
+
     await app.init();
 
     request = supertest(app.getHttpServer());
@@ -59,7 +63,7 @@ describe('AuthController (e2e)', () => {
     request
       .post('/auth/register')
       .send(generateUser())
-      .expect(HttpStatus.OK)
+      .expect(HttpStatus.CREATED)
       .end(getAuthResponseCallback(done));
   });
 

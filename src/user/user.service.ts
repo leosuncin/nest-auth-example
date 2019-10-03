@@ -17,17 +17,7 @@ export class UserService {
   ) {}
 
   async create(data: Partial<User>) {
-    const user = new User(data);
-    const existUser =
-      (await this.userRepository.count({ email: data.email })) > 0;
-
-    if (existUser) {
-      throw new UnprocessableEntityException(
-        `The email «${data.email}» is already register.`,
-      );
-    }
-
-    return this.userRepository.save(user);
+    return this.userRepository.save(new User(data));
   }
 
   async findOne(where: FindOneOptions<User>) {

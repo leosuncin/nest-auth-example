@@ -22,7 +22,7 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('register')
-  @HttpCode(HttpStatus.OK)
+  @HttpCode(HttpStatus.CREATED)
   async register(@Body() signUp: SignUp, @Res() resp: Response) {
     const user = await this.authService.register(signUp);
     const token = this.authService.signToken(user);
