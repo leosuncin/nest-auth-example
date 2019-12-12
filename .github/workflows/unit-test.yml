@@ -1,0 +1,32 @@
+name: Unit test
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [8.x, 10.x, 12.x]
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - name: npm install, build, and test
+      run: |
+        npm ci
+        npm run build --if-present
+        npm test
+      env:
+        CI: true
+        PORT: 3000
+        APP_SECRET: 444a45b38193572dd7d3c0d691d806b487dbdfe1
+        POSTGRES_DB: authentication
+        POSTGRES_USER: admin
+        POSTGRES_PASSWORD: contraseña
+        DATABASE_URL: postgres://admin:contraseña@localhost:5432/authentication
