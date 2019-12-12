@@ -7,6 +7,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
     "format": "prettier --write \"src/**/*.ts\"",
+    "fixtures": "node -r @suncin/dotenv -r ts-node/register node_modules/typeorm-fixtures-cli/dist/cli.js -c ormconfig.js test/fixtures",
     "start": "ts-node -r @suncin/dotenv -r tsconfig-paths/register src/main.ts",
     "start:dev": "nodemon",
     "start:debug": "nodemon --config nodemon-debug.json",
@@ -17,7 +18,7 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "pretest:e2e": "node -r @suncin/dotenv -r ts-node/register node_modules/typeorm-fixtures-cli/dist/cli.js -c ormconfig.js test/fixtures",
+    "pretest:e2e": "npm run fixtures",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "typeorm": "ts-node -r @suncin/dotenv -r tsconfig-paths/register ./node_modules/typeorm/cli.js"
   },
