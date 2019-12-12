@@ -21,10 +21,26 @@ jobs:
         key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
         restore-keys: |
           ${{ runner.os }}-node-
+    - uses: harmon758/postgresql-action@v1
+      with:
+        postgresql version: '11'
+        postgresql db: authentication
+        postgresql user: admin
+        postgresql password: contraseña
     - name: Install dependencies
       run: |
         npm ci
         npm audit
+        npm run typeorm migration:run
+        npm run fixtures
+        npm run fixtures
+      env:
+        PORT: 3000
+        APP_SECRET: 444a45b38193572dd7d3c0d691d806b487dbdfe1
+        POSTGRES_DB: authentication
+        POSTGRES_USER: admin
+        POSTGRES_PASSWORD: contraseña
+        DATABASE_URL: postgres://admin:contraseña@localhost:5432/authentication
 
   build:
     needs: [install]
@@ -55,8 +71,6 @@ jobs:
       run: |
         npm ci
         npm run build --if-present
-        npm run typeorm migration:run
-        npm run fixtures
         npm run test:e2e
       env:
         CI: true
@@ -96,10 +110,8 @@ jobs:
       run: |
         npm i -g newman
         npm ci --dev
-        npm run typeorm migration:run
-        npm run fixtures
-        npm run fixtures
-        npm run start:prod
+        npm run start:prod &
+        sleep 10
         newman run https://www.getpostman.com/collections/6b82b259fc751deda654
       env:
         CI: true
