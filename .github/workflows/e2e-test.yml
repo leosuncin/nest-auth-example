@@ -1,0 +1,53 @@
+name: E2E test
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [8.x, 10.x, 12.x]
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - uses: actions/cache@v1
+      name: Cache dependencies
+      with:
+        path: ~/.npm
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-
+    - name: Cache local node_modules
+      uses: actions/cache@v1
+      with:
+        path: node_modules
+        key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-modules-
+    - uses: harmon758/postgresql-action@v1
+      with:
+        postgresql version: '11'
+        postgresql db: authentication
+        postgresql user: admin
+        postgresql password: contraseña
+    - name: npm install, build, and test
+      run: |
+        npm ci
+        npm run build --if-present
+        npm run typeorm migration:run
+        npm run test:e2e
+      env:
+        CI: true
+        PORT: 3000
+        APP_SECRET: 444a45b38193572dd7d3c0d691d806b487dbdfe1
+        POSTGRES_DB: authentication
+        POSTGRES_USER: admin
+        POSTGRES_PASSWORD: contraseña
+        DATABASE_URL: postgres://admin:contraseña@localhost:5432/authentication
