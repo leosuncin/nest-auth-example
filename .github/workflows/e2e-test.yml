@@ -99,7 +99,8 @@ jobs:
         npm run typeorm migration:run
         npm run fixtures
         npm run fixtures
-        npm run start:prod
+        npm run start:prod &
+        sleep 20
         newman run https://www.getpostman.com/collections/6b82b259fc751deda654
       env:
         CI: true
