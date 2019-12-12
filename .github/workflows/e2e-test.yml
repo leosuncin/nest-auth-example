@@ -3,14 +3,11 @@ name: E2E test
 on: [push]
 
 jobs:
-  build:
-
+  install:
     runs-on: ubuntu-latest
-
     strategy:
       matrix:
         node-version: [8.x, 10.x, 12.x]
-
     steps:
     - uses: actions/checkout@v1
     - name: Use Node.js ${{ matrix.node-version }}
@@ -24,13 +21,30 @@ jobs:
         key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
         restore-keys: |
           ${{ runner.os }}-node-
-    - name: Cache local node_modules
-      uses: actions/cache@v1
+    - name: Install dependencies
+      run: |
+        npm ci
+        npm audit
+
+  build:
+    needs: [install]
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [8.x, 10.x, 12.x]
+    steps:
+    - uses: actions/checkout@v1
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
       with:
-        path: node_modules
-        key: ${{ runner.os }}-node-modules-${{ hashFiles('**/package-lock.json') }}
+        node-version: ${{ matrix.node-version }}
+    - uses: actions/cache@v1
+      name: Cache dependencies
+      with:
+        path: ~/.npm
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
         restore-keys: |
-          ${{ runner.os }}-node-modules-
+          ${{ runner.os }}-node-
     - uses: harmon758/postgresql-action@v1
       with:
         postgresql version: '11'
@@ -47,6 +61,49 @@ jobs:
         CI: true
         PORT: 3000
         APP_SECRET: 444a45b38193572dd7d3c0d691d806b487dbdfe1
+        POSTGRES_DB: authentication
+        POSTGRES_USER: admin
+        POSTGRES_PASSWORD: contraseña
+        DATABASE_URL: postgres://admin:contraseña@localhost:5432/authentication
+
+  run-server:
+    needs: [install]
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [8.x, 10.x, 12.x]
+    steps:
+    - uses: actions/checkout@v1
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - uses: actions/cache@v1
+      name: Cache dependencies
+      with:
+        path: ~/.npm
+        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-node-
+    - uses: harmon758/postgresql-action@v1
+      with:
+        postgresql version: '11'
+        postgresql db: authentication
+        postgresql user: admin
+        postgresql password: contraseña
+    - name: npm install, build, and test
+      run: |
+        npm i -g newman
+        npm ci --dev
+        npm run typeorm migration:run
+        npm run fixtures
+        npm run start:prod
+        newman run https://www.getpostman.com/collections/6b82b259fc751deda654
+      env:
+        CI: true
+        PORT: 3000
+        APP_SECRET: 444a45b38193572dd7d3c0d691d806b487dbdfe1
+        NODE_ENV: production
         POSTGRES_DB: authentication
         POSTGRES_USER: admin
         POSTGRES_PASSWORD: contraseña
