@@ -95,7 +95,7 @@ jobs:
     - name: npm install, build, and test
       run: |
         npm i -g newman
-        npm ci --dev
+        npm ci
         npm run typeorm migration:run
         npm run fixtures
         npm run fixtures
@@ -106,7 +106,6 @@ jobs:
         CI: true
         PORT: 3000
         APP_SECRET: 444a45b38193572dd7d3c0d691d806b487dbdfe1
-        NODE_ENV: production
         POSTGRES_DB: authentication
         POSTGRES_USER: admin
         POSTGRES_PASSWORD: contraseña
