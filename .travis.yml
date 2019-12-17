@@ -18,15 +18,18 @@ cache:
 
 install:
   - npm ci
+  - npm i -g newman
 
 before_script:
   - npm audit
   - psql -c "create database ${POSTGRES_DB};" -U $POSTGRES_USER
   - npm run typeorm migration:run
   - npm run fixtures
+  - npm run build --if-present
 
 script:
-  - npm run lint
-  - npm run build --if-present
+  - npm run lint --if-present
+  - npm run start:prod &
   - npm run test:cov
   - npm run test:e2e
+  - newman run https://www.getpostman.com/collections/6b82b259fc751deda654
