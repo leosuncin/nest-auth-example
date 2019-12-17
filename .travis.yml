@@ -1,0 +1,32 @@
+language: node_js
+
+services:
+  - postgresql
+
+node_js:
+  - 11
+  - 12
+  - node
+
+notifications:
+  email: false
+
+cache:
+  directories:
+    - node_modules
+    - ~/.npm
+
+install:
+  - npm ci
+
+before_script:
+  - npm audit
+  - psql -c "create database ${POSTGRES_DB};" -U $POSTGRES_USER
+  - npm run typeorm migration:run
+  - npm run fixtures
+
+script:
+  - npm run lint
+  - npm run build --if-present
+  - npm run test:cov
+  - npm run test:e2e
