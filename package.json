@@ -27,7 +27,7 @@
     "@nestjs/core": "^6.10.10",
     "@nestjs/jwt": "^6.1.1",
     "@nestjs/passport": "^6.1.1",
-    "@nestjs/platform-express": "^6.10.10",
+    "@nestjs/platform-express": "^6.10.14",
     "@nestjs/typeorm": "^6.2.0",
     "bcryptjs": "^2.4.3",
     "class-transformer": "^0.2.3",
