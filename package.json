@@ -68,7 +68,7 @@
     "tsconfig-paths": "^3.9.0",
     "tslint": "5.20.1",
     "typeorm-fixtures-cli": "^1.4.2",
-    "typescript": "^3.7.3"
+    "typescript": "^3.7.5"
   },
   "jest": {
     "moduleFileExtensions": [
