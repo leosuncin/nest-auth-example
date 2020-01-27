@@ -44,7 +44,7 @@
     "typeorm": "^0.2.22"
   },
   "devDependencies": {
-    "@nestjs/testing": "^6.10.10",
+    "@nestjs/testing": "^6.11.1",
     "@suncin/dotenv": "^1.0.0",
     "@types/bcryptjs": "^2.4.2",
     "@types/cookie-parser": "^1.4.2",
