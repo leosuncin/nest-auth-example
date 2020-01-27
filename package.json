@@ -59,7 +59,7 @@
     "@types/supertest": "^2.0.8",
     "faker": "^4.1.0",
     "jest": "^25.1.0",
-    "node-mocks-http": "^1.8.0",
+    "node-mocks-http": "^1.8.1",
     "nodemon": "^2.0.2",
     "prettier": "^1.19.1",
     "supertest": "^4.0.2",
