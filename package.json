@@ -23,7 +23,7 @@
     "typeorm": "ts-node -r @suncin/dotenv -r tsconfig-paths/register ./node_modules/typeorm/cli.js"
   },
   "dependencies": {
-    "@nestjs/common": "^6.10.14",
+    "@nestjs/common": "^6.11.1",
     "@nestjs/core": "^6.10.10",
     "@nestjs/jwt": "^6.1.1",
     "@nestjs/passport": "^6.1.1",
