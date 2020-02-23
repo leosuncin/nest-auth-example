@@ -52,7 +52,7 @@
     "@types/express-session": "^1.15.16",
     "@types/faker": "^4.1.9",
     "@types/jest": "^24.9.1",
-    "@types/node": "^12.12.17",
+    "@types/node": "^13.7.4",
     "@types/passport": "^1.0.2",
     "@types/passport-jwt": "^3.0.3",
     "@types/passport-local": "^1.0.33",
