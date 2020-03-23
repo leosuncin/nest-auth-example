@@ -41,13 +41,9 @@ jobs:
     - name: Run the backend
       run: |
         npm run start:prod &
-        sleep 20
       env:
         PORT: 3000
         APP_SECRET: 444a45b38193572dd7d3c0d691d806b487dbdfe1
         DATABASE_URL: postgres://admin:wnbaohW7mn@localhost:${{ job.services.postgres.ports[5432] }}/authentication
     - name: Run Postman collection
-      uses: matt-ball/newman-action@master
-      with:
-        postmanApiKey: ${{ secrets.POSTMAN_API_KEY }}
-        collection: https://www.getpostman.com/collections/6b82b259fc751deda654
+      run: npx newman run https://www.getpostman.com/collections/6b82b259fc751deda654
