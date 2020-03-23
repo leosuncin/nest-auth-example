@@ -3,110 +3,47 @@ name: E2E test
 on: [push]
 
 jobs:
-  install:
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [8.x, 10.x, 12.x]
-    steps:
-    - uses: actions/checkout@v1
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
-      with:
-        node-version: ${{ matrix.node-version }}
-    - uses: actions/cache@v1
-      name: Cache dependencies
-      with:
-        path: ~/.npm
-        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-        restore-keys: |
-          ${{ runner.os }}-node-
-    - name: Install dependencies
-      run: |
-        npm ci
-        npm audit
-
-  build:
-    needs: [install]
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [8.x, 10.x, 12.x]
-    steps:
-    - uses: actions/checkout@v1
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
-      with:
-        node-version: ${{ matrix.node-version }}
-    - uses: actions/cache@v1
-      name: Cache dependencies
-      with:
-        path: ~/.npm
-        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-        restore-keys: |
-          ${{ runner.os }}-node-
-    - uses: harmon758/postgresql-action@v1
-      with:
-        postgresql version: '11'
-        postgresql db: authentication
-        postgresql user: admin
-        postgresql password: contraseña
-    - name: npm install, build, and test
-      run: |
-        npm ci
-        npm run build --if-present
-        npm run typeorm migration:run
-        npm run fixtures
-        npm run test:e2e
-      env:
-        CI: true
-        PORT: 3000
-        APP_SECRET: 444a45b38193572dd7d3c0d691d806b487dbdfe1
-        POSTGRES_DB: authentication
-        POSTGRES_USER: admin
-        POSTGRES_PASSWORD: contraseña
-        DATABASE_URL: postgres://admin:contraseña@localhost:5432/authentication
-
   run-server:
-    needs: [install]
+    if: "!contains(github.event.head_commit.message, 'skip ci')"
     runs-on: ubuntu-latest
     strategy:
       matrix:
         node-version: [8.x, 10.x, 12.x]
+    services:
+      postgres:
+        image: postgres:11
+        env:
+          POSTGRES_USER: admin
+          POSTGRES_PASSWORD: wnbaohW7mn
+          POSTGRES_DB: authentication
+        ports:
+        - 5432:5432
+        # needed because the postgres container does not provide a healthcheck
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     steps:
-    - uses: actions/checkout@v1
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
-    - uses: actions/cache@v1
-      name: Cache dependencies
-      with:
-        path: ~/.npm
-        key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-        restore-keys: |
-          ${{ runner.os }}-node-
-    - uses: harmon758/postgresql-action@v1
-      with:
-        postgresql version: '11'
-        postgresql db: authentication
-        postgresql user: admin
-        postgresql password: contraseña
-    - name: npm install, build, and test
+    - uses: bahmutov/npm-install@v1
+    - name: Prepare the database
       run: |
-        npm i -g newman
-        npm ci
         npm run typeorm migration:run
         npm run fixtures
         npm run fixtures
-        npm run start:prod &
-        sleep 20
-        newman run https://www.getpostman.com/collections/6b82b259fc751deda654
       env:
-        CI: true
         PORT: 3000
         APP_SECRET: 444a45b38193572dd7d3c0d691d806b487dbdfe1
-        POSTGRES_DB: authentication
         POSTGRES_USER: admin
-        POSTGRES_PASSWORD: contraseña
-        DATABASE_URL: postgres://admin:contraseña@localhost:5432/authentication
+        POSTGRES_PASSWORD: wnbaohW7mn
+        POSTGRES_DB: authentication
+        DATABASE_URL: postgres://admin:wnbaohW7mn@localhost:${{ job.services.postgres.ports[5432] }}/authentication
+    - name: Run the backend
+      run: |
+        npm run start:prod &
+      env:
+        PORT: 3000
+        APP_SECRET: 444a45b38193572dd7d3c0d691d806b487dbdfe1
+        DATABASE_URL: postgres://admin:wnbaohW7mn@localhost:${{ job.services.postgres.ports[5432] }}/authentication
+    - name: Run Postman collection
+      run: npx newman run https://www.getpostman.com/collections/6b82b259fc751deda654
