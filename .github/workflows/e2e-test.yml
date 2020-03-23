@@ -3,6 +3,43 @@ name: E2E test
 on: [push]
 
 jobs:
+  e2e-test:
+    if: "!contains(github.event.head_commit.message, 'skip ci')"
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [8.x, 10.x, 12.x]
+    services:
+      postgres:
+        image: postgres:11
+        env:
+          POSTGRES_USER: admin
+          POSTGRES_PASSWORD: wnbaohW7mn
+          POSTGRES_DB: authentication
+        ports:
+        - 5432:5432
+        # needed because the postgres container does not provide a healthcheck
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - uses: bahmutov/npm-install@v1
+    - name: Run E2E tests
+      run: |
+        npm run typeorm migration:run
+        npm run fixtures
+        npm run test:e2e
+      env:
+        CI: 'true'
+        PORT: 3000
+        APP_SECRET: 444a45b38193572dd7d3c0d691d806b487dbdfe1
+        POSTGRES_USER: admin
+        POSTGRES_PASSWORD: wnbaohW7mn
+        POSTGRES_DB: authentication
+        DATABASE_URL: postgres://admin:wnbaohW7mn@localhost:${{ job.services.postgres.ports[5432] }}/authentication
+
   run-server:
     if: "!contains(github.event.head_commit.message, 'skip ci')"
     runs-on: ubuntu-latest
