@@ -4,6 +4,7 @@ import { useContainer } from 'class-validator';
 import * as cookieParser from 'cookie-parser';
 import * as session from 'express-session';
 import * as passport from 'passport';
+import * as connectPgSimple from 'connect-pg-simple';
 
 import { AppModule } from './app.module';
 
@@ -22,6 +23,10 @@ async function bootstrap() {
       secret: process.env.APP_SECRET as string,
       resave: false,
       saveUninitialized: false,
+      store:
+        process.env.NODE_ENV === 'production'
+          ? new (connectPgSimple(session))()
+          : new session.MemoryStore(),
     }),
   );
   app.use(passport.initialize());
