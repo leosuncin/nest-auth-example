@@ -1,21 +1,21 @@
 import {
+  Body,
   Controller,
-  Post,
+  Get,
   HttpCode,
   HttpStatus,
-  Body,
-  UseGuards,
+  Post,
   Req,
   Res,
-  Get,
+  UseGuards,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 
+import { User } from 'src/user/user.entity';
 import { AuthService } from './auth.service';
 import { SignUp } from './dto/sign-up.dto';
-import { User } from 'src/user/user.entity';
-import { PassportGuard } from './guards/passport.guard';
-import { SessionGuard } from './guards/session.guard';
+import { LocalAuthGuard } from './guards/local-auth.guard';
+import { SessionAuthGuard } from './guards/session-auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -35,7 +35,7 @@ export class AuthController {
   }
 
   @Post('login')
-  @UseGuards(PassportGuard('local'))
+  @UseGuards(LocalAuthGuard)
   @HttpCode(HttpStatus.OK)
   async login(@Req() req: Request, @Res() resp: Response) {
     const user = req.user as User;
@@ -49,8 +49,8 @@ export class AuthController {
   }
 
   @Get('/me')
-  @UseGuards(SessionGuard)
+  @UseGuards(SessionAuthGuard)
   me(@Req() req: Request) {
-    return req.user || req.session.passport.user;
+    return req.session?.passport?.user;
   }
 }
