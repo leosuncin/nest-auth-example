@@ -51,6 +51,6 @@ export class AuthController {
   @Get('/me')
   @UseGuards(SessionAuthGuard)
   me(@Req() req: Request) {
-    return req.session.passport.user;
+    return req.session?.passport?.user;
   }
 }

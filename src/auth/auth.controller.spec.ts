@@ -94,7 +94,6 @@ describe('Auth Controller', () => {
   it('should got me logged', () => {
     const user = { id: 1, name: 'John Doe', email: 'john@doe.me' };
 
-    expect(controller.me(httpMocks.createRequest({ user }))).toEqual(user);
     expect(
       controller.me(
         httpMocks.createRequest({
