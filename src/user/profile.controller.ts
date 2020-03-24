@@ -12,10 +12,11 @@ import {
 
 import { UserService } from './user.service';
 import { UserUpdate } from './dto/user-update.dto';
-import { PassportGuard } from '../auth/guards/passport.guard';
+import { JWTAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { SessionAuthGuard } from '../auth/guards/session-auth.guard';
 
 @Controller('profile')
-@UseGuards(PassportGuard('jwt'))
+@UseGuards(JWTAuthGuard, SessionAuthGuard)
 @UseInterceptors(ClassSerializerInterceptor)
 export class ProfileController {
   constructor(private readonly userService: UserService) {}
