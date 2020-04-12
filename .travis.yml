@@ -4,8 +4,6 @@ services:
   - postgresql
 
 node_js:
-  - 11
-  - 12
   - node
 
 notifications:
@@ -29,7 +27,7 @@ before_script:
 
 script:
   - npm run lint --if-present
-  - npm start &
+  - NODE_ENV=production npm start &
   - npm run test:cov
   - npm run test:e2e
   - newman run https://www.getpostman.com/collections/6b82b259fc751deda654
