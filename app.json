@@ -1,0 +1,16 @@
+{
+  "name": "Nest.js authentication example",
+  "description": "Nest.js authentication with Passport. Realworld example",
+  "repository": "https://github.com/leosuncin/nest-auth-example",
+  "keywords": ["node", "nestjs", "passport", "typescript", "postgresql", "authentication"],
+  "env": {
+    "APP_SECRET": {
+      "description": "A secret key for verifying the integrity of JWT.",
+      "generator": "secret"
+    }
+  },
+  "addons": ["heroku-postgresql:hobby-dev"],
+  "scripts": {
+    "postdeploy": "npm run migration:run"
+  }
+}
