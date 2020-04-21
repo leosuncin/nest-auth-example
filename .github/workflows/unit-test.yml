@@ -45,3 +45,4 @@ jobs:
         POSTGRES_USER: admin
         POSTGRES_PASSWORD: contraseña
         DATABASE_URL: postgres://admin:contraseña@localhost:5432/authentication
+        ALLOWED_ORIGINS: '*'

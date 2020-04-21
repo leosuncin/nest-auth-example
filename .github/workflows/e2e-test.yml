@@ -39,6 +39,7 @@ jobs:
         POSTGRES_PASSWORD: wnbaohW7mn
         POSTGRES_DB: authentication
         DATABASE_URL: postgres://admin:wnbaohW7mn@localhost:${{ job.services.postgres.ports[5432] }}/authentication
+        ALLOWED_ORIGINS: '*'
 
   run-server:
     if: "!contains(github.event.head_commit.message, 'skip ci')"
@@ -75,6 +76,7 @@ jobs:
         POSTGRES_PASSWORD: wnbaohW7mn
         POSTGRES_DB: authentication
         DATABASE_URL: postgres://admin:wnbaohW7mn@localhost:${{ job.services.postgres.ports[5432] }}/authentication
+        ALLOWED_ORIGINS: '*'
     - name: Run the backend
       run: |
         npm run build
@@ -84,5 +86,6 @@ jobs:
         NODE_ENV: production
         APP_SECRET: 444a45b38193572dd7d3c0d691d806b487dbdfe1
         DATABASE_URL: postgres://admin:wnbaohW7mn@localhost:${{ job.services.postgres.ports[5432] }}/authentication
+        ALLOWED_ORIGINS: '*'
     - name: Run Postman collection
       run: npx newman run https://www.getpostman.com/collections/6b82b259fc751deda654
