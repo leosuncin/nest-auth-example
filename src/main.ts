@@ -31,6 +31,11 @@ async function bootstrap() {
   );
   app.use(passport.initialize());
   app.use(passport.session());
+  app.enableCors({
+    origin: process.env.ALLOWED_ORIGINS?.split(/\s*,\s*/) ?? '*',
+    credentials: true,
+    exposedHeaders: ['Authorization'],
+  });
 
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
 
