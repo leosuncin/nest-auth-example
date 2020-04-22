@@ -27,6 +27,12 @@ async function bootstrap() {
         process.env.NODE_ENV === 'production'
           ? new (connectPgSimple(session))()
           : new session.MemoryStore(),
+      cookie: {
+        httpOnly: true,
+        signed: true,
+        sameSite: 'strict',
+        secure: process.env.NODE_ENV === 'production',
+      }
     }),
   );
   app.use(passport.initialize());

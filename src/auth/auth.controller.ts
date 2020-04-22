@@ -29,6 +29,12 @@ export class AuthController {
 
     delete user.password;
     resp.setHeader('Authorization', `Bearer ${token}`);
+    resp.cookie('token', token, {
+      httpOnly: true,
+      signed: true,
+      sameSite: 'strict',
+      secure: process.env.NODE_ENV === 'production',
+    });
     resp.send(user);
 
     return resp;
@@ -43,6 +49,12 @@ export class AuthController {
 
     delete user.password;
     resp.setHeader('Authorization', `Bearer ${token}`);
+    resp.cookie('token', token, {
+      httpOnly: true,
+      signed: true,
+      sameSite: 'strict',
+      secure: process.env.NODE_ENV === 'production',
+    });
     resp.send(user);
 
     return resp;
