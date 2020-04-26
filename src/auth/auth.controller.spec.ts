@@ -65,7 +65,7 @@ describe('Auth Controller', () => {
     };
     const resp = httpMocks.createResponse();
 
-    expect(await controller.register(register, resp)).toBeDefined();
+    await expect(controller.register(register, resp)).resolves.toBeDefined();
     expect(resp._getHeaders()).toHaveProperty(
       'authorization',
       'Bearer 6a6f686e40646f652e6d65',
@@ -80,10 +80,9 @@ describe('Auth Controller', () => {
     req.user = {
       name: 'John Doe',
       email: 'john@doe.me',
-      password: 'Pa$$w0rd',
     };
 
-    expect(await controller.login(req, resp)).toBeDefined();
+    await expect(controller.login(req, resp)).resolves.toBeDefined();
     expect(resp._getHeaders()).toHaveProperty(
       'authorization',
       'Bearer 6a6f686e40646f652e6d65',
@@ -94,14 +93,6 @@ describe('Auth Controller', () => {
   it('should got me logged', () => {
     const user = { id: 1, name: 'John Doe', email: 'john@doe.me' };
 
-    expect(
-      controller.me(
-        httpMocks.createRequest({
-          session: {
-            passport: { user },
-          },
-        } as unknown),
-      ),
-    ).toEqual(user);
+    expect(controller.me(httpMocks.createRequest({ user }))).toEqual(user);
   });
 });
