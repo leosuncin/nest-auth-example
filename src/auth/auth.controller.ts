@@ -27,7 +27,6 @@ export class AuthController {
     const user = await this.authService.register(signUp);
     const token = this.authService.signToken(user);
 
-    delete user.password;
     resp.setHeader('Authorization', `Bearer ${token}`);
     resp.cookie('token', token, {
       httpOnly: true,
@@ -47,7 +46,6 @@ export class AuthController {
     const user = req.user as User;
     const token = this.authService.signToken(user);
 
-    delete user.password;
     resp.setHeader('Authorization', `Bearer ${token}`);
     resp.cookie('token', token, {
       httpOnly: true,

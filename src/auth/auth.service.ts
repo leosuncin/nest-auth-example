@@ -14,7 +14,10 @@ export class AuthService {
   ) {}
 
   async register(signUp: SignUp): Promise<User> {
-    return this.userService.create(signUp);
+    const user = await this.userService.create(signUp);
+    delete user.password;
+
+    return user;
   }
 
   async login(email: string, password: string): Promise<User> {
@@ -33,6 +36,7 @@ export class AuthService {
         `Wrong password for user with email: ${email}`,
       );
     }
+    delete user.password;
 
     return user;
   }
@@ -47,6 +51,7 @@ export class AuthService {
         `There isn't any user with email: ${payload.sub}`,
       );
     }
+    delete user.password;
 
     return user;
   }
