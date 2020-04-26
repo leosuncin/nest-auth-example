@@ -1,5 +1,7 @@
 import { HttpStatus, INestApplication, ValidationPipe } from '@nestjs/common';
-import { TestingModule, Test } from '@nestjs/testing';
+import { Test, TestingModule } from '@nestjs/testing';
+import * as cookieParser from 'cookie-parser';
+import * as session from 'express-session';
 import * as faker from 'faker';
 import * as passport from 'passport';
 import * as supertest from 'supertest';
@@ -19,7 +21,23 @@ describe('ProfileController (e2e)', () => {
 
     app = moduleFixture.createNestApplication();
     app.useGlobalPipes(
-      new ValidationPipe({ transform: true, whitelist: true }),
+      new ValidationPipe({
+        transform: true,
+        whitelist: true,
+        validationError: { target: false },
+      }),
+    );
+    app.use(cookieParser(process.env.APP_SECRET));
+    app.use(
+      session({
+        secret: process.env.APP_SECRET as string,
+        resave: false,
+        saveUninitialized: false,
+        cookie: {
+          httpOnly: true,
+          sameSite: 'strict',
+        }
+      }),
     );
     app.use(passport.initialize());
     app.use(passport.session());
