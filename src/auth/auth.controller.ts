@@ -5,18 +5,18 @@ import {
   HttpCode,
   HttpStatus,
   Post,
-  Req,
   Res,
   UseGuards,
 } from '@nestjs/common';
-import { Request, Response } from 'express';
+import { Response } from 'express';
 
-import { User } from 'src/user/user.entity';
+import { AuthUser } from '../user/user.decorator';
+import { User } from '../user/user.entity';
 import { AuthService } from './auth.service';
 import { SignUp } from './dto/sign-up.dto';
+import { JWTAuthGuard } from './guards/jwt-auth.guard';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { SessionAuthGuard } from './guards/session-auth.guard';
-import { JWTAuthGuard } from './guards/jwt-auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -43,8 +43,7 @@ export class AuthController {
   @Post('login')
   @UseGuards(LocalAuthGuard)
   @HttpCode(HttpStatus.OK)
-  async login(@Req() req: Request, @Res() resp: Response) {
-    const user = req.user as User;
+  async login(@AuthUser() user: User, @Res() resp: Response) {
     const token = this.authService.signToken(user);
 
     resp.setHeader('Authorization', `Bearer ${token}`);
@@ -61,7 +60,7 @@ export class AuthController {
 
   @Get('/me')
   @UseGuards(SessionAuthGuard, JWTAuthGuard)
-  me(@Req() req: Request) {
-    return req.user;
+  me(@AuthUser() user: User) {
+    return user;
   }
 }

@@ -8,12 +8,11 @@ import { UserService } from '../user/user.service';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 
-const userBuilder = build('User', {
+const userBuilder = build<Partial<User>>('User', {
   fields: {
     id: sequence(),
     name: fake(f => f.name.findName()),
     email: fake(f => f.internet.exampleEmail()),
-    password: fake(f => f.random.uuid()),
     createdAt: perBuild(() => new Date()),
     updatedAt: perBuild(() => new Date()),
   },
@@ -90,14 +89,13 @@ describe('Auth Controller', () => {
 
   it('should log in an user', async () => {
     expect.assertions(3);
-    const req = httpMocks.createRequest();
     const resp = httpMocks.createResponse();
-    req.user = {
+    const user = userBuilder({ overrides: {
       name: 'John Doe',
       email: 'john@doe.me',
-    };
+    }});
 
-    await expect(controller.login(req, resp)).resolves.toBeDefined();
+    await expect(controller.login(user as User, resp)).resolves.toBeDefined();
     expect(resp._getHeaders()).toHaveProperty(
       'authorization',
       'Bearer 6a6f686e40646f652e6d65',
@@ -111,6 +109,6 @@ describe('Auth Controller', () => {
       email: 'john@doe.me',
     }});
 
-    expect(controller.me(httpMocks.createRequest({ user }))).toEqual(user);
+    expect(controller.me(user as User)).toEqual(user);
   });
 });
