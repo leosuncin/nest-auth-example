@@ -1,10 +1,26 @@
+import { build, fake, perBuild, sequence } from '@jackfranklin/test-data-bot';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import * as faker from 'faker';
 
 import { ProfileController } from './profile.controller';
-import { UserService } from './user.service';
 import { User } from './user.entity';
+import { UserService } from './user.service';
+
+const userBuilder = build('User', {
+  fields: {
+    id: sequence(),
+    name: fake(f => f.name.findName()),
+    email: fake(f => f.internet.exampleEmail()),
+    password: fake(f => f.random.uuid()),
+    createdAt: perBuild(() => new Date()),
+    updatedAt: perBuild(() => new Date()),
+  },
+});
+const updateBuilder = build('UserUpdate', {
+  fields: {
+    name: fake(f => f.name.findName()),
+  },
+});
 
 describe('Profile Controller', () => {
   let controller: ProfileController;
@@ -21,10 +37,11 @@ describe('Profile Controller', () => {
               const test = Number.isFinite(options)
                 ? Boolean(options)
                 : Boolean(options.where.id);
-              return Promise.resolve(test ? new User() : null);
+
+              return Promise.resolve(test ? userBuilder() : null);
             },
             save(dto) {
-              return Promise.resolve(dto);
+              return Promise.resolve(userBuilder({ overrides: dto }));
             },
           },
         },
@@ -42,15 +59,9 @@ describe('Profile Controller', () => {
   it('should fail to get a profile', () =>
     expect(controller.get(0)).rejects.toThrow());
 
-  it('should update a profile', () => {
-    const data = { name: faker.fake('{{name.firstName}} name.lastName') };
+  it('should update a profile', () =>
+    expect(controller.update(1, updateBuilder())).resolves.toBeDefined());
 
-    return expect(controller.update(1, data)).resolves.toBeDefined();
-  });
-
-  it('should fail to update a profile', () => {
-    const data = { name: faker.fake('{{name.firstName}} name.lastName') };
-
-    return expect(controller.update(0, data)).rejects.toBeDefined();
-  });
+  it('should fail to update a profile', () =>
+    expect(controller.update(0, updateBuilder())).rejects.toBeDefined());
 });

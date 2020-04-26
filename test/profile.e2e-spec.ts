@@ -1,12 +1,17 @@
+import { build, fake } from '@jackfranklin/test-data-bot';
 import { HttpStatus, INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as cookieParser from 'cookie-parser';
 import * as session from 'express-session';
-import * as faker from 'faker';
 import * as passport from 'passport';
 import * as supertest from 'supertest';
-
 import { AppModule } from '../src/app.module';
+
+const updateBuilder = build('UserUpdate', {
+  fields: {
+    name: fake(f => f.name.findName()),
+  },
+});
 
 describe('ProfileController (e2e)', () => {
   let app: INestApplication;
@@ -36,7 +41,7 @@ describe('ProfileController (e2e)', () => {
         cookie: {
           httpOnly: true,
           sameSite: 'strict',
-        }
+        },
       }),
     );
     app.use(passport.initialize());
@@ -59,64 +64,49 @@ describe('ProfileController (e2e)', () => {
     await app.close();
   });
 
-  it('should show the user profile', done => {
-    request
+  it('should show the user profile', async () => {
+    const { body } = await request
       .get(`/profile/${userId}`)
       .set('Authorization', `Bearer ${token}`)
-      .expect(HttpStatus.OK)
-      .end((err, resp) => {
-        if (err) {
-          return done(err);
-        }
+      .expect(HttpStatus.OK);
 
-        expect(resp.body).not.toHaveProperty('password');
-        return done();
-      });
+    expect(body).not.toHaveProperty('password');
   });
 
-  it('should fail to show user profile without authorization', done => {
-    request
+  it('should fail to show user profile without authorization', async () => {
+    const resp = await request
       .get(`/profile/${userId}`)
-      .expect(HttpStatus.UNAUTHORIZED)
-      .end(done);
+      .expect(HttpStatus.UNAUTHORIZED);
+
+    expect(resp.body).toBeDefined();
   });
 
-  it('should update the user profile', done => {
-    request
+  it('should update the user profile', async () => {
+    const { body } = await request
       .put(`/profile/${userId}`)
-      .send({
-        name: faker.name.findName(),
-      })
+      .send(updateBuilder())
       .set('Authorization', `Bearer ${token}`)
-      .expect(HttpStatus.OK)
-      .end((err, resp) => {
-        if (err) {
-          return done(err);
-        }
+      .expect(HttpStatus.OK);
 
-        expect(resp.body).not.toHaveProperty('password');
-        return done();
-      });
+    expect(body).not.toHaveProperty('password');
   });
 
-  it('should require the name when update profile', done => {
-    request
+  it('should require the name when update profile', async () => {
+    const resp = await request
       .put(`/profile/${userId}`)
-      .send({
-        email: faker.internet.exampleEmail(),
-      })
+      .send({ name: '' })
       .set('Authorization', `Bearer ${token}`)
-      .expect(HttpStatus.BAD_REQUEST)
-      .end(done);
+      .expect(HttpStatus.BAD_REQUEST);
+
+    expect(resp.body).toBeDefined();
   });
 
-  it('should fail to update the profile without authorization', done => {
-    request
+  it('should fail to update the profile without authorization', async () => {
+    const resp = await request
       .put(`/profile/${userId}`)
-      .send({
-        name: faker.name.findName(),
-      })
-      .expect(HttpStatus.UNAUTHORIZED)
-      .end(done);
+      .send(updateBuilder())
+      .expect(HttpStatus.UNAUTHORIZED);
+
+    expect(resp.body).toBeDefined();
   });
 });

@@ -1,24 +1,22 @@
+import { build, fake } from '@jackfranklin/test-data-bot';
 import { HttpStatus, INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { useContainer } from 'class-validator';
 import * as cookieParser from 'cookie-parser';
 import * as session from 'express-session';
-import * as faker from 'faker';
 import * as passport from 'passport';
 import * as supertest from 'supertest';
 
 import { AppModule } from '../src/app.module';
 
-function generateUser() {
-  const firstName = faker.name.firstName();
-  const lastName = faker.name.lastName();
-
-  return {
-    name: `${firstName} ${lastName}`,
-    email: faker.internet.exampleEmail(firstName, lastName),
+const userBuilder = build('User', {
+  fields: {
+    name: fake((f) => f.name.findName()),
+    email: fake((f) => f.internet.exampleEmail()),
     password: 'Pa$$w0rd',
-  };
-}
+  },
+});
+
 
 function getAuthResponseCallback(done: jest.DoneCallback) {
   return (err, resp: supertest.Response) => {
@@ -80,7 +78,7 @@ describe('AuthController (e2e)', () => {
   it('should allow to sign up a new user', done => {
     request
       .post('/auth/register')
-      .send(generateUser())
+      .send(userBuilder())
       .expect(HttpStatus.CREATED)
       .end(getAuthResponseCallback(done));
   });

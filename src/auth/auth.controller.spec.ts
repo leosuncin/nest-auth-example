@@ -1,11 +1,23 @@
+import { build, fake, perBuild, sequence } from '@jackfranklin/test-data-bot';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import * as httpMocks from 'node-mocks-http';
 
-import { AuthController } from './auth.controller';
-import { AuthService } from './auth.service';
 import { User } from '../user/user.entity';
 import { UserService } from '../user/user.service';
+import { AuthController } from './auth.controller';
+import { AuthService } from './auth.service';
+
+const userBuilder = build('User', {
+  fields: {
+    id: sequence(),
+    name: fake(f => f.name.findName()),
+    email: fake(f => f.internet.exampleEmail()),
+    password: fake(f => f.random.uuid()),
+    createdAt: perBuild(() => new Date()),
+    updatedAt: perBuild(() => new Date()),
+  },
+});
 
 describe('Auth Controller', () => {
   let controller: AuthController;
@@ -26,10 +38,13 @@ describe('Auth Controller', () => {
               const test = Number.isFinite(options)
                 ? Boolean(options)
                 : Boolean(options.where.id);
-              return Promise.resolve(test ? new User() : null);
+
+              return Promise.resolve(test ? userBuilder() : null);
             },
             save(dto) {
-              return Promise.resolve(dto);
+              return Promise.resolve(
+                userBuilder({ overrides: dto }),
+              );
             },
           },
         },
@@ -91,7 +106,10 @@ describe('Auth Controller', () => {
   });
 
   it('should got me logged', () => {
-    const user = { id: 1, name: 'John Doe', email: 'john@doe.me' };
+    const user = userBuilder({ overrides: {
+      name: 'John Doe',
+      email: 'john@doe.me',
+    }});
 
     expect(controller.me(httpMocks.createRequest({ user }))).toEqual(user);
   });
