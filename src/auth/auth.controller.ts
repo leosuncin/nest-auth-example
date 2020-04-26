@@ -16,6 +16,7 @@ import { AuthService } from './auth.service';
 import { SignUp } from './dto/sign-up.dto';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { SessionAuthGuard } from './guards/session-auth.guard';
+import { JWTAuthGuard } from './guards/jwt-auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -59,8 +60,8 @@ export class AuthController {
   }
 
   @Get('/me')
-  @UseGuards(SessionAuthGuard)
+  @UseGuards(SessionAuthGuard, JWTAuthGuard)
   me(@Req() req: Request) {
-    return req.session?.passport?.user;
+    return req.user;
   }
 }
