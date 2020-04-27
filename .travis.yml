@@ -4,7 +4,7 @@ services:
   - postgresql
 
 node_js:
-  - node
+  - 13
 
 notifications:
   email: false
@@ -19,7 +19,7 @@ install:
   - npm i -g newman
 
 before_script:
-  - npm audit
+  - npm audit --prod
   - psql -c "create database ${POSTGRES_DB};" -U $POSTGRES_USER
   - npm run typeorm migration:run
   - npm run fixtures
@@ -27,7 +27,8 @@ before_script:
 
 script:
   - npm run lint --if-present
-  - NODE_ENV=production npm start &
   - npm run test:cov
   - npm run test:e2e
+  - NODE_ENV=production npm start &
+  - sleep 10
   - newman run https://www.getpostman.com/collections/6b82b259fc751deda654
