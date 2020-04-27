@@ -11,26 +11,11 @@ import { AppModule } from '../src/app.module';
 
 const userBuilder = build('User', {
   fields: {
-    name: fake((f) => f.name.findName()),
-    email: fake((f) => f.internet.exampleEmail()),
+    name: fake(f => f.name.findName()),
+    email: fake(f => f.internet.exampleEmail()),
     password: 'Pa$$w0rd',
   },
 });
-
-
-function getAuthResponseCallback(done: jest.DoneCallback) {
-  return (err, resp: supertest.Response) => {
-    if (err) {
-      return done(err);
-    }
-
-    expect(resp.body).toBeDefined();
-    expect(resp.body.password).toBeUndefined();
-    expect(resp.header.authorization).toMatch(/Bearer\s+.*/);
-
-    return done();
-  };
-}
 
 describe('AuthController (e2e)', () => {
   let app: INestApplication;
@@ -58,7 +43,7 @@ describe('AuthController (e2e)', () => {
         cookie: {
           httpOnly: true,
           sameSite: 'strict',
-        }
+        },
       }),
     );
     app.use(passport.initialize());
@@ -75,22 +60,53 @@ describe('AuthController (e2e)', () => {
     await app.close();
   });
 
-  it('should allow to sign up a new user', done => {
-    request
-      .post('/auth/register')
-      .send(userBuilder())
-      .expect(HttpStatus.CREATED)
-      .end(getAuthResponseCallback(done));
-  });
+  it.each([
+    ['/auth/register', userBuilder(), HttpStatus.CREATED],
+    [
+      '/auth/login',
+      {
+        email: 'john@doe.me',
+        password: 'Pa$$w0rd',
+      },
+      HttpStatus.OK,
+    ],
+    [
+      '/auth/register',
+      { name: null, email: null, password: null },
+      HttpStatus.BAD_REQUEST,
+    ],
+    ['/auth/login', { email: '', password: '' }, HttpStatus.UNAUTHORIZED],
+    [
+      '/auth/login',
+      { email: 'john@doe.me', password: '' },
+      HttpStatus.UNAUTHORIZED,
+    ],
+  ])(
+    'should make a POST request to %s with %p and expect %d status',
+    async (url, body, statusCode) => {
+      const resp = await request.post(url).send(body).expect(statusCode);
 
-  it('should allow to sign in an user', done => {
-    request
+      expect(resp.body).toBeDefined();
+      expect(resp.body.password).toBeUndefined();
+      if (resp.ok) expect(resp.header.authorization).toMatch(/Bearer\s+.*/);
+    },
+  );
+
+  it('should get session user', async () => {
+    const {
+      header: { authorization },
+    } = await request
       .post('/auth/login')
       .send({
         email: 'john@doe.me',
         password: 'Pa$$w0rd',
       })
-      .expect(HttpStatus.OK)
-      .end(getAuthResponseCallback(done));
+      .expect(HttpStatus.OK);
+    const resp = await request
+      .get('/auth/me')
+      .set('Authorization', authorization);
+
+    expect(resp.body).toBeDefined();
+    expect(resp.body.password).toBeUndefined();
   });
 });
