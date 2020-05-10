@@ -7,7 +7,7 @@ import * as passport from 'passport';
 import * as supertest from 'supertest';
 import { AppModule } from '../src/app.module';
 
-const updateBuilder = build('UserUpdate', {
+const updateBuilder = build({
   fields: {
     name: fake(f => f.name.findName()),
   },

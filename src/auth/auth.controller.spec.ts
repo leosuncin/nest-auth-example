@@ -8,7 +8,7 @@ import { UserService } from '../user/user.service';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 
-const userBuilder = build<Partial<User>>('User', {
+const userBuilder = build<Partial<User>>({
   fields: {
     id: sequence(),
     name: fake(f => f.name.findName()),

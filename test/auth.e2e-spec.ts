@@ -9,7 +9,7 @@ import * as supertest from 'supertest';
 
 import { AppModule } from '../src/app.module';
 
-const userBuilder = build('User', {
+const userBuilder = build({
   fields: {
     name: fake(f => f.name.findName()),
     email: fake(f => f.internet.exampleEmail()),
