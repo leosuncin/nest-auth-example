@@ -6,7 +6,7 @@ import { ProfileController } from './profile.controller';
 import { User } from './user.entity';
 import { UserService } from './user.service';
 
-const userBuilder = build('User', {
+const userBuilder = build({
   fields: {
     id: sequence(),
     name: fake(f => f.name.findName()),
@@ -16,7 +16,7 @@ const userBuilder = build('User', {
     updatedAt: perBuild(() => new Date()),
   },
 });
-const updateBuilder = build('UserUpdate', {
+const updateBuilder = build({
   fields: {
     name: fake(f => f.name.findName()),
   },
