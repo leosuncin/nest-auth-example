@@ -19,7 +19,6 @@ install:
   - npm i -g newman
 
 before_script:
-  - npm audit --prod
   - psql -c "create database ${POSTGRES_DB};" -U $POSTGRES_USER
   - npm run typeorm migration:run
   - npm run fixtures
