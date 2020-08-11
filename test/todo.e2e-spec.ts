@@ -101,4 +101,15 @@ describe('TodoController (e2e)', () => {
 
     expect(Array.isArray(resp.body)).toBe(true);
   });
+
+  it('should get one todo that belong to user', async () => {
+    const resp = await request
+      .get('/todo/1')
+      .set('Authorization', `Bearer ${token}`)
+      .expect(HttpStatus.OK)
+      .expect('Content-Type', /json/);
+
+    expect(resp.body).toBeDefined();
+    expect(resp.body).not.toHaveProperty('owner');
+  });
 });
