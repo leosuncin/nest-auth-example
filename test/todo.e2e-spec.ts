@@ -57,7 +57,7 @@ describe('TodoController (e2e)', () => {
   it('should create a new todo', async () => {
     const payload = createTodoBuilder();
     const resp = await request
-      .put('/todo')
+      .post('/todo')
       .set('Authorization', `Bearer ${token}`)
       .send(payload)
       .expect(HttpStatus.CREATED);
@@ -66,9 +66,9 @@ describe('TodoController (e2e)', () => {
     expect(resp.body).toHaveProperty('done', false);
   });
 
-  /* it('should fail to create with invalid body', async () => {
+  it('should fail to create with invalid body', async () => {
     const resp = await request
-      .put('/todo')
+      .post('/todo')
       .set('Authorization', `Bearer ${token}`)
       .send({})
       .expect(HttpStatus.UNPROCESSABLE_ENTITY)
@@ -77,7 +77,7 @@ describe('TodoController (e2e)', () => {
     expect(resp.body).toHaveProperty('error', 'Unprocessable Entity');
   });
 
-  it('should list all todos that belong to user', async () => {
+  /* it('should list all todos that belong to user', async () => {
     const resp = await request
       .get('/todo')
       .set('Authorization', `Bearer ${token}`)
