@@ -1,0 +1,11 @@
+entity: Todo
+items:
+  make_sandwich:
+    id: 1
+    text: 'Make a sandwich'
+    done: no
+    owner: '@john'
+  todo{1..10}:
+    text: '{{lorem.sentence}}'
+    done: '{{random.boolean}}'
+    owner: '@john'
