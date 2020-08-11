@@ -90,4 +90,15 @@ describe('TodoController (e2e)', () => {
     expect(resp.body).toBeDefined();
     expect(resp.body).not.toHaveProperty('owner');
   });
+
+  it('should update one todo that belong to user', async () => {
+    const resp = await request
+      .put('/todo/1')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ done: true })
+      .expect(HttpStatus.OK);
+
+    expect(resp.body).not.toHaveProperty('owner');
+    expect(resp.body).toHaveProperty('done', true);
+  });
 });
