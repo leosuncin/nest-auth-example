@@ -44,6 +44,7 @@ describe('Todo Controller', () => {
           useValue: {
             create: dto => dto,
             save: dto => Promise.resolve(todoBuilder({ overrides: dto })),
+            find: () => Promise.resolve([]),
           },
         },
       ],
@@ -65,5 +66,11 @@ describe('Todo Controller', () => {
     await expect(
       controller.createTodo(newTodo as any, user as any),
     ).resolves.toBeInstanceOf(Todo);
+  });
+
+  test('should list all todos', async () => {
+    await expect(
+      controller.listTodo(userBuilder() as any),
+    ).resolves.toBeDefined();
   });
 });

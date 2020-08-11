@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 
 import { Todo } from './todo.entity';
 import { TodoCreate } from './todo-create.dto';
+import { User } from '../user/user.entity';
 
 @Injectable()
 export class TodoService {
@@ -16,5 +17,9 @@ export class TodoService {
     const todo = this.repo.create(newTodo);
 
     return this.repo.save(todo);
+  }
+
+  listTodo(owner: User): Promise<Todo[]> {
+    return this.repo.find({ owner });
   }
 }
