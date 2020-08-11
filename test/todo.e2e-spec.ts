@@ -31,12 +31,12 @@ describe('TodoController (e2e)', () => {
     request = supertest(app.getHttpServer());
     // service = app.get<TodoService>(TodoService);
 
-    // const {
-    //   header: { authorization },
-    // } = await supertest(app.getHttpServer())
-    //   .post('/auth/login')
-    //   .send({ email: 'john@doe.me', password: 'Pa$$w0rd' });
-    // [, token] = authorization.split(/\s+/);
+    const {
+      header: { authorization },
+    } = await supertest(app.getHttpServer())
+      .post('/auth/login')
+      .send({ email: 'john@doe.me', password: 'Pa$$w0rd' });
+    [, token] = authorization.split(/\s+/);
   });
 
   afterEach(async () => {
@@ -77,7 +77,7 @@ describe('TodoController (e2e)', () => {
     expect(resp.body).toHaveProperty('error', 'Unprocessable Entity');
   });
 
-  /* it('should list all todos that belong to user', async () => {
+  it('should list all todos that belong to user', async () => {
     const resp = await request
       .get('/todo')
       .set('Authorization', `Bearer ${token}`)
@@ -87,7 +87,7 @@ describe('TodoController (e2e)', () => {
     expect(Array.isArray(resp.body)).toBe(true);
   });
 
-  it('should get one todo that belong to user', async () => {
+  /* it('should get one todo that belong to user', async () => {
     const todos = service.listTodo(1 as any);
     const resp = await request
       .get(`/todo/${todos[0].id}`)
