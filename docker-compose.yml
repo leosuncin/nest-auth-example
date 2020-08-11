@@ -1,4 +1,4 @@
-version: '3'
+version: '3.6'
 
 services:
   postgres:
@@ -8,10 +8,16 @@ services:
       - postgres-data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
+    healthcheck:
+      test: pg_isready
+      interval: 10s
+      timeout: 5s
+      retries: 5
   pgweb:
     image: sosedoff/pgweb
     depends_on:
       - postgres
+    restart: on-failure
     environment:
       DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?sslmode=disable
     ports:
