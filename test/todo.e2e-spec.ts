@@ -101,4 +101,16 @@ describe('TodoController (e2e)', () => {
     expect(resp.body).not.toHaveProperty('owner');
     expect(resp.body).toHaveProperty('done', true);
   });
+
+  it('should remove one todo that belong to user', async () => {
+    const { body: todo } = await request
+      .post('/todo')
+      .set('Authorization', `Bearer ${token}`)
+      .send(createTodoBuilder())
+      .expect(HttpStatus.CREATED);
+    const resp = await request
+      .delete(`/todo/${todo.id}`)
+      .set('Authorization', `Bearer ${token}`)
+      .expect(HttpStatus.NO_CONTENT);
+  });
 });
