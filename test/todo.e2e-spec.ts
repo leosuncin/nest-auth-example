@@ -54,7 +54,7 @@ describe('TodoController (e2e)', () => {
       .expect(HttpStatus.UNAUTHORIZED);
   });
 
-  /* it('should create a new todo', async () => {
+  it('should create a new todo', async () => {
     const payload = createTodoBuilder();
     const resp = await request
       .put('/todo')
@@ -66,7 +66,7 @@ describe('TodoController (e2e)', () => {
     expect(resp.body).toHaveProperty('done', false);
   });
 
-  it('should fail to create with invalid body', async () => {
+  /* it('should fail to create with invalid body', async () => {
     const resp = await request
       .put('/todo')
       .set('Authorization', `Bearer ${token}`)
