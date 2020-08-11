@@ -113,4 +113,22 @@ describe('TodoController (e2e)', () => {
       .set('Authorization', `Bearer ${token}`)
       .expect(HttpStatus.NO_CONTENT);
   });
+
+  it('should mark one todo as done', async () => {
+    const resp = await request
+      .patch('/todo/1/done')
+      .set('Authorization', `Bearer ${token}`)
+      .expect(HttpStatus.OK);
+
+    expect(resp.body).toHaveProperty('done', true);
+  });
+
+  it('should mark one todo as pending', async () => {
+    const resp = await request
+      .patch('/todo/1/pending')
+      .set('Authorization', `Bearer ${token}`)
+      .expect(HttpStatus.OK);
+
+    expect(resp.body).toHaveProperty('done', false);
+  });
 });
