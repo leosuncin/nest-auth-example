@@ -47,15 +47,14 @@ describe('TodoController (e2e)', () => {
     expect(app).toBeDefined();
   });
 
-  /* it('should require authentication', async () => {
+  it('should require authentication', async () => {
     await request
-      .put('/todo')
+      .get('/todo')
       .send(createTodoBuilder())
-      .expect(HttpStatus.UNAUTHORIZED)
-      .expect(resp => expect(resp.body).toMatchInlineSnapshot());
+      .expect(HttpStatus.UNAUTHORIZED);
   });
 
-  it('should create a new todo', async () => {
+  /* it('should create a new todo', async () => {
     const payload = createTodoBuilder();
     const resp = await request
       .put('/todo')
