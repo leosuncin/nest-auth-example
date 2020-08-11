@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { Todo } from './todo.entity';
 import { TodoCreate } from './todo-create.dto';
 import { User } from '../user/user.entity';
+import { TodoUpdate } from './todo-update.dto';
 
 @Injectable()
 export class TodoService {
@@ -25,5 +26,11 @@ export class TodoService {
 
   getTodo(id: number): Promise<Todo> {
     return this.repo.findOne(id, { loadRelationIds: true });
+  }
+
+  updateTodo(todo: Todo, updates: TodoUpdate): Promise<Todo> {
+    Object.assign(todo, updates);
+
+    return this.repo.save(todo);
   }
 }
