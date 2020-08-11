@@ -1,4 +1,4 @@
-import { Controller, Post, UseGuards, Body } from '@nestjs/common';
+import { Controller, Post, UseGuards, Body, Get } from '@nestjs/common';
 
 import { TodoService } from './todo.service';
 import { JWTAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -21,5 +21,10 @@ export class TodoController {
     newTodo.owner = user;
 
     return this.service.createTodo(newTodo);
+  }
+
+  @Get()
+  listTodo(@AuthUser() user: User): Promise<Todo[]> {
+    return this.service.listTodo(user);
   }
 }
