@@ -1,11 +1,10 @@
 import { build, fake } from '@jackfranklin/test-data-bot';
-import { HttpStatus, INestApplication, ValidationPipe } from '@nestjs/common';
+import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import * as cookieParser from 'cookie-parser';
-import * as session from 'express-session';
-import * as passport from 'passport';
 import * as supertest from 'supertest';
+
 import { AppModule } from '../src/app.module';
+import { setup } from '../src/setup';
 
 const updateBuilder = build({
   fields: {
@@ -24,28 +23,7 @@ describe('ProfileController (e2e)', () => {
       imports: [AppModule],
     }).compile();
 
-    app = moduleFixture.createNestApplication();
-    app.useGlobalPipes(
-      new ValidationPipe({
-        transform: true,
-        whitelist: true,
-        validationError: { target: false },
-      }),
-    );
-    app.use(cookieParser(process.env.APP_SECRET));
-    app.use(
-      session({
-        secret: process.env.APP_SECRET as string,
-        resave: false,
-        saveUninitialized: false,
-        cookie: {
-          httpOnly: true,
-          sameSite: 'strict',
-        },
-      }),
-    );
-    app.use(passport.initialize());
-    app.use(passport.session());
+    app = setup(moduleFixture.createNestApplication());
     await app.init();
 
     request = supertest(app.getHttpServer());
@@ -96,7 +74,7 @@ describe('ProfileController (e2e)', () => {
       .put(`/profile/${userId}`)
       .send({ name: '' })
       .set('Authorization', `Bearer ${token}`)
-      .expect(HttpStatus.BAD_REQUEST);
+      .expect(HttpStatus.UNPROCESSABLE_ENTITY);
 
     expect(resp.body).toBeDefined();
   });
