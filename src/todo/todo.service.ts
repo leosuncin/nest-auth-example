@@ -22,4 +22,8 @@ export class TodoService {
   listTodo(owner: User): Promise<Todo[]> {
     return this.repo.find({ owner });
   }
+
+  getTodo(id: number): Promise<Todo> {
+    return this.repo.findOne(id, { loadRelationIds: true });
+  }
 }
