@@ -6,6 +6,7 @@ import {
   CreateDateColumn,
   ManyToOne,
 } from 'typeorm';
+import { Exclude } from 'class-transformer';
 
 import { User } from '../user/user.entity';
 
@@ -21,7 +22,8 @@ export class Todo {
   done: boolean;
 
   @ManyToOne(type => User, { nullable: false, onDelete: 'RESTRICT' })
-  owner: User;
+  @Exclude()
+  owner: User | number;
 
   @CreateDateColumn()
   createdAt: Date;
