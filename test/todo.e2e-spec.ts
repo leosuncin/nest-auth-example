@@ -7,6 +7,7 @@ import * as passport from 'passport';
 import * as supertest from 'supertest';
 
 import { AppModule } from '../src/app.module';
+import { setup } from '../src/setup';
 import { TodoService } from '../src/todo/todo.service';
 
 const createTodoBuilder = build({
@@ -26,28 +27,8 @@ describe('TodoController (e2e)', () => {
       imports: [AppModule],
     }).compile();
 
-    app = moduleFixture.createNestApplication();
-    app.useGlobalPipes(
-      new ValidationPipe({
-        transform: true,
-        whitelist: true,
-        errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
-      }),
-    );
-    app.use(cookieParser(process.env.APP_SECRET));
-    app.use(
-      session({
-        secret: process.env.APP_SECRET as string,
-        resave: false,
-        saveUninitialized: false,
-        cookie: {
-          httpOnly: true,
-          sameSite: 'strict',
-        },
-      }),
-    );
-    app.use(passport.initialize());
-    app.use(passport.session());
+    app = setup(moduleFixture.createNestApplication());
+
     await app.init();
 
     request = supertest(app.getHttpServer());
