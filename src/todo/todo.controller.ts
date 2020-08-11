@@ -28,6 +28,7 @@ export class TodoController {
   constructor(private readonly service: TodoService) {}
 
   @Post()
+  @UseInterceptors(ClassSerializerInterceptor)
   createTodo(
     @Body() newTodo: TodoCreate,
     @AuthUser() user: User,
