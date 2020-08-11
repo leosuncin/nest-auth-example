@@ -47,7 +47,7 @@ describe('AuthController (e2e)', () => {
     [
       '/auth/register',
       { name: null, email: null, password: null },
-      HttpStatus.BAD_REQUEST,
+      HttpStatus.UNPROCESSABLE_ENTITY,
     ],
     ['/auth/login', { email: '', password: '' }, HttpStatus.UNAUTHORIZED],
     [
