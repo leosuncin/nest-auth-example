@@ -29,7 +29,7 @@ describe('TodoController (e2e)', () => {
     await app.init();
 
     request = supertest(app.getHttpServer());
-    // service = app.get<TodoService>(TodoService);
+    service = app.get<TodoService>(TodoService);
 
     const {
       header: { authorization },
@@ -87,7 +87,7 @@ describe('TodoController (e2e)', () => {
     expect(Array.isArray(resp.body)).toBe(true);
   });
 
-  /* it('should get one todo that belong to user', async () => {
+  it('should get one todo that belong to user', async () => {
     const todos = service.listTodo(1 as any);
     const resp = await request
       .get(`/todo/${todos[0].id}`)
@@ -97,5 +97,5 @@ describe('TodoController (e2e)', () => {
 
     expect(resp.body).toBeDefined();
     expect(resp.body).not.toHaveProperty('owner');
-  }); */
+  });
 });
