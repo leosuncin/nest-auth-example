@@ -91,4 +91,14 @@ describe('TodoController (e2e)', () => {
 
     expect(resp.body).toHaveProperty('error', 'Unprocessable Entity');
   });
+
+  it('should list all todos that belong to user', async () => {
+    const resp = await request
+      .get('/todo')
+      .set('Authorization', `Bearer ${token}`)
+      .expect(HttpStatus.OK)
+      .expect('Content-Type', /json/);
+
+    expect(Array.isArray(resp.body)).toBe(true);
+  });
 });
