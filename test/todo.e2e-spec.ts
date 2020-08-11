@@ -40,11 +40,38 @@ describe('TodoController (e2e)', () => {
     await app.close();
   });
 
-  it('should require authentication', async () => {
-    await request
-      .get('/todo')
-      .send(createTodoBuilder())
-      .expect(HttpStatus.UNAUTHORIZED);
+  it.each([
+    ['post', '/todo'],
+    ['get', '/todo'],
+    ['get', '/todo/1'],
+    ['put', '/todo/1'],
+    ['delete', '/todo/1'],
+    ['patch', '/todo/1/done'],
+    ['patch', '/todo/1/pending'],
+  ])('should require authentication', async (method, url) => {
+    switch (method) {
+      case 'post':
+        await request
+          .post(url)
+          .send(createTodoBuilder())
+          .expect(HttpStatus.UNAUTHORIZED);
+        break;
+      case 'get':
+        await request.get(url).expect(HttpStatus.UNAUTHORIZED);
+        break;
+      case 'put':
+        await request
+          .put(url)
+          .send(createTodoBuilder())
+          .expect(HttpStatus.UNAUTHORIZED);
+        break;
+      case 'delete':
+        await request.delete(url).expect(HttpStatus.UNAUTHORIZED);
+        break;
+      case 'patch':
+        await request.patch(url).expect(HttpStatus.UNAUTHORIZED);
+        break;
+    }
   });
 
   it('should create a new todo', async () => {
