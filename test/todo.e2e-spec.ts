@@ -7,6 +7,7 @@ import * as passport from 'passport';
 import * as supertest from 'supertest';
 
 import { AppModule } from '../src/app.module';
+import { TodoService } from '../src/todo/todo.service';
 
 const createTodoBuilder = build({
   fields: {
@@ -18,6 +19,7 @@ describe('TodoController (e2e)', () => {
   let app: INestApplication;
   let request: supertest.SuperTest<supertest.Test>;
   let token: string;
+  let service: TodoService;
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -49,6 +51,7 @@ describe('TodoController (e2e)', () => {
     await app.init();
 
     request = supertest(app.getHttpServer());
+    service = app.get<TodoService>(TodoService);
 
     const {
       header: { authorization },
@@ -101,5 +104,17 @@ describe('TodoController (e2e)', () => {
       .expect('Content-Type', /json/);
 
     expect(Array.isArray(resp.body)).toBe(true);
+  });
+
+  it('should get one todo that belong to user', async () => {
+    const todos = service.listTodo(1 as any);
+    const resp = await request
+      .get(`/todo/${todos[0].id}`)
+      .set('Authorization', `Bearer ${token}`)
+      .expect(HttpStatus.OK)
+      .expect('Content-Type', /json/);
+
+    expect(resp.body).toBeDefined();
+    expect(resp.body).not.toHaveProperty('owner');
   });
 });
