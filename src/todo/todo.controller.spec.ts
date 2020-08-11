@@ -24,7 +24,7 @@ const todoBuilder = build<Todo>({
   fields: {
     id: sequence(),
     text: fake(f => f.lorem.sentence()),
-    done: perBuild(() => false),
+    done: fake(f => f.random.boolean()),
     owner: userBuilder(),
     createdAt: perBuild(() => new Date()),
     updatedAt: perBuild(() => new Date()),
@@ -140,5 +140,19 @@ describe('Todo Controller', () => {
     await expect(controller.removeTodo(1, user as any)).rejects.toThrow(
       ForbiddenException,
     );
+  });
+
+  test('should mark todo as done', async () => {
+    const user = userBuilder({ overrides: { id: 1 } });
+    await expect(
+      controller.markTodoAsDone(1, user as any),
+    ).resolves.toHaveProperty('done', true);
+  });
+
+  test('should mark todo as pending', async () => {
+    const user = userBuilder({ overrides: { id: 1 } });
+    await expect(
+      controller.markTodoAsPending(1, user as any),
+    ).resolves.toHaveProperty('done', false);
   });
 });

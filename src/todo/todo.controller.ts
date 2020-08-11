@@ -12,6 +12,7 @@ import {
   Delete,
   HttpCode,
   HttpStatus,
+  Patch,
 } from '@nestjs/common';
 
 import { TodoService } from './todo.service';
@@ -76,5 +77,37 @@ export class TodoController {
     const todo = await this.service.getTodo(id, user);
 
     return this.service.removeTodo(todo);
+  }
+
+  @Patch(':id/done')
+  async markTodoAsDone(
+    @Param('id', ParseIntPipe) id: number,
+    @AuthUser() user: User,
+  ): Promise<Partial<Todo>> {
+    const todo = await this.service.getTodo(id, user);
+
+    if (todo.done) {
+      return { done: todo.done };
+    }
+
+    await this.service.updateTodo(todo, { done: true });
+
+    return { done: todo.done, updatedAt: todo.updatedAt };
+  }
+
+  @Patch(':id/pending')
+  async markTodoAsPending(
+    @Param('id', ParseIntPipe) id: number,
+    @AuthUser() user: User,
+  ): Promise<Partial<Todo>> {
+    const todo = await this.service.getTodo(id, user);
+
+    if (!todo.done) {
+      return { done: todo.done };
+    }
+
+    await this.service.updateTodo(todo, { done: false });
+
+    return { done: todo.done, updatedAt: todo.updatedAt };
   }
 }
