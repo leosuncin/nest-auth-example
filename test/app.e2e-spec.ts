@@ -25,4 +25,10 @@ describe('AppController (e2e)', () => {
       .expect(HttpStatus.OK)
       .expect('Hello World!');
   });
+
+  it('/todos (GET)', async () => {
+    await request(app.getHttpServer())
+      .get('/todo')
+      .expect(HttpStatus.UNAUTHORIZED);
+  });
 });
