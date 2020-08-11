@@ -10,6 +10,7 @@ import {
   ForbiddenException,
   UseInterceptors,
   ClassSerializerInterceptor,
+  Put,
 } from '@nestjs/common';
 
 import { TodoService } from './todo.service';
@@ -19,6 +20,7 @@ import { TodoCreate } from './todo-create.dto';
 import { AuthUser } from '../user/user.decorator';
 import { User } from '../user/user.entity';
 import { Todo } from './todo.entity';
+import { TodoUpdate } from './todo-update.dto';
 
 @Controller('todo')
 @UseGuards(SessionAuthGuard, JWTAuthGuard)
@@ -54,5 +56,22 @@ export class TodoController {
       throw new ForbiddenException(`Todo does not belong to you`);
 
     return todo;
+  }
+
+  @Put(':id')
+  @UseInterceptors(ClassSerializerInterceptor)
+  async updateTodo(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updates: TodoUpdate,
+    @AuthUser() user: User,
+  ): Promise<Todo> {
+    const todo = await this.service.getTodo(id);
+
+    if (!todo) throw new NotFoundException(`Not found any todo with id: ${id}`);
+
+    if (todo.owner !== user.id)
+      throw new ForbiddenException(`Todo does not belong to you`);
+
+    return this.service.updateTodo(todo, updates);
   }
 }

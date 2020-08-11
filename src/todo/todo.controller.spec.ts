@@ -97,4 +97,28 @@ describe('Todo Controller', () => {
       ForbiddenException,
     );
   });
+
+  test('should update one todo', async () => {
+    const user = userBuilder({ overrides: { id: 1 } });
+    const updates = { done: true };
+    await expect(
+      controller.updateTodo(1, updates, user as any),
+    ).resolves.toBeDefined();
+  });
+
+  test('should fail to update unexisting todo', async () => {
+    const user = userBuilder();
+    const updates = { done: true };
+    await expect(
+      controller.updateTodo(0, updates, user as any),
+    ).rejects.toThrow(NotFoundException);
+  });
+
+  test("should fail to update another's todo", async () => {
+    const user = userBuilder();
+    const updates = { done: true };
+    await expect(
+      controller.updateTodo(1, updates, user as any),
+    ).rejects.toThrow(ForbiddenException);
+  });
 });
