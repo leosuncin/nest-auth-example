@@ -50,6 +50,7 @@ describe('Todo Controller', () => {
               Promise.resolve(
                 id > 0 ? todoBuilder({ overrides: { id, owner: id } }) : null,
               ),
+            remove: todo => Promise.resolve(todo),
           },
         },
       ],
@@ -120,5 +121,24 @@ describe('Todo Controller', () => {
     await expect(
       controller.updateTodo(1, updates, user as any),
     ).rejects.toThrow(ForbiddenException);
+  });
+
+  test('should remove one todo', async () => {
+    const user = userBuilder({ overrides: { id: 1 } });
+    await expect(controller.removeTodo(1, user as any)).resolves.toBeDefined();
+  });
+
+  test('should fail to remove unexisting todo', async () => {
+    const user = userBuilder();
+    await expect(controller.removeTodo(0, user as any)).rejects.toThrow(
+      NotFoundException,
+    );
+  });
+
+  test("should fail to remove another's todo", async () => {
+    const user = userBuilder();
+    await expect(controller.removeTodo(1, user as any)).rejects.toThrow(
+      ForbiddenException,
+    );
   });
 });

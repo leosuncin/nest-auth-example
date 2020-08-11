@@ -11,6 +11,9 @@ import {
   UseInterceptors,
   ClassSerializerInterceptor,
   Put,
+  Delete,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 
 import { TodoService } from './todo.service';
@@ -74,5 +77,21 @@ export class TodoController {
       throw new ForbiddenException(`Todo does not belong to you`);
 
     return this.service.updateTodo(todo, updates);
+  }
+
+  @Delete(':id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async removeTodo(
+    @Param('id', ParseIntPipe) id: number,
+    @AuthUser() user: User,
+  ): Promise<Todo> {
+    const todo = await this.service.getTodo(id);
+
+    if (!todo) throw new NotFoundException(`Not found any todo with id: ${id}`);
+
+    if (todo.owner !== user.id)
+      throw new ForbiddenException(`Todo does not belong to you`);
+
+    return this.service.removeTodo(todo);
   }
 }

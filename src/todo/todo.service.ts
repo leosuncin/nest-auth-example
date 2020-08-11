@@ -33,4 +33,8 @@ export class TodoService {
 
     return this.repo.save(todo);
   }
+
+  removeTodo(todo: Todo): Promise<Todo> {
+    return this.repo.remove(todo);
+  }
 }
