@@ -1,7 +1,9 @@
 import { HttpStatus } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as request from 'supertest';
+
 import { AppModule } from './../src/app.module';
+import { setup } from '../src/setup';
 
 describe('AppController (e2e)', () => {
   let app;
@@ -11,7 +13,8 @@ describe('AppController (e2e)', () => {
       imports: [AppModule],
     }).compile();
 
-    app = moduleFixture.createNestApplication();
+    app = setup(moduleFixture.createNestApplication());
+
     await app.init();
   });
 
