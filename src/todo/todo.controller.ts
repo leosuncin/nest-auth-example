@@ -6,8 +6,6 @@ import {
   Get,
   Param,
   ParseIntPipe,
-  NotFoundException,
-  ForbiddenException,
   UseInterceptors,
   ClassSerializerInterceptor,
   Put,
@@ -52,12 +50,7 @@ export class TodoController {
     @Param('id', ParseIntPipe) id: number,
     @AuthUser() user: User,
   ): Promise<Todo> {
-    const todo = await this.service.getTodo(id);
-
-    if (!todo) throw new NotFoundException(`Not found any todo with id: ${id}`);
-
-    if (todo.owner !== user.id)
-      throw new ForbiddenException(`Todo does not belong to you`);
+    const todo = await this.service.getTodo(id, user);
 
     return todo;
   }
@@ -69,12 +62,7 @@ export class TodoController {
     @Body() updates: TodoUpdate,
     @AuthUser() user: User,
   ): Promise<Todo> {
-    const todo = await this.service.getTodo(id);
-
-    if (!todo) throw new NotFoundException(`Not found any todo with id: ${id}`);
-
-    if (todo.owner !== user.id)
-      throw new ForbiddenException(`Todo does not belong to you`);
+    const todo = await this.service.getTodo(id, user);
 
     return this.service.updateTodo(todo, updates);
   }
@@ -85,12 +73,7 @@ export class TodoController {
     @Param('id', ParseIntPipe) id: number,
     @AuthUser() user: User,
   ): Promise<Todo> {
-    const todo = await this.service.getTodo(id);
-
-    if (!todo) throw new NotFoundException(`Not found any todo with id: ${id}`);
-
-    if (todo.owner !== user.id)
-      throw new ForbiddenException(`Todo does not belong to you`);
+    const todo = await this.service.getTodo(id, user);
 
     return this.service.removeTodo(todo);
   }

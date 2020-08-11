@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ForbiddenException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
@@ -24,8 +28,15 @@ export class TodoService {
     return this.repo.find({ owner });
   }
 
-  getTodo(id: number): Promise<Todo> {
-    return this.repo.findOne(id, { loadRelationIds: true });
+  async getTodo(id: number, owner: User): Promise<Todo> {
+    const todo = await this.repo.findOne(id, { loadRelationIds: true });
+
+    if (!todo) throw new NotFoundException(`Not found any todo with id: ${id}`);
+
+    if (todo.owner !== owner.id)
+      throw new ForbiddenException(`Todo does not belong to you`);
+
+    return todo;
   }
 
   updateTodo(todo: Todo, updates: TodoUpdate): Promise<Todo> {
