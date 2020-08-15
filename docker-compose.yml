@@ -41,6 +41,14 @@ services:
     restart: on-failure
     ports:
       - "8071:3000"
+  maildev:
+    image: maildev/maildev
+    ports:
+      - '1025:25'
+      - '1080:80'
+    environment:
+      MAILDEV_INCOMING_USER: username
+      MAILDEV_INCOMING_PASS: password
 
 volumes:
   postgres-data:
