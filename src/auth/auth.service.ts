@@ -1,21 +1,28 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { InjectQueue } from '@nestjs/bull';
+import { Queue } from 'bull';
 
 import { User } from '../user/user.entity';
 import { SignUp } from './dto/sign-up.dto';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
 import { UserService } from '../user/user.service';
+import { EMAIL_QUEUE_NAME } from '../constants';
+import { WELCOME_JOB_NAME } from '../mail/mail.constant';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
+    @InjectQueue(EMAIL_QUEUE_NAME)
+    private readonly emailQueue: Queue<SignUp>,
   ) {}
 
   async register(signUp: SignUp): Promise<User> {
     const user = await this.userService.create(signUp);
     delete user.password;
+    await this.emailQueue.add(WELCOME_JOB_NAME, user);
 
     return user;
   }
