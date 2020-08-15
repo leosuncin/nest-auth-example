@@ -22,6 +22,26 @@ services:
       DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?sslmode=disable
     ports:
       - "8091:8081"
+  redis:
+    image: redis:5-alpine
+    volumes:
+      - redis-data:/data
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: redis-cli ping
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    command: redis-server --appendonly yes
+  bullboard:
+    image: deadly0/bull-board
+    environment:
+      REDIS_HOST: redis
+    restart: on-failure
+    ports:
+      - "8071:3000"
 
 volumes:
   postgres-data:
+  redis-data:
