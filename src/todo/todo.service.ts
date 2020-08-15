@@ -25,7 +25,7 @@ export class TodoService {
   }
 
   listTodo(owner: User): Promise<Todo[]> {
-    return this.repo.find({ owner });
+    return this.repo.find({ where: { owner }, order: { createdAt: 'DESC' } });
   }
 
   async getTodo(id: number, owner: User): Promise<Todo> {
