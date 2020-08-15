@@ -10,6 +10,7 @@ import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { TodoModule } from './todo/todo.module';
 import { EMAIL_QUEUE_NAME } from './constants';
+import { MailModule } from './mail/mail.module';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { EMAIL_QUEUE_NAME } from './constants';
     UserModule,
     AuthModule,
     TodoModule,
+    MailModule,
   ],
   controllers: [AppController],
   providers: [AppService],
