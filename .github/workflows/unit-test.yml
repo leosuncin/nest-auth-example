@@ -46,3 +46,4 @@ jobs:
         POSTGRES_PASSWORD: contraseña
         DATABASE_URL: postgres://admin:contraseña@localhost:5432/authentication
         ALLOWED_ORIGINS: '*'
+        REDIS_URL: redis://localhost:6379
