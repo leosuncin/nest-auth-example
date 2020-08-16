@@ -8,6 +8,7 @@ import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { TodoModule } from './todo/todo.module';
+import { MailModule } from './mail/mail.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { TodoModule } from './todo/todo.module';
     UserModule,
     AuthModule,
     TodoModule,
+    MailModule,
   ],
   controllers: [AppController],
   providers: [AppService],
