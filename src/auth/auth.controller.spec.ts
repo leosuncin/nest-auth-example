@@ -1,8 +1,10 @@
 import { build, fake, perBuild, sequence } from '@jackfranklin/test-data-bot';
+import { getQueueToken } from '@nestjs/bull';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import * as httpMocks from 'node-mocks-http';
 
+import { EMAIL_QUEUE_NAME } from '../mail/mail.constant';
 import { User } from '../user/user.entity';
 import { UserService } from '../user/user.service';
 import { AuthController } from './auth.controller';
@@ -41,9 +43,7 @@ describe('Auth Controller', () => {
               return Promise.resolve(test ? userBuilder() : null);
             },
             save(dto) {
-              return Promise.resolve(
-                userBuilder({ overrides: dto }),
-              );
+              return Promise.resolve(userBuilder({ overrides: dto }));
             },
           },
         },
@@ -58,6 +58,12 @@ describe('Auth Controller', () => {
                   '',
                 );
             },
+          },
+        },
+        {
+          provide: getQueueToken(EMAIL_QUEUE_NAME),
+          useValue: {
+            add: () => Promise.resolve(),
           },
         },
       ],
@@ -90,10 +96,12 @@ describe('Auth Controller', () => {
   it('should log in an user', async () => {
     expect.assertions(3);
     const resp = httpMocks.createResponse();
-    const user = userBuilder({ overrides: {
-      name: 'John Doe',
-      email: 'john@doe.me',
-    }});
+    const user = userBuilder({
+      overrides: {
+        name: 'John Doe',
+        email: 'john@doe.me',
+      },
+    });
 
     await expect(controller.login(user as User, resp)).resolves.toBeDefined();
     expect(resp._getHeaders()).toHaveProperty(
@@ -104,10 +112,12 @@ describe('Auth Controller', () => {
   });
 
   it('should got me logged', () => {
-    const user = userBuilder({ overrides: {
-      name: 'John Doe',
-      email: 'john@doe.me',
-    }});
+    const user = userBuilder({
+      overrides: {
+        name: 'John Doe',
+        email: 'john@doe.me',
+      },
+    });
 
     expect(controller.me(user as User)).toEqual(user);
   });
