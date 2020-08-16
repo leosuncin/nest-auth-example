@@ -1,8 +1,8 @@
 {
   "name": "nest-auth-example",
   "version": "0.0.1",
-  "description": "",
-  "author": "",
+  "description": "Nest.js authentication with Passport. Realworld example",
+  "author": "Jaime Leonardo Suncin Cruz <leosuncin@gmail.com>",
   "private": true,
   "license": "MIT",
   "scripts": {
