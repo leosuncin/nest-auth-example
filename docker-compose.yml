@@ -22,6 +22,16 @@ services:
       DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?sslmode=disable
     ports:
       - "8091:8081"
+  maildev:
+    image: maildev/maildev
+    env_file: .env
+    environment:
+      MAILDEV_INCOMING_USER: $MAILGUN_SMTP_LOGIN
+      MAILDEV_INCOMING_PASS: $MAILGUN_SMTP_PASSWORD
+    ports:
+      - '1025:25'
+      - '1080:80'
 
 volumes:
   postgres-data:
+  redis-data:
