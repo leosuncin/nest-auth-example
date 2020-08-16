@@ -2,37 +2,35 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { BullModule } from '@nestjs/bull';
 import { MailerModule } from '@nestjs-modules/mailer';
-import { EjsAdapter } from '@nestjs-modules/mailer/dist/adapters/ejs.adapter';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { TodoModule } from './todo/todo.module';
-import { EMAIL_QUEUE_NAME } from './constants';
 import { MailModule } from './mail/mail.module';
+import bull from './config/bull.config';
+import mailer from './config/mailer.config';
+import mail from './config/mail.config';
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot(),
-    BullModule.registerQueue({
-      name: EMAIL_QUEUE_NAME,
-      redis: process.env.REDIS_URL,
+    ConfigModule.forRoot({
+      isGlobal: true,
+      load: [bull, mailer, mail],
     }),
-    MailerModule.forRoot({
-      transport: {
-        host: process.env.SMTP_HOST || 'localhost',
-        port: parseInt(process.env.SMTP_PORT, 10) || 1025,
-        secure: process.env.SMTP_SECURE === 'true',
-        ignoreTLS: process.env.SMTP_SECURE !== 'false',
-        auth: {
-          user: process.env.SMTP_AUTH_USER || 'username',
-          pass: process.env.SMTP_AUTH_PASS || 'password',
-        },
+    TypeOrmModule.forRoot(),
+    BullModule.registerQueueAsync({
+      inject: [ConfigService],
+      useFactory(config: ConfigService) {
+        return config.get('bull');
       },
-      template: {
-        dir: process.cwd() + '/templates/',
-        adapter: new EjsAdapter(),
+    }),
+    MailerModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory(config: ConfigService) {
+        return config.get('mailer');
       },
     }),
     UserModule,

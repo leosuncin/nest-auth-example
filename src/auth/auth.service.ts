@@ -7,8 +7,7 @@ import { User } from '../user/user.entity';
 import { SignUp } from './dto/sign-up.dto';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
 import { UserService } from '../user/user.service';
-import { EMAIL_QUEUE_NAME } from '../constants';
-import { WELCOME_JOB_NAME } from '../mail/mail.constant';
+import { EMAIL_QUEUE_NAME, WELCOME_JOB_NAME } from '../mail/mail.constant';
 
 @Injectable()
 export class AuthService {

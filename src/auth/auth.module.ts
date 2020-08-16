@@ -9,7 +9,7 @@ import { AuthService } from './auth.service';
 import { SessionSerializer } from './session.serializer';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { LocalStrategy } from './strategies/local.strategy';
-import { EMAIL_QUEUE_NAME } from '../constants';
+import { EMAIL_QUEUE_NAME } from '../mail/mail.constant';
 
 @Module({
   imports: [
