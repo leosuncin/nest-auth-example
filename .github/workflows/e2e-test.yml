@@ -25,6 +25,14 @@ jobs:
         ports:
         - 6379:6379
         options: --entrypoint redis-server
+      maildev:
+        image: maildev/maildev
+        env:
+          MAILDEV_INCOMING_USER: admin
+          MAILDEV_INCOMING_PASS: wnbaohW7mn
+        ports:
+        - 1025:25
+        - 1080:80
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-node@v1
@@ -46,6 +54,11 @@ jobs:
         DATABASE_URL: postgres://admin:wnbaohW7mn@localhost:${{ job.services.postgres.ports[5432] }}/authentication
         ALLOWED_ORIGINS: '*'
         REDIS_URL: redis://localhost:${{ job.services.redis.ports[6379] }}
+        SMTP_HOST: localhost
+        SMTP_PORT: ${{ job.services.maildev.ports[1025] }}
+        SMTP_AUTH_USER: admin
+        SMTP_AUTH_PASS: wnbaohW7mn
+        SMTP_SECURE: 'false'
 
   run-server:
     if: "!contains(github.event.head_commit.message, 'skip ci')"
@@ -69,6 +82,14 @@ jobs:
         ports:
         - 6379:6379
         options: --entrypoint redis-server
+      maildev:
+        image: maildev/maildev
+        env:
+          MAILDEV_INCOMING_USER: admin
+          MAILDEV_INCOMING_PASS: wnbaohW7mn
+        ports:
+        - 1025:25
+        - 1080:80
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-node@v1
@@ -100,5 +121,10 @@ jobs:
         DATABASE_URL: postgres://admin:wnbaohW7mn@localhost:${{ job.services.postgres.ports[5432] }}/authentication
         ALLOWED_ORIGINS: '*'
         REDIS_URL: redis://localhost:${{ job.services.redis.ports[6379] }}
+        SMTP_HOST: localhost
+        SMTP_PORT: ${{ job.services.maildev.ports[1025] }}
+        SMTP_AUTH_USER: admin
+        SMTP_AUTH_PASS: wnbaohW7mn
+        SMTP_SECURE: 'false'
     - name: Run Postman collection
       run: npx newman run https://www.getpostman.com/collections/6b82b259fc751deda654
