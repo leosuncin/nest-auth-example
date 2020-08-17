@@ -60,6 +60,12 @@ describe('Auth Controller', () => {
             },
           },
         },
+        {
+          provide: 'MailService',
+          useValue: {
+            sendWelcomeEmail: (params) => Promise.resolve(params)
+          }
+        }
       ],
     }).compile();
 
