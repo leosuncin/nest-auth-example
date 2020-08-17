@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { MailerModule } from '@nestjs-modules/mailer';
-import { EjsAdapter } from '@nestjs-modules/mailer/dist/adapters/ejs.adapter';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -9,25 +9,19 @@ import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { TodoModule } from './todo/todo.module';
 import { MailModule } from './mail/mail.module';
+import mailer from './config/mailer.config';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      expandVariables: true,
+      load: [mailer],
+    }),
     TypeOrmModule.forRoot(),
-    MailerModule.forRoot({
-      transport: {
-        host: process.env.MAILGUN_SMTP_SERVER,
-        port: parseInt(process.env.MAILGUN_SMTP_PORT, 10),
-        secure: process.env.SMTP_SECURE === 'true',
-        ignoreTLS: process.env.SMTP_SECURE !== 'true',
-        auth: {
-          user: process.env.MAILGUN_SMTP_LOGIN,
-          pass: process.env.MAILGUN_SMTP_PASSWORD,
-        },
-      },
-      template: {
-        dir: process.cwd() + '/templates/',
-        adapter: new EjsAdapter(),
-      },
+    MailerModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => config.get('mailer'),
     }),
     UserModule,
     AuthModule,
