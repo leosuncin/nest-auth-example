@@ -1,19 +1,25 @@
 import { MailerService } from '@nestjs-modules/mailer';
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 
 import { SignUp } from '../auth/dto/sign-up.dto';
+import { MailOptions } from './mail-options.interface';
 
 @Injectable()
 export class MailService {
-  constructor(private readonly mailer: MailerService) {}
+  constructor(
+    private readonly mailer: MailerService,
+    private readonly config: ConfigService,
+  ) {}
 
   sendWelcomeEmail(signUp: SignUp): Promise<any> {
-    const baseUrl = process.env.CLIENT_BASE_URL ?? 'http://localhost:3001';
-    const fromName = process.env.npm_package_author_name ?? 'Author';
-    const from = process.env.npm_package_author_email ?? 'no-reply@example.com';
-    const productName = process.env.PRODUCT_NAME ?? 'Nest.js Auth';
-    const companyName = process.env.COMPANY_NAME ?? 'ACME Inc.';
-    const actionUrl = `${baseUrl}/auth/login`;
+    const {
+      fromName,
+      from,
+      productName,
+      companyName,
+      loginUrl: actionUrl,
+    } = this.config.get<MailOptions>('mail');
     const { name, email: to } = signUp;
 
     return this.mailer.sendMail({

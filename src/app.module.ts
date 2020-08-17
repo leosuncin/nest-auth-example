@@ -10,13 +10,14 @@ import { AuthModule } from './auth/auth.module';
 import { TodoModule } from './todo/todo.module';
 import { MailModule } from './mail/mail.module';
 import mailer from './config/mailer.config';
+import mail from './config/mail.config';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
       expandVariables: true,
-      load: [mailer],
+      load: [mailer, mail],
     }),
     TypeOrmModule.forRoot(),
     MailerModule.forRootAsync({
