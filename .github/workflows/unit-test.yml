@@ -46,3 +46,14 @@ jobs:
         POSTGRES_PASSWORD: contraseña
         DATABASE_URL: postgres://admin:contraseña@localhost:5432/authentication
         ALLOWED_ORIGINS: '*'
+        MAILGUN_SMTP_SERVER: localhost
+        MAILGUN_SMTP_PORT: 1025
+        MAILGUN_SMTP_LOGIN: admin
+        MAILGUN_SMTP_PASSWORD: wnbaohW7mn
+        MAILGUN_API_KEY: 6rtK845ev6ZSCD6NepoUcK727K266Yv8
+        MAILGUN_DOMAIN: sandbox6rtK845ev6ZSCD6NepoUcK727K266Yv8.mailgun.org
+        MAILGUN_PUBLIC_KEY: pubkey-6rtK845ev6ZSCD6NepoUcK727K266Yv8
+        CLIENT_BASE_URL: http://localhost:3001
+        PRODUCT_NAME: Nest.js Auth
+        COMPANY_NAME: ACME Inc
+        SMTP_SECURE: 'false'
