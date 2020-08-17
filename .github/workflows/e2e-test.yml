@@ -78,15 +78,6 @@ jobs:
         - 5432:5432
         # needed because the postgres container does not provide a healthcheck
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
-      maildev:
-        image: maildev/maildev
-        env:
-          MAILDEV_INCOMING_USER: admin
-          MAILDEV_INCOMING_PASS: wnbaohW7mn
-        ports:
-        - 1025:25
-        - 1080:80
-        options: --health-cmd "wget -q -O- http://localhost/healthz || exit 1" --health-interval 10s --health-timeout 5s --health-retries 5
     steps:
     - uses: actions/checkout@v2
     - uses: actions/setup-node@v1
@@ -106,17 +97,17 @@ jobs:
         POSTGRES_DB: authentication
         DATABASE_URL: postgres://admin:wnbaohW7mn@localhost:${{ job.services.postgres.ports[5432] }}/authentication
         ALLOWED_ORIGINS: '*'
-        MAILGUN_SMTP_SERVER: localhost
-        MAILGUN_SMTP_PORT: ${{ job.services.maildev.ports[25] }}
-        MAILGUN_SMTP_LOGIN: admin
-        MAILGUN_SMTP_PASSWORD: wnbaohW7mn
-        MAILGUN_API_KEY: 6rtK845ev6ZSCD6NepoUcK727K266Yv8
-        MAILGUN_DOMAIN: sandbox6rtK845ev6ZSCD6NepoUcK727K266Yv8.mailgun.org
-        MAILGUN_PUBLIC_KEY: pubkey-6rtK845ev6ZSCD6NepoUcK727K266Yv8
+        MAILGUN_SMTP_SERVER: ${{ secrets.MAILGUN_SMTP_SERVER }}
+        MAILGUN_SMTP_PORT: ${{ secrets.MAILGUN_SMTP_PORT }}
+        MAILGUN_SMTP_LOGIN: ${{ secrets.MAILGUN_SMTP_LOGIN }}
+        MAILGUN_SMTP_PASSWORD: ${{ secrets.MAILGUN_SMTP_PASSWORD }}
+        MAILGUN_API_KEY: ${{ secrets.MAILGUN_API_KEY }}
+        MAILGUN_DOMAIN: ${{ secrets.MAILGUN_DOMAIN }}
+        MAILGUN_PUBLIC_KEY: ${{ secrets.MAILGUN_PUBLIC_KEY }}
         CLIENT_BASE_URL: http://localhost:3001
         PRODUCT_NAME: Nest.js Auth
         COMPANY_NAME: ACME Inc
-        SMTP_SECURE: 'false'
+        SMTP_SECURE: 'true'
     - name: Run the backend
       run: |
         npm run build
