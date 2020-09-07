@@ -60,22 +60,21 @@
     "@types/passport-jwt": "^3.0.3",
     "@types/passport-local": "^1.0.33",
     "@types/supertest": "^2.0.8",
-    "@typescript-eslint/eslint-plugin": "^2.23.0",
-    "@typescript-eslint/parser": "^2.23.0",
-    "eslint": "^6.8.0",
+    "@typescript-eslint/eslint-plugin": "^4.1.0",
+    "@typescript-eslint/parser": "^4.1.0",
+    "eslint": "^7.8.0",
     "eslint-config-prettier": "^6.10.0",
     "eslint-plugin-import": "^2.20.1",
-    "jest": "^25.1.0",
+    "jest": "^26.4.2",
     "node-mocks-http": "^1.8.1",
-    "nodemon": "^2.0.2",
     "prettier": "^2.0.1",
     "supertest": "^4.0.2",
-    "ts-jest": "^25.2.1",
+    "ts-jest": "^26.3.0",
     "ts-loader": "^8.0.0",
     "ts-node": "^9.0.0",
     "tsconfig-paths": "^3.9.0",
     "typeorm-fixtures-cli": "^1.4.2",
-    "typescript": "^3.8.3"
+    "typescript": "^4.0.0"
   },
   "jest": {
     "moduleFileExtensions": [
