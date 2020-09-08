@@ -2,6 +2,8 @@ import { build, fake, perBuild, sequence } from '@jackfranklin/test-data-bot';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { NotFoundException, ForbiddenException } from '@nestjs/common';
+import { mock, anyObject, MockProxy } from 'jest-mock-extended';
+import { Repository } from 'typeorm';
 
 import { TodoController } from './todo.controller';
 import { TodoService } from './todo.service';
@@ -34,24 +36,34 @@ const todoBuilder = build<Todo>({
 
 describe('Todo Controller', () => {
   let controller: TodoController;
+  let repositoryMock: MockProxy<Repository<Todo>>;
 
   beforeEach(async () => {
+    repositoryMock = mock<Repository<Todo>>();
+    repositoryMock.create.mockImplementation(dto =>
+      Object.assign(new Todo(), dto),
+    );
+    repositoryMock.save.mockImplementation((entity: any) =>
+      Promise.resolve(todoBuilder({ overrides: entity })),
+    );
+    repositoryMock.find.mockResolvedValue([]);
+    repositoryMock.findOne
+      .calledWith(1 as any, anyObject())
+      .mockResolvedValue(todoBuilder({ overrides: { id: 1, owner: 1 } }));
+    repositoryMock.findOne
+      .calledWith(0 as any, anyObject())
+      .mockResolvedValue(null);
+    repositoryMock.remove.mockResolvedValue(
+      todoBuilder({ overrides: { id: 1, owner: 1 } }),
+    );
+
     const module: TestingModule = await Test.createTestingModule({
       controllers: [TodoController],
       providers: [
         TodoService,
         {
           provide: getRepositoryToken(Todo),
-          useValue: {
-            create: dto => dto,
-            save: dto => Promise.resolve(todoBuilder({ overrides: dto })),
-            find: () => Promise.resolve([]),
-            findOne: id =>
-              Promise.resolve(
-                id > 0 ? todoBuilder({ overrides: { id, owner: id } }) : null,
-              ),
-            remove: todo => Promise.resolve(todo),
-          },
+          useValue: repositoryMock,
         },
       ],
     }).compile();

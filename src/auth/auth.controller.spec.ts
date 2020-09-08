@@ -2,6 +2,8 @@ import { build, fake, perBuild, sequence } from '@jackfranklin/test-data-bot';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import * as httpMocks from 'node-mocks-http';
+import { mock } from 'jest-mock-extended';
+import { Repository } from 'typeorm';
 
 import { User } from '../user/user.entity';
 import { UserService } from '../user/user.service';
@@ -16,10 +18,12 @@ const userBuilder = build<Partial<User>>({
     createdAt: perBuild(() => new Date()),
     updatedAt: perBuild(() => new Date()),
   },
+  postBuild: u => new User(u),
 });
 
 describe('Auth Controller', () => {
   let controller: AuthController;
+  const repositoryMock = mock<Repository<User>>();
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -29,23 +33,7 @@ describe('Auth Controller', () => {
         UserService,
         {
           provide: getRepositoryToken(User),
-          useValue: {
-            count({ email }) {
-              return Promise.resolve(email ? 0 : 1);
-            },
-            findOne(options: any) {
-              const test = Number.isFinite(options)
-                ? Boolean(options)
-                : Boolean(options.where.id);
-
-              return Promise.resolve(test ? userBuilder() : null);
-            },
-            save(dto) {
-              return Promise.resolve(
-                userBuilder({ overrides: dto }),
-              );
-            },
-          },
+          useValue: repositoryMock,
         },
         {
           provide: 'JwtService',
@@ -78,6 +66,9 @@ describe('Auth Controller', () => {
       password: 'Pa$$w0rd',
     };
     const resp = httpMocks.createResponse();
+    repositoryMock.save.mockResolvedValueOnce(
+      userBuilder({ overrides: register }) as User,
+    );
 
     await expect(controller.register(register, resp)).resolves.toBeDefined();
     expect(resp._getHeaders()).toHaveProperty(
@@ -90,10 +81,12 @@ describe('Auth Controller', () => {
   it('should log in an user', async () => {
     expect.assertions(3);
     const resp = httpMocks.createResponse();
-    const user = userBuilder({ overrides: {
-      name: 'John Doe',
-      email: 'john@doe.me',
-    }});
+    const user = userBuilder({
+      overrides: {
+        name: 'John Doe',
+        email: 'john@doe.me',
+      },
+    });
 
     await expect(controller.login(user as User, resp)).resolves.toBeDefined();
     expect(resp._getHeaders()).toHaveProperty(
@@ -104,10 +97,12 @@ describe('Auth Controller', () => {
   });
 
   it('should got me logged', () => {
-    const user = userBuilder({ overrides: {
-      name: 'John Doe',
-      email: 'john@doe.me',
-    }});
+    const user = userBuilder({
+      overrides: {
+        name: 'John Doe',
+        email: 'john@doe.me',
+      },
+    });
 
     expect(controller.me(user as User)).toEqual(user);
   });
