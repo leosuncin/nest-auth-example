@@ -5,11 +5,11 @@ import { User } from '../user/user.entity';
 
 @Injectable()
 export class SessionSerializer extends PassportSerializer {
-  serializeUser(user: User, done: (err: Error | null, id?: any) => void) {
+  serializeUser(user: User, done: (err: Error | null, id?: User) => void): void {
     done(null, user);
   }
 
-  deserializeUser(id: any, done: (err: Error | null, payload?: User) => void) {
-    done(null, id);
+  deserializeUser(payload: unknown, done: (err: Error | null, payload?: unknown) => void): void {
+    done(null, payload);
   }
 }

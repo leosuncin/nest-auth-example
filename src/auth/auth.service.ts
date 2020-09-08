@@ -56,7 +56,7 @@ export class AuthService {
     return user;
   }
 
-  signToken(user: User) {
+  signToken(user: User): string {
     const payload = {
       sub: user.email,
     };

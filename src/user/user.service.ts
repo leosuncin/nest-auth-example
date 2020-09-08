@@ -12,11 +12,11 @@ export class UserService {
     private readonly userRepository: Repository<User>,
   ) {}
 
-  async create(data: Partial<User>) {
+  async create(data: Partial<User>): Promise<User> {
     return this.userRepository.save(new User(data));
   }
 
-  async findOne(where: FindOneOptions<User>) {
+  async findOne(where: FindOneOptions<User>): Promise<User> {
     const user = await this.userRepository.findOne(where);
 
     if (!user) {
@@ -28,7 +28,7 @@ export class UserService {
     return user;
   }
 
-  async update(id, updates: UserUpdate) {
+  async update(id: number, updates: UserUpdate): Promise<User> {
     const user = await this.userRepository.findOne(id);
 
     if (!user) {
