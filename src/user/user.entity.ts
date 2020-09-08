@@ -35,12 +35,12 @@ export class User {
   }
 
   @BeforeInsert()
-  async setPassword(password: string) {
-    const salt = await await bcrypt.genSalt();
+  async setPassword(password: string): Promise<void> {
+    const salt = await bcrypt.genSalt();
     this.password = await bcrypt.hash(password || this.password, salt);
   }
 
-  async checkPassword(plainPassword: string) {
+  async checkPassword(plainPassword: string): Promise<boolean> {
     return await bcrypt.compare(plainPassword, this.password);
   }
 }

@@ -135,7 +135,7 @@ describe('TodoController (e2e)', () => {
       .set('Authorization', `Bearer ${token}`)
       .send(createTodoBuilder())
       .expect(HttpStatus.CREATED);
-    const resp = await request
+    await request
       .delete(`/todo/${todo.id}`)
       .set('Authorization', `Bearer ${token}`)
       .expect(HttpStatus.NO_CONTENT);

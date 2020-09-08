@@ -24,7 +24,7 @@ export class AuthController {
 
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
-  async register(@Body() signUp: SignUp, @Res() resp: Response) {
+  async register(@Body() signUp: SignUp, @Res() resp: Response): Promise<Response> {
     const user = await this.authService.register(signUp);
     const token = this.authService.signToken(user);
 
@@ -43,7 +43,7 @@ export class AuthController {
   @Post('login')
   @UseGuards(LocalAuthGuard)
   @HttpCode(HttpStatus.OK)
-  async login(@AuthUser() user: User, @Res() resp: Response) {
+  async login(@AuthUser() user: User, @Res() resp: Response): Promise<Response> {
     const token = this.authService.signToken(user);
 
     resp.setHeader('Authorization', `Bearer ${token}`);
@@ -60,7 +60,7 @@ export class AuthController {
 
   @Get('/me')
   @UseGuards(SessionAuthGuard, JWTAuthGuard)
-  me(@AuthUser() user: User) {
+  me(@AuthUser() user: User): User {
     return user;
   }
 }
