@@ -7,9 +7,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - uses: hallee/eslint-action@1.0.3
-      with:
-        repo-token: ${{ secrets.GITHUB_TOKEN }}
+    - uses: bahmutov/npm-install@v1
+    - uses: icrawl/action-tsc@v1
 
   test:
     if: "!contains(github.event.head_commit.message, 'skip ci')"
