@@ -1,26 +1,16 @@
 name: Unit test
 
-on: [push]
+on: [push, pull_request]
 
 jobs:
-  build:
-    if: "!contains(github.event.head_commit.message, 'skip ci')"
+  lint:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [12.x, 14.x]
     steps:
     - uses: actions/checkout@v2
-    - uses: actions/setup-node@v1
+    - uses: hallee/eslint-action@1.0.3
       with:
-        node-version: ${{ matrix.node-version }}
-    - uses: bahmutov/npm-install@v1
-    - name: Build the project
-      run: |
-        npm run build --if-present
-      env:
-        PORT: 3000
-        APP_SECRET: 444a45b38193572dd7d3c0d691d806b487dbdfe1
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+    - uses: andoshin11/typescript-error-reporter-action@v1.0.2
 
   test:
     if: "!contains(github.event.head_commit.message, 'skip ci')"
@@ -36,7 +26,7 @@ jobs:
     - uses: bahmutov/npm-install@v1
     - name: Run unit test
       run: |
-        npm test
+        npm run test:cov
       env:
         CI: 'true'
         PORT: 3000
@@ -46,3 +36,15 @@ jobs:
         POSTGRES_PASSWORD: contraseña
         DATABASE_URL: postgres://admin:contraseña@localhost:5432/authentication
         ALLOWED_ORIGINS: '*'
+    - name: Monitor coverage
+      if: "github.event_name == 'pull_request'"
+      uses: slavcodev/coverage-monitor-action@1.1.0
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        clover_file: coverage/clover.xml
+        threshold_alert: 50
+        threshold_warning: 80
+    - uses: actions/upload-artifact@v2
+      with:
+        name: unit-coverage
+        path: coverage
