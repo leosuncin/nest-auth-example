@@ -7,8 +7,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - uses: bahmutov/npm-install@v1
-    - uses: andoshin11/typescript-error-reporter-action@v1.0.2
+    - uses: hallee/eslint-action@1.0.3
+      with:
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
 
   test:
     if: "!contains(github.event.head_commit.message, 'skip ci')"
