@@ -10,6 +10,9 @@ jobs:
     - uses: bahmutov/npm-install@v1
     - uses: icrawl/action-tsc@v1
     - run: npm run lint
+    - uses: wemake-services/dotenv-linter@master
+      with:
+        options: .env.example
 
   test:
     if: "!contains(github.event.head_commit.message, 'skip ci')"
