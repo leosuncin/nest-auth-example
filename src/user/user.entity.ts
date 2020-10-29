@@ -7,6 +7,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   BeforeInsert,
+  BeforeUpdate,
 } from 'typeorm';
 
 @Entity()
@@ -35,9 +36,12 @@ export class User {
   }
 
   @BeforeInsert()
-  async setPassword(password: string): Promise<void> {
+  @BeforeUpdate()
+  async hashPassword(): Promise<void> {
     const salt = await bcrypt.genSalt();
-    this.password = await bcrypt.hash(password || this.password, salt);
+    if (!/^\$2a\$\d+\$/.test(this.password)) {
+      this.password = await bcrypt.hash(this.password, salt);
+    }
   }
 
   async checkPassword(plainPassword: string): Promise<boolean> {

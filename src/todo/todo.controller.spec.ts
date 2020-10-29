@@ -11,7 +11,7 @@ import { Todo } from './todo.entity';
 import { User } from '../user/user.entity';
 
 const userBuilder = build<
-  Omit<User, 'password' | 'setPassword' | 'checkPassword'>
+  Omit<User, 'password' | 'hashPassword' | 'checkPassword'>
 >({
   fields: {
     id: sequence(),

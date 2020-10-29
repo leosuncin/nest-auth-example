@@ -19,7 +19,6 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "pretest:e2e": "npm run fixtures",
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "typeorm": "ts-node -r dotenv/config -r tsconfig-paths/register ./node_modules/typeorm/cli.js"
   },
