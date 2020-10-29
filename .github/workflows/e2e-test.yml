@@ -11,7 +11,7 @@ jobs:
         node-version: [12.x, 14.x]
     services:
       postgres:
-        image: postgres:11
+        image: postgres:12
         env:
           POSTGRES_USER: admin
           POSTGRES_PASSWORD: wnbaohW7mn
@@ -26,6 +26,8 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
     - uses: bahmutov/npm-install@v1
+    - name: Build the project
+      run: npm run build
     - name: Run E2E tests
       run: |
         npm run typeorm migration:run
@@ -49,7 +51,7 @@ jobs:
         node-version: [12.x, 14.x]
     services:
       postgres:
-        image: postgres:11
+        image: postgres:12
         env:
           POSTGRES_USER: admin
           POSTGRES_PASSWORD: wnbaohW7mn
@@ -64,6 +66,8 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
     - uses: bahmutov/npm-install@v1
+    - name: Build the project
+      run: npm run build
     - name: Prepare the database
       run: |
         npm run typeorm migration:run
@@ -78,9 +82,7 @@ jobs:
         DATABASE_URL: postgres://admin:wnbaohW7mn@localhost:${{ job.services.postgres.ports[5432] }}/authentication
         ALLOWED_ORIGINS: '*'
     - name: Run the backend
-      run: |
-        npm run build
-        npm start &
+      run: npm start &
       env:
         PORT: 3000
         NODE_ENV: production

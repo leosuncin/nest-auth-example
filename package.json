@@ -9,7 +9,7 @@
     "prebuild": "rimraf dist",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "fixtures": "node -r @suncin/dotenv -r ts-node/register node_modules/typeorm-fixtures-cli/dist/cli.js -c ormconfig.js test/fixtures",
+    "fixtures": "fixtures --require dotenv/config -c ormconfig.js test/fixtures",
     "start": "node dist/main.js",
     "start:dev": "NODE_OPTIONS='-r @suncin/dotenv' nest start --watch",
     "start:debug": "NODE_OPTIONS='-r @suncin/dotenv' nest start --debug --watch",
@@ -21,7 +21,7 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "pretest:e2e": "npm run fixtures",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "typeorm": "ts-node -r @suncin/dotenv -r tsconfig-paths/register ./node_modules/typeorm/cli.js"
+    "typeorm": "ts-node -r dotenv/config -r tsconfig-paths/register ./node_modules/typeorm/cli.js"
   },
   "dependencies": {
     "@nestjs/common": "^7.0.0",

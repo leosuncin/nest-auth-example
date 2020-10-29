@@ -1,0 +1,49 @@
+name: Stress test
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  run-server:
+    name: Run server and stress test with k6
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:12
+        env:
+          POSTGRES_USER: tighten
+          POSTGRES_PASSWORD: rename
+          POSTGRES_DB: embassy
+        ports:
+        - 5432:5432
+        # needed because the postgres container does not provide a healthcheck
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2-beta
+        with:
+          node-version: 14.x
+      - name: Install k6
+        run: |
+          curl https://github.com/loadimpact/k6/releases/download/v0.28.0/k6-v0.28.0-linux64.tar.gz -L | tar xvz --strip-components 1
+      - uses: bahmutov/npm-install@v1
+      - name: Setup the project
+        run: |
+          npm run build
+          npm run typeorm migration:run
+          npm run fixtures
+          npm prune --production
+        env:
+          DATABASE_URL: postgres://tighten:rename@localhost:${{ job.services.postgres.ports[5432] }}/embassy
+      - name: Run the server
+        run: npm start &
+        env:
+          PORT: 3000
+          NODE_ENV: production
+          APP_SECRET: RUtBZUJZUnIzekhONDllNHNwaVRpVE5jMWFwek9ETFV3WXFERUNTb3o0VngzdEJMWkxzL1ExVnU5
+          DATABASE_URL: postgres://tighten:rename@localhost:${{ job.services.postgres.ports[5432] }}/embassy
+          ALLOWED_ORIGINS: '*'
+      - name: Run k6 local test
+        run: ./k6 run stress-test/main.js
