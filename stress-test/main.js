@@ -1,5 +1,5 @@
 import http from 'k6/http';
-import { sleep, check } from 'k6';
+import { sleep, check, group } from 'k6';
 
 import { requestLogin, requestRegister, requestMe } from './auth.js';
 
@@ -32,8 +32,10 @@ export default function (data) {
   check(res, {
     'status is OK': res => res.status === 200,
   });
-  requestLogin(baseUrl);
-  requestRegister(baseUrl);
-  requestMe(baseUrl, data.token);
+  group('Authorization', () => {
+    requestLogin(baseUrl);
+    requestRegister(baseUrl);
+    requestMe(baseUrl, data.token);
+  });
   sleep(1);
 }
