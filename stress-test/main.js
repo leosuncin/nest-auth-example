@@ -2,6 +2,7 @@ import http from 'k6/http';
 import { sleep, check, group } from 'k6';
 
 import { requestLogin, requestRegister, requestMe } from './auth.js';
+import { requestProfile, requestUpdateProfile } from './profile.js';
 
 const baseUrl = 'http://localhost:3000';
 
@@ -13,6 +14,7 @@ export const options = {
     checks: ['rate>0.9'],
     'failed login request': ['rate < 0.1'],
     'failed register request': ['rate < 0.1'],
+    'faile update profile request': ['rate < 0.1'],
   },
 };
 
@@ -36,6 +38,10 @@ export default function (data) {
     requestLogin(baseUrl);
     requestRegister(baseUrl);
     requestMe(baseUrl, data.token);
+  });
+  group('User profile', () => {
+    requestProfile(baseUrl, data.token);
+    requestUpdateProfile(baseUrl, data.token);
   });
   sleep(1);
 }
