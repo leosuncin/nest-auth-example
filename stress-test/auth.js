@@ -57,3 +57,22 @@ export function requestRegister(baseUrl) {
   });
   registerFailedRate.add(!result);
 }
+
+/**
+ * Get the user session
+ *
+ * @param {string} baseUrl Base URL
+ * @param {string} token JWT
+ */
+export function requestMe(baseUrl, token) {
+  const params = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  };
+  const res = http.get(`${baseUrl}/auth/me`, params);
+
+  check(res, {
+    'Get user session': res => res.status === 200,
+  });
+}

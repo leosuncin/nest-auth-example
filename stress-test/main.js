@@ -1,7 +1,7 @@
 import http from 'k6/http';
 import { sleep, check } from 'k6';
 
-import { requestLogin, requestRegister } from './auth.js';
+import { requestLogin, requestRegister, requestMe } from './auth.js';
 
 const baseUrl = 'http://localhost:3000';
 
@@ -16,7 +16,17 @@ export const options = {
   },
 };
 
-export default function () {
+export function setup() {
+  const res = http.post(`${baseUrl}/auth/login`, {
+    email: 'jane@doe.me',
+    password: 'Pa$$w0rd',
+  });
+  const [, token] = res.headers.Authorization.split(/\s+/);
+
+  return { token };
+}
+
+export default function (data) {
   const res = http.get(baseUrl);
 
   check(res, {
@@ -24,5 +34,6 @@ export default function () {
   });
   requestLogin(baseUrl);
   requestRegister(baseUrl);
+  requestMe(baseUrl, data.token);
   sleep(1);
 }
