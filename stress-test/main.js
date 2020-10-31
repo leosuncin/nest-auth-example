@@ -3,6 +3,11 @@ import { sleep, check, group } from 'k6';
 
 import { requestLogin, requestRegister, requestMe } from './auth.js';
 import { requestProfile, requestUpdateProfile } from './profile.js';
+import {
+  requestListTodo,
+  requestTodoWorkflow,
+  requestUnauthorizedTodo,
+} from './todo.js';
 
 const baseUrl = 'http://localhost:3000';
 
@@ -15,6 +20,11 @@ export const options = {
     'failed login request': ['rate < 0.1'],
     'failed register request': ['rate < 0.1'],
     'faile update profile request': ['rate < 0.1'],
+    'failed create todo request': ['rate < 0.1'],
+    'failed update todo request': ['rate < 0.1'],
+    'failed mark todo as done request': ['rate < 0.1'],
+    'failed mark todo as pending request': ['rate < 0.1'],
+    'failed delete todo request': ['rate < 0.1'],
   },
 };
 
@@ -42,6 +52,11 @@ export default function (data) {
   group('User profile', () => {
     requestProfile(baseUrl, data.token);
     requestUpdateProfile(baseUrl, data.token);
+  });
+  group('Todo', () => {
+    requestTodoWorkflow(baseUrl, data.token);
+    requestListTodo(baseUrl, data.token);
+    requestUnauthorizedTodo(baseUrl);
   });
   sleep(1);
 }
