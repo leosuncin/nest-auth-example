@@ -5,7 +5,16 @@ items:
     text: 'Make a sandwich'
     done: no
     owner: '@john'
+  make_salad:
+    id: 2
+    text: 'Make a salad'
+    done: no
+    owner: '@jane'
   todo{1..10}:
     text: '{{lorem.sentence}}'
     done: '{{random.boolean}}'
     owner: '@john'
+  todo{1..100}:
+    text: '{{lorem.sentence}}'
+    done: '{{random.boolean}}'
+    owner: '@jane'

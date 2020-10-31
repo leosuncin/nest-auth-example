@@ -9,7 +9,7 @@
     "prebuild": "rimraf dist",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "fixtures": "node -r @suncin/dotenv -r ts-node/register node_modules/typeorm-fixtures-cli/dist/cli.js -c ormconfig.js test/fixtures",
+    "fixtures": "fixtures --require dotenv/config -c ormconfig.js test/fixtures",
     "start": "node dist/main.js",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
@@ -19,9 +19,8 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "pretest:e2e": "npm run fixtures",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "typeorm": "ts-node -r @suncin/dotenv -r tsconfig-paths/register ./node_modules/typeorm/cli.js"
+    "typeorm": "ts-node -r dotenv/config -r tsconfig-paths/register ./node_modules/typeorm/cli.js"
   },
   "dependencies": {
     "@nestjs-modules/mailer": "^1.5.1",
@@ -76,7 +75,7 @@
     "jest-mock-extended": "^1.0.10",
     "node-mocks-http": "^1.8.1",
     "prettier": "^2.0.1",
-    "supertest": "^4.0.2",
+    "supertest": "^5.0.0",
     "ts-jest": "^26.3.0",
     "ts-loader": "^8.0.0",
     "ts-node": "^9.0.0",

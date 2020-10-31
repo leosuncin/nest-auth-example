@@ -6,16 +6,13 @@ jobs:
   e2e-test:
     if: "!contains(github.event.head_commit.message, 'skip ci')"
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [12.x, 14.x]
     services:
       postgres:
-        image: postgres:11
+        image: postgres:12
         env:
-          POSTGRES_USER: admin
-          POSTGRES_PASSWORD: wnbaohW7mn
-          POSTGRES_DB: authentication
+          POSTGRES_USER: user
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: nestjs
         ports:
         - 5432:5432
         # needed because the postgres container does not provide a healthcheck
@@ -33,10 +30,12 @@ jobs:
     - uses: actions/checkout@v2
     - uses: actions/setup-node@v1
       with:
-        node-version: ${{ matrix.node-version }}
+        node-version: 14.x
     - uses: bahmutov/npm-install@v1
     - name: Run E2E tests
       run: |
+        cp .env.example .env
+        npm run build
         npm run typeorm migration:run
         npm run fixtures
         npm run test:e2e
@@ -44,10 +43,10 @@ jobs:
         CI: 'true'
         PORT: 3000
         APP_SECRET: 444a45b38193572dd7d3c0d691d806b487dbdfe1
-        POSTGRES_USER: admin
-        POSTGRES_PASSWORD: wnbaohW7mn
-        POSTGRES_DB: authentication
-        DATABASE_URL: postgres://admin:wnbaohW7mn@localhost:${{ job.services.postgres.ports[5432] }}/authentication
+        POSTGRES_USER: user
+        POSTGRES_PASSWORD: password
+        POSTGRES_DB: nestjs
+        DATABASE_URL: postgres://user:password@localhost:${{ job.services.postgres.ports[5432] }}/nestjs
         ALLOWED_ORIGINS: '*'
         MAILGUN_SMTP_SERVER: localhost
         MAILGUN_SMTP_PORT: ${{ job.services.maildev.ports[25] }}
@@ -64,12 +63,9 @@ jobs:
   run-server:
     if: "!contains(github.event.head_commit.message, 'skip ci')"
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [12.x, 14.x]
     services:
       postgres:
-        image: postgres:11
+        image: postgres:12
         env:
           POSTGRES_USER: admin
           POSTGRES_PASSWORD: wnbaohW7mn
@@ -82,12 +78,12 @@ jobs:
     - uses: actions/checkout@v2
     - uses: actions/setup-node@v1
       with:
-        node-version: ${{ matrix.node-version }}
+        node-version: 14.x
     - uses: bahmutov/npm-install@v1
     - name: Prepare the database
       run: |
+        npm run build
         npm run typeorm migration:run
-        npm run fixtures
         npm run fixtures
       env:
         PORT: 3000
@@ -109,9 +105,7 @@ jobs:
         COMPANY_NAME: ACME Inc
         SMTP_SECURE: 'true'
     - name: Run the backend
-      run: |
-        npm run build
-        npm start &
+      run: npm start &
       env:
         PORT: 3000
         NODE_ENV: production

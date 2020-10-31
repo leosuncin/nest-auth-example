@@ -7,3 +7,10 @@ items:
     website: '{{internet.url}}'
     occupation: '{{name.jobTitle}}'
     user: '@john'
+  jane_profile:
+    id: 2
+    phone: '(802) 798-1134'
+    birthday: 12 Oct 1982
+    website: '{{internet.url}}'
+    occupation: '{{name.jobTitle}}'
+    user: '@jane'

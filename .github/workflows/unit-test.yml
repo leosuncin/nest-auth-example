@@ -9,9 +9,10 @@ jobs:
     - uses: actions/checkout@v2
     - uses: bahmutov/npm-install@v1
     - uses: icrawl/action-tsc@v1
-    - uses: hallee/eslint-action@1.0.3
+    - run: npm run lint
+    - uses: wemake-services/dotenv-linter@master
       with:
-        repo-token: ${{ secrets.GITHUB_TOKEN }}
+        options: .env.example
 
   test:
     if: "!contains(github.event.head_commit.message, 'skip ci')"
