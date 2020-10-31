@@ -1,0 +1,16 @@
+tasks:
+  - before: rm -rf dist
+    init: |
+      npm ci
+      cp .env.example .env
+      npm run build
+      npm run typeorm migration:run
+      npm run fixtures
+    command: npm run start:dev
+
+image:
+  file: .gitpod.Dockerfile
+
+ports:
+  - port: 3000
+    onOpen: open-preview
