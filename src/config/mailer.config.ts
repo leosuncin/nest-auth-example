@@ -14,7 +14,6 @@ export default registerAs<() => MailerOptions>('mailer', () => {
   return {
     transport: prod ? mailgunTransport({
       auth: {
-        // eslint-disable-next-line @typescript-eslint/camelcase
         api_key: process.env.MAILGUN_API_KEY,
         domain: process.env.MAILGUN_DOMAIN,
       }
