@@ -8,6 +8,7 @@ import { AuthService } from './auth.service';
 import { SessionSerializer } from './session.serializer';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { LocalStrategy } from './strategies/local.strategy';
+import { MailModule } from '../mail/mail.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { LocalStrategy } from './strategies/local.strategy';
         algorithms: ['HS384'],
       },
     }),
+    MailModule,
   ],
   controllers: [AuthController],
   providers: [AuthService, LocalStrategy, JwtStrategy, SessionSerializer],

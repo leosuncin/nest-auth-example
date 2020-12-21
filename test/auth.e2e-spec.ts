@@ -9,7 +9,7 @@ import { setup } from '../src/setup';
 const userBuilder = build({
   fields: {
     name: fake(f => f.name.findName()),
-    email: fake(f => f.internet.exampleEmail()),
+    email: fake(f => f.internet.exampleEmail().toLowerCase()),
     password: 'Pa$$w0rd',
   },
 });
@@ -35,7 +35,6 @@ describe('AuthController (e2e)', () => {
   });
 
   it.each([
-    ['/auth/register', userBuilder(), HttpStatus.CREATED],
     [
       '/auth/login',
       {
@@ -65,6 +64,31 @@ describe('AuthController (e2e)', () => {
       if (resp.ok) expect(resp.header.authorization).toMatch(/Bearer\s+.*/);
     },
   );
+
+  test('should register a new user and send welcome email', async () => {
+    const payload = userBuilder();
+    const resp = await request
+      .post('/auth/register')
+      .send(payload)
+      .expect(HttpStatus.CREATED);
+
+    expect(resp.body).toBeDefined();
+    expect(resp.body.password).toBeUndefined();
+    expect(resp.header.authorization).toMatch(/Bearer\s+.*/);
+
+    await supertest('http://localhost:1080')
+      .get('/email')
+      .expect(res => {
+        expect(
+          Array.isArray(res.body) &&
+            res.body.some(email =>
+              email.to.find(
+                destination => destination.address === payload.email,
+              ),
+            ),
+        ).toBe(true);
+      });
+  });
 
   it('should get session user', async () => {
     const {

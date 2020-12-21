@@ -5,17 +5,25 @@ import { User } from '../user/user.entity';
 import { SignUp } from './dto/sign-up.dto';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
 import { UserService } from '../user/user.service';
+import { MailService } from '../mail/mail.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
+    private readonly mailService: MailService,
   ) {}
 
   async register(signUp: SignUp): Promise<User> {
     const user = await this.userService.create(signUp);
     delete user.password;
+
+    try {
+      await this.mailService.sendWelcomeEmail(signUp);
+    } catch (error) {
+      console.error('AuthService', error);
+    }
 
     return user;
   }
