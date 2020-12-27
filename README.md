@@ -88,3 +88,11 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 ## License
 
   Nest is [MIT licensed](LICENSE).
+
+### :star2: Stargazers
+
+[![Stargazers repo roster for @leosuncin/nest-auth-example](https://reporoster.com/stars/leosuncin/nest-auth-example)](https://github.com/leosuncin/nest-auth-example/stargazers)
+
+### :fork_and_knife: Forkers
+
+[![Forkers repo roster for @leosuncin/nest-auth-example](https://reporoster.com/forks/leosuncin/nest-auth-example)](https://github.com/leosuncin/nest-auth-example/network/members)
