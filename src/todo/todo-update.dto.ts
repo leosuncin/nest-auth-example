@@ -16,7 +16,7 @@ export class TodoUpdate {
 
   @IsOptional()
   @IsBoolean()
-  @Transform(value =>
+  @Transform(({ value }) =>
     typeof value === 'string'
       ? ['true', '1', 'yes'].includes(value.toLowerCase())
       : Boolean(value),
