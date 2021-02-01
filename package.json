@@ -9,7 +9,7 @@
     "prebuild": "rimraf dist",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "fixtures": "fixtures --require dotenv/config -c ormconfig.js test/fixtures",
+    "fixtures": "ts-node --require dotenv/config --require reflect-metadata bin/fixtures.ts",
     "start": "node dist/main.js",
     "start:dev": "NODE_OPTIONS='-r @suncin/dotenv' nest start --watch",
     "start:debug": "NODE_OPTIONS='-r @suncin/dotenv' nest start --debug --watch",
@@ -60,6 +60,7 @@
     "@types/passport-jwt": "^3.0.3",
     "@types/passport-local": "^1.0.33",
     "@types/supertest": "^2.0.8",
+    "@types/yargs": "^16.0.0",
     "@typescript-eslint/eslint-plugin": "^4.1.0",
     "@typescript-eslint/parser": "^4.1.0",
     "eslint": "^7.8.0",
@@ -67,6 +68,7 @@
     "eslint-plugin-import": "^2.20.1",
     "jest": "^26.4.2",
     "jest-mock-extended": "^1.0.10",
+    "nestjs-command": "^2.0.0",
     "node-mocks-http": "^1.8.1",
     "prettier": "^2.0.1",
     "supertest": "^6.0.0",
@@ -75,7 +77,8 @@
     "ts-node": "^9.0.0",
     "tsconfig-paths": "^3.9.0",
     "typeorm-fixtures-cli": "1.8.1",
-    "typescript": "^4.0.0"
+    "typescript": "^4.0.0",
+    "yargs": "^16.2.0"
   },
   "jest": {
     "moduleFileExtensions": [
