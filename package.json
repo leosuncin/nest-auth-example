@@ -31,7 +31,7 @@
     "@nestjs/terminus": "^7.0.0",
     "@nestjs/typeorm": "^7.0.0",
     "bcryptjs": "^2.4.3",
-    "class-transformer": "^0.3.1",
+    "class-transformer": "^0.4.0",
     "class-validator": "^0.13.1",
     "connect-pg-simple": "^6.1.0",
     "cookie-parser": "^1.4.5",
