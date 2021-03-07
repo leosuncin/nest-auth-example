@@ -4,7 +4,7 @@ services:
   - postgresql
 
 node_js:
-  - 13
+  - 14
 
 notifications:
   email: false
@@ -20,9 +20,9 @@ install:
 
 before_script:
   - psql -c "create database ${POSTGRES_DB};" -U $POSTGRES_USER
+  - npm run build --if-present
   - npm run typeorm migration:run
   - npm run fixtures
-  - npm run build --if-present
 
 script:
   - npm run lint --if-present
