@@ -1,9 +1,6 @@
 module.exports = {
   type: 'postgres',
-  url:
-    process.env.DATABASE_URL +
-    '?sslmode=' +
-    (process.env.SSL_MODE || 'disable'),
+  url: process.env.DATABASE_URL,
   entities: [
     process.env.NODE_ENV === 'test'
       ? 'src/**/*.entity.ts'
@@ -14,4 +11,12 @@ module.exports = {
     migrationsDir: 'src/migrations',
   },
   synchronize: false,
+  extra: {
+    ssl:
+      process.env.SSL_MODE === 'require'
+        ? {
+            rejectUnauthorized: false,
+          }
+        : false,
+  },
 };
