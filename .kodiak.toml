@@ -1,0 +1,12 @@
+version = 1
+
+[merge]
+	method = "rebase"
+	delete_branch_on_merge = true
+
+[approve]
+	auto_approve_usernames = ["dependabot"]
+
+[update]
+	always = true
+	ignored_usernames = ["dependabot"]
