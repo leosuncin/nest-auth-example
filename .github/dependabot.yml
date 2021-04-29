@@ -1,38 +1,16 @@
 version: 2
 updates:
-- package-ecosystem: npm
-  directory: "/"
-  schedule:
-    interval: weekly
-    day: sunday
-    time: "11:00"
-  open-pull-requests-limit: 10
-  versioning-strategy: widen
-  ignore:
-  - dependency-name: "@typescript-eslint/eslint-plugin"
-    versions:
-    - 4.15.2
-  - dependency-name: "@typescript-eslint/parser"
-    versions:
-    - 4.15.2
-  - dependency-name: ts-jest
-    versions:
-    - 26.5.2
-  - dependency-name: eslint-config-prettier
-    versions:
-    - 8.0.0
-  - dependency-name: "@nestjs/platform-express"
-    versions:
-    - 7.6.7
-  - dependency-name: "@nestjs/common"
-    versions:
-    - 7.6.7
-  - dependency-name: "@nestjs/testing"
-    versions:
-    - 7.6.7
-  - dependency-name: "@nestjs/core"
-    versions:
-    - 7.6.7
-  - dependency-name: typeorm-fixtures-cli
-    versions:
-    - 1.9.1
+  - package-ecosystem: npm
+    directory: '/'
+    schedule:
+      interval: weekly
+      day: sunday
+    open-pull-requests-limit: 10
+    versioning-strategy: widen
+    labels:
+      - dependencies
+      - automerge
+    ignore:
+      - dependency-name: '@types/express'
+        versions:
+          - '> 4.17.3'
