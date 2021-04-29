@@ -13,4 +13,4 @@ updates:
     ignore:
       - dependency-name: '@types/express'
         versions:
-          - '> 4.17.3'
+          - '> 4.17.1'
