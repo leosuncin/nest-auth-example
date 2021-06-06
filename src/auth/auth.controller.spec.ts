@@ -58,7 +58,6 @@ describe('Auth Controller', () => {
   });
 
   it('should register a new user', async () => {
-    expect.assertions(3);
     const register = {
       name: 'John Doe',
       email: 'john@doe.me',
@@ -72,7 +71,6 @@ describe('Auth Controller', () => {
   });
 
   it('should log in an user', async () => {
-    expect.assertions(3);
     const user = userBuilder({
       overrides: {
         name: 'John Doe',
