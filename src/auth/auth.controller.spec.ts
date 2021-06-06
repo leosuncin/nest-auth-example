@@ -1,7 +1,6 @@
 import { build, fake, perBuild, sequence } from '@jackfranklin/test-data-bot';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import * as httpMocks from 'node-mocks-http';
 import { mock } from 'jest-mock-extended';
 import { Repository } from 'typeorm';
 
@@ -38,7 +37,7 @@ describe('Auth Controller', () => {
         {
           provide: 'JwtService',
           useValue: {
-            sign(payload) {
+            sign(payload: Record<'sub', string>) {
               return payload.sub
                 .split('')
                 .reduce(
@@ -65,22 +64,15 @@ describe('Auth Controller', () => {
       email: 'john@doe.me',
       password: 'Pa$$w0rd',
     };
-    const resp = httpMocks.createResponse();
     repositoryMock.save.mockResolvedValueOnce(
       userBuilder({ overrides: register }) as User,
     );
 
-    await expect(controller.register(register, resp)).resolves.toBeDefined();
-    expect(resp._getHeaders()).toHaveProperty(
-      'authorization',
-      'Bearer 6a6f686e40646f652e6d65',
-    );
-    expect(resp._getData()).not.toHaveProperty('password');
+    await expect(controller.register(register)).resolves.not.toHaveProperty('password');
   });
 
   it('should log in an user', async () => {
     expect.assertions(3);
-    const resp = httpMocks.createResponse();
     const user = userBuilder({
       overrides: {
         name: 'John Doe',
@@ -88,12 +80,7 @@ describe('Auth Controller', () => {
       },
     });
 
-    await expect(controller.login(user as User, resp)).resolves.toBeDefined();
-    expect(resp._getHeaders()).toHaveProperty(
-      'authorization',
-      'Bearer 6a6f686e40646f652e6d65',
-    );
-    expect(resp._getData()).not.toHaveProperty('password');
+    await expect(controller.login(user as User)).resolves.not.toHaveProperty('password');
   });
 
   it('should got me logged', () => {

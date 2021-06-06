@@ -7,6 +7,7 @@ import {
   Post,
   Res,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { Response } from 'express';
 
@@ -17,6 +18,7 @@ import { SignUp } from './dto/sign-up.dto';
 import { JWTAuthGuard } from './guards/jwt-auth.guard';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { SessionAuthGuard } from './guards/session-auth.guard';
+import { TokenInterceptor } from './interceptors/token.interceptor';
 
 @Controller('auth')
 export class AuthController {
@@ -24,38 +26,17 @@ export class AuthController {
 
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
-  async register(@Body() signUp: SignUp, @Res() resp: Response): Promise<Response> {
-    const user = await this.authService.register(signUp);
-    const token = this.authService.signToken(user);
-
-    resp.setHeader('Authorization', `Bearer ${token}`);
-    resp.cookie('token', token, {
-      httpOnly: true,
-      signed: true,
-      sameSite: 'strict',
-      secure: process.env.NODE_ENV === 'production',
-    });
-    resp.send(user);
-
-    return resp;
+  @UseInterceptors(TokenInterceptor)
+  register(@Body() signUp: SignUp): Promise<User> {
+    return this.authService.register(signUp);
   }
 
   @Post('login')
   @UseGuards(LocalAuthGuard)
   @HttpCode(HttpStatus.OK)
-  async login(@AuthUser() user: User, @Res() resp: Response): Promise<Response> {
-    const token = this.authService.signToken(user);
-
-    resp.setHeader('Authorization', `Bearer ${token}`);
-    resp.cookie('token', token, {
-      httpOnly: true,
-      signed: true,
-      sameSite: 'strict',
-      secure: process.env.NODE_ENV === 'production',
-    });
-    resp.send(user);
-
-    return resp;
+  @UseInterceptors(TokenInterceptor)
+  async login(@AuthUser() user: User): Promise<User> {
+    return user;
   }
 
   @Get('/me')
