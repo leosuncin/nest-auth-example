@@ -26,7 +26,7 @@
     "@nestjs/common": "^7.0.0",
     "@nestjs/core": "^8.0.5",
     "@nestjs/jwt": "^8.0.0",
-    "@nestjs/passport": "^7.0.0",
+    "@nestjs/passport": "^8.0.1",
     "@nestjs/platform-express": "^7.0.0",
     "@nestjs/terminus": "^7.0.0",
     "@nestjs/typeorm": "^8.0.1",
