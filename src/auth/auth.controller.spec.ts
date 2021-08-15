@@ -1,4 +1,5 @@
 import { build, fake, perBuild, sequence } from '@jackfranklin/test-data-bot';
+import { JwtModule } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { mock } from 'jest-mock-extended';
@@ -34,20 +35,8 @@ describe('Auth Controller', () => {
           provide: getRepositoryToken(User),
           useValue: repositoryMock,
         },
-        {
-          provide: 'JwtService',
-          useValue: {
-            sign(payload: Record<'sub', string>) {
-              return payload.sub
-                .split('')
-                .reduce(
-                  (prev, current) => prev + current.charCodeAt(0).toString(16),
-                  '',
-                );
-            },
-          },
-        },
       ],
+      imports: [JwtModule.register({ secret: process.env.APP_SECRET })],
     }).compile();
 
     controller = module.get<AuthController>(AuthController);
@@ -67,7 +56,9 @@ describe('Auth Controller', () => {
       userBuilder({ overrides: register }) as User,
     );
 
-    await expect(controller.register(register)).resolves.not.toHaveProperty('password');
+    await expect(controller.register(register)).resolves.not.toHaveProperty(
+      'password',
+    );
   });
 
   it('should log in an user', async () => {
@@ -78,7 +69,9 @@ describe('Auth Controller', () => {
       },
     });
 
-    await expect(controller.login(user as User)).resolves.not.toHaveProperty('password');
+    await expect(controller.login(user as User)).resolves.not.toHaveProperty(
+      'password',
+    );
   });
 
   it('should got me logged', () => {
