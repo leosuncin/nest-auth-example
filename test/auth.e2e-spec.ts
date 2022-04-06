@@ -1,4 +1,5 @@
-import { build, fake } from '@jackfranklin/test-data-bot';
+import { faker } from '@faker-js/faker';
+import { build, perBuild } from '@jackfranklin/test-data-bot';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as supertest from 'supertest';
@@ -8,8 +9,8 @@ import { setup } from '../src/setup';
 
 const userBuilder = build({
   fields: {
-    name: fake(f => f.name.findName()),
-    email: fake(f => f.internet.exampleEmail()),
+    name: perBuild(() => faker.name.findName()),
+    email: perBuild(() => faker.internet.exampleEmail()),
     password: 'Pa$$w0rd',
   },
 });

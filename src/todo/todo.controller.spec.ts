@@ -1,4 +1,5 @@
-import { build, fake, perBuild, sequence } from '@jackfranklin/test-data-bot';
+import { faker } from '@faker-js/faker';
+import { build, perBuild, sequence } from '@jackfranklin/test-data-bot';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { NotFoundException, ForbiddenException } from '@nestjs/common';
@@ -10,23 +11,24 @@ import { TodoService } from './todo.service';
 import { Todo } from './todo.entity';
 import { User } from '../user/user.entity';
 
-const userBuilder = build<
-  Omit<User, 'password' | 'hashPassword' | 'checkPassword'>
->({
+const userBuilder = build<User>({
   fields: {
     id: sequence(),
-    name: fake(f => f.name.findName()),
-    email: fake(f => f.internet.exampleEmail()),
+    name: perBuild(() => faker.name.findName()),
+    email: perBuild(() => faker.internet.exampleEmail()),
     createdAt: perBuild(() => new Date()),
     updatedAt: perBuild(() => new Date()),
+    password: undefined,
+    checkPassword: perBuild(() => jest.fn()),
+    hashPassword: perBuild(() => jest.fn()),
   },
   postBuild: u => new User(u),
 });
 const todoBuilder = build<Todo>({
   fields: {
     id: sequence(),
-    text: fake(f => f.lorem.sentence()),
-    done: fake(f => f.random.boolean()),
+    text: perBuild(() => faker.lorem.sentence()),
+    done: perBuild(() => faker.datatype.boolean()),
     owner: userBuilder(),
     createdAt: perBuild(() => new Date()),
     updatedAt: perBuild(() => new Date()),

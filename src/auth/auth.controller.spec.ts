@@ -1,4 +1,5 @@
-import { build, fake, perBuild, sequence } from '@jackfranklin/test-data-bot';
+import { faker } from '@faker-js/faker';
+import { build, perBuild, sequence } from '@jackfranklin/test-data-bot';
 import { JwtModule } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
@@ -13,8 +14,8 @@ import { AuthService } from './auth.service';
 const userBuilder = build<Partial<User>>({
   fields: {
     id: sequence(),
-    name: fake(f => f.name.findName()),
-    email: fake(f => f.internet.exampleEmail()),
+    name: perBuild(() => faker.name.findName()),
+    email: perBuild(() => faker.internet.exampleEmail()),
     createdAt: perBuild(() => new Date()),
     updatedAt: perBuild(() => new Date()),
   },
