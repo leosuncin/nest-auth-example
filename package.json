@@ -46,6 +46,7 @@
     "typeorm": "^0.2.37"
   },
   "devDependencies": {
+    "@faker-js/faker": "^6.1.2",
     "@jackfranklin/test-data-bot": "^2.0.0",
     "@nestjs/cli": "^8.1.0",
     "@nestjs/schematics": "^8.0.0",

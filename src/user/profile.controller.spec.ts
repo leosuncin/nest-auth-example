@@ -1,4 +1,5 @@
-import { build, fake, perBuild, sequence } from '@jackfranklin/test-data-bot';
+import { faker } from '@faker-js/faker';
+import { build, perBuild, sequence } from '@jackfranklin/test-data-bot';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { mock } from 'jest-mock-extended';
@@ -11,9 +12,9 @@ import { UserService } from './user.service';
 const userBuilder = build<Partial<User>>({
   fields: {
     id: sequence(),
-    name: fake(f => f.name.findName()),
-    email: fake(f => f.internet.exampleEmail()),
-    password: fake(f => f.random.uuid()),
+    name: perBuild(() => faker.name.findName()),
+    email: perBuild(() => faker.internet.exampleEmail()),
+    password: perBuild(() => faker.datatype.uuid()),
     createdAt: perBuild(() => new Date()),
     updatedAt: perBuild(() => new Date()),
   },
@@ -21,7 +22,7 @@ const userBuilder = build<Partial<User>>({
 });
 const updateBuilder = build({
   fields: {
-    name: fake(f => f.name.findName()),
+    name: perBuild(() => faker.name.findName()),
   },
 });
 
