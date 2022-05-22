@@ -36,7 +36,7 @@
     "connect-pg-simple": "^7.0.0",
     "cookie-parser": "^1.4.5",
     "express-session": "^1.17.0",
-    "passport": "^0.5.2",
+    "passport": "^0.6.0",
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",
     "pg": "^8.7.1",
