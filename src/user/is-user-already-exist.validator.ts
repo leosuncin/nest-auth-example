@@ -5,7 +5,6 @@ import {
   ValidatorConstraintInterface,
 } from 'class-validator';
 import { Repository } from 'typeorm';
-import { isNullOrUndefined } from 'util';
 
 import { User } from './user.entity';
 
@@ -18,9 +17,9 @@ export class IsUserAlreadyExist implements ValidatorConstraintInterface {
   ) {}
 
   async validate(email: string): Promise<boolean> {
-    const user = await this.userRepository.findOne({ email });
+    const user = await this.userRepository.findOneBy({ email });
 
-    return isNullOrUndefined(user);
+    return user === null || user === undefined;
   }
 
   defaultMessage(): string {

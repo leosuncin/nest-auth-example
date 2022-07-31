@@ -25,11 +25,17 @@ export class TodoService {
   }
 
   listTodo(owner: User): Promise<Todo[]> {
-    return this.repo.find({ where: { owner }, order: { createdAt: 'DESC' } });
+    return this.repo.find({
+      where: { owner: { id: owner.id } },
+      order: { createdAt: 'DESC' },
+    });
   }
 
   async getTodo(id: number, owner: User): Promise<Todo> {
-    const todo = await this.repo.findOne(id, { loadRelationIds: true });
+    const todo = await this.repo.findOne({
+      where: { id },
+      loadRelationIds: true,
+    });
 
     if (!todo) throw new NotFoundException(`Not found any todo with id: ${id}`);
 
@@ -40,7 +46,7 @@ export class TodoService {
   }
 
   updateTodo(todo: Todo, updates: TodoUpdate): Promise<Todo> {
-    Object.assign(todo, updates);
+    this.repo.merge(todo, updates);
 
     return this.repo.save(todo);
   }

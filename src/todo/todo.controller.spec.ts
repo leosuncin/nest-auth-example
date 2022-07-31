@@ -3,8 +3,8 @@ import { build, perBuild, sequence } from '@jackfranklin/test-data-bot';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { NotFoundException, ForbiddenException } from '@nestjs/common';
-import { mock, anyObject, MockProxy } from 'jest-mock-extended';
-import { Repository } from 'typeorm';
+import { mock, Matcher } from 'jest-mock-extended';
+import type { Repository } from 'typeorm';
 
 import { TodoController } from './todo.controller';
 import { TodoService } from './todo.service';
@@ -38,34 +38,39 @@ const todoBuilder = build<Todo>({
 
 describe('Todo Controller', () => {
   let controller: TodoController;
-  let repositoryMock: MockProxy<Repository<Todo>>;
 
   beforeEach(async () => {
-    repositoryMock = mock<Repository<Todo>>();
-    repositoryMock.create.mockImplementation(dto =>
-      Object.assign(new Todo(), dto),
-    );
-    repositoryMock.save.mockImplementation((entity: any) =>
-      Promise.resolve(todoBuilder({ overrides: entity })),
-    );
-    repositoryMock.find.mockResolvedValue([]);
-    repositoryMock.findOne
-      .calledWith(1 as any, anyObject())
-      .mockResolvedValue(todoBuilder({ overrides: { id: 1, owner: 1 } }));
-    repositoryMock.findOne
-      .calledWith(0 as any, anyObject())
-      .mockResolvedValue(null);
-    repositoryMock.remove.mockResolvedValue(
-      todoBuilder({ overrides: { id: 1, owner: 1 } }),
-    );
-
     const module: TestingModule = await Test.createTestingModule({
       controllers: [TodoController],
       providers: [
         TodoService,
         {
           provide: getRepositoryToken(Todo),
-          useValue: repositoryMock,
+          useFactory() {
+            const todo = todoBuilder({ overrides: { id: 1, owner: 1 } });
+            const repositoryMocked = mock<Repository<Todo>>({
+              create: jest
+                .fn()
+                .mockImplementation(dto => Object.assign(new Todo(), dto)),
+              save: jest
+                .fn()
+                .mockImplementation(entity =>
+                  Promise.resolve(todoBuilder({ overrides: entity })),
+                ),
+              merge: jest.fn().mockImplementation(Object.assign),
+            });
+
+            repositoryMocked.findOne
+              .calledWith(
+                // @ts-expect-error expect a single option
+                new Matcher(options => options.where.id > 0, 'todo.id'),
+              )
+              .mockResolvedValueOnce(todo);
+            repositoryMocked.find.mockResolvedValue([todo]);
+            repositoryMocked.remove.mockResolvedValue(todo);
+
+            return repositoryMocked;
+          },
         },
       ],
     }).compile();
@@ -88,32 +93,32 @@ describe('Todo Controller', () => {
     ).resolves.toBeInstanceOf(Todo);
   });
 
-  test('should list all todos', async () => {
+  it('should list all todos', async () => {
     await expect(
       controller.listTodo(userBuilder() as any),
     ).resolves.toBeDefined();
   });
 
-  test('should get one todo', async () => {
+  it('should get one todo', async () => {
     const user = userBuilder({ overrides: { id: 1 } });
     await expect(controller.getTodo(1, user as any)).resolves.toBeDefined();
   });
 
-  test('should fail to get unexisting todo', async () => {
+  it('should fail to get nonexisting todo', async () => {
     const user = userBuilder();
     await expect(controller.getTodo(0, user as any)).rejects.toThrow(
       NotFoundException,
     );
   });
 
-  test("should fail to get another's todo", async () => {
+  it("should fail to get another's todo", async () => {
     const user = userBuilder();
     await expect(controller.getTodo(1, user as any)).rejects.toThrow(
       ForbiddenException,
     );
   });
 
-  test('should update one todo', async () => {
+  it('should update one todo', async () => {
     const user = userBuilder({ overrides: { id: 1 } });
     const updates = { done: true };
     await expect(
@@ -121,7 +126,7 @@ describe('Todo Controller', () => {
     ).resolves.toBeDefined();
   });
 
-  test('should fail to update unexisting todo', async () => {
+  it('should fail to update nonexisting todo', async () => {
     const user = userBuilder();
     const updates = { done: true };
     await expect(
@@ -129,7 +134,7 @@ describe('Todo Controller', () => {
     ).rejects.toThrow(NotFoundException);
   });
 
-  test("should fail to update another's todo", async () => {
+  it("should fail to update another's todo", async () => {
     const user = userBuilder();
     const updates = { done: true };
     await expect(
@@ -137,33 +142,33 @@ describe('Todo Controller', () => {
     ).rejects.toThrow(ForbiddenException);
   });
 
-  test('should remove one todo', async () => {
+  it('should remove one todo', async () => {
     const user = userBuilder({ overrides: { id: 1 } });
     await expect(controller.removeTodo(1, user as any)).resolves.toBeDefined();
   });
 
-  test('should fail to remove unexisting todo', async () => {
+  it('should fail to remove nonexisting todo', async () => {
     const user = userBuilder();
     await expect(controller.removeTodo(0, user as any)).rejects.toThrow(
       NotFoundException,
     );
   });
 
-  test("should fail to remove another's todo", async () => {
+  it("should fail to remove another's todo", async () => {
     const user = userBuilder();
     await expect(controller.removeTodo(1, user as any)).rejects.toThrow(
       ForbiddenException,
     );
   });
 
-  test('should mark todo as done', async () => {
+  it('should mark todo as done', async () => {
     const user = userBuilder({ overrides: { id: 1 } });
     await expect(
       controller.markTodoAsDone(1, user as any),
     ).resolves.toHaveProperty('done', true);
   });
 
-  test('should mark todo as pending', async () => {
+  it('should mark todo as pending', async () => {
     const user = userBuilder({ overrides: { id: 1 } });
     await expect(
       controller.markTodoAsPending(1, user as any),

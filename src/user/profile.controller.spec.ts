@@ -61,21 +61,22 @@ describe('Profile Controller', () => {
   });
 
   it('should fail to get a profile', async () => {
-    repositoryMock.findOne.mockResolvedValueOnce(null);
+    repositoryMock.findOne.mockResolvedValueOnce(undefined);
 
     await expect(controller.get(0)).rejects.toThrow();
   });
 
   it('should update a profile', async () => {
-    repositoryMock.findOne.mockResolvedValueOnce(
+    repositoryMock.findOneBy.mockResolvedValueOnce(
       userBuilder({ overrides: { id: 1 } }) as User,
     );
+    repositoryMock.merge.mockImplementation(Object.assign);
 
     await expect(controller.update(1, updateBuilder())).resolves.toBeDefined();
   });
 
   it('should fail to update a profile', async () => {
-    repositoryMock.findOne.mockResolvedValueOnce(null);
+    repositoryMock.findOneBy.mockResolvedValueOnce(undefined);
 
     await expect(controller.update(0, updateBuilder())).rejects.toBeDefined();
   });

@@ -13,7 +13,9 @@ export class UserService {
   ) {}
 
   async create(data: Partial<User>): Promise<User> {
-    return this.userRepository.save(new User(data));
+    const user = this.userRepository.create(data);
+
+    return this.userRepository.save(user);
   }
 
   async findOne(where: FindOneOptions<User>): Promise<User> {
@@ -29,12 +31,13 @@ export class UserService {
   }
 
   async update(id: number, updates: UserUpdate): Promise<User> {
-    const user = await this.userRepository.findOne(id);
+    const user = await this.userRepository.findOneBy({ id });
 
     if (!user) {
       throw new NotFoundException(`There isn't any user with id: ${id}`);
     }
-    Object.assign(user, updates);
+
+    this.userRepository.merge(user, updates);
 
     return this.userRepository.save(user);
   }

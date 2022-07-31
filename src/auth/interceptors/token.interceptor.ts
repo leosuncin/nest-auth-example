@@ -13,16 +13,14 @@ import { AuthService } from '../auth.service';
 
 @Injectable()
 export class TokenInterceptor implements NestInterceptor {
-  constructor(
-    private readonly authService: AuthService,
-  ) {}
+  constructor(private readonly authService: AuthService) {}
 
   intercept(
     context: ExecutionContext,
     next: CallHandler<User>,
   ): Observable<User> {
     return next.handle().pipe(
-      map((user) => {
+      map(user => {
         const response = context.switchToHttp().getResponse<Response>();
         const token = this.authService.signToken(user);
 
