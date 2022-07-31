@@ -3,17 +3,6 @@ name: Unit test
 on: [push, pull_request]
 
 jobs:
-  lint:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
-    - uses: bahmutov/npm-install@v1
-    - uses: icrawl/action-tsc@v1
-    - run: npm run lint
-    - uses: wemake-services/dotenv-linter@master
-      with:
-        options: .env.example
-
   test:
     if: "!contains(github.event.head_commit.message, 'skip ci')"
     runs-on: ubuntu-latest
@@ -42,9 +31,9 @@ jobs:
         MAILGUN_SMTP_PORT: 1025
         MAILGUN_SMTP_LOGIN: admin
         MAILGUN_SMTP_PASSWORD: wnbaohW7mn
-        MAILGUN_API_KEY: 6rtK845ev6ZSCD6NepoUcK727K266Yv8
-        MAILGUN_DOMAIN: sandbox6rtK845ev6ZSCD6NepoUcK727K266Yv8.mailgun.org
-        MAILGUN_PUBLIC_KEY: pubkey-6rtK845ev6ZSCD6NepoUcK727K266Yv8
+        MAILGUN_API_KEY: r4nd0mFaK3randomFake
+        MAILGUN_DOMAIN: sandboxr4nd0mFaK3randomFake.mailgun.org
+        MAILGUN_PUBLIC_KEY: pubkey-r4nd0mFaK3randomFake
         CLIENT_BASE_URL: http://localhost:3001
         PRODUCT_NAME: Nest.js Auth
         COMPANY_NAME: ACME Inc
