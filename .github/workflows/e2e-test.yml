@@ -14,31 +14,31 @@ jobs:
           POSTGRES_PASSWORD: password
           POSTGRES_DB: nestjs
         ports:
-        - 5432:5432
+          - 5432:5432
         # needed because the postgres container does not provide a healthcheck
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-node@v3
-      with:
-        node-version: 14.x
-    - uses: bahmutov/npm-install@v1
-    - name: Run E2E tests
-      run: |
-        cp .env.example .env
-        npm run build
-        npm run typeorm migration:run
-        npm run fixtures
-        npm run test:e2e
-      env:
-        CI: 'true'
-        PORT: 3000
-        APP_SECRET: 444a45b38193572dd7d3c0d691d806b487dbdfe1
-        POSTGRES_USER: user
-        POSTGRES_PASSWORD: password
-        POSTGRES_DB: nestjs
-        DATABASE_URL: postgres://user:password@localhost:${{ job.services.postgres.ports[5432] }}/nestjs
-        ALLOWED_ORIGINS: '*'
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 14.x
+      - uses: bahmutov/npm-install@v1
+      - name: Run E2E tests
+        run: |
+          cp .env.example .env
+          npm run build
+          npm run typeorm migration:run
+          npm run fixtures
+          npm run test:e2e
+        env:
+          CI: 'true'
+          PORT: 3000
+          APP_SECRET: 444a45b38193572dd7d3c0d691d806b487dbdfe1
+          POSTGRES_USER: user
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: nestjs
+          DATABASE_URL: postgres://user:password@localhost:${{ job.services.postgres.ports[5432] }}/nestjs
+          ALLOWED_ORIGINS: '*'
 
   run-server:
     if: "!contains(github.event.head_commit.message, 'skip ci')"
@@ -51,35 +51,35 @@ jobs:
           POSTGRES_PASSWORD: wnbaohW7mn
           POSTGRES_DB: authentication
         ports:
-        - 5432:5432
+          - 5432:5432
         # needed because the postgres container does not provide a healthcheck
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-node@v3
-      with:
-        node-version: 14.x
-    - uses: bahmutov/npm-install@v1
-    - name: Prepare the database
-      run: |
-        npm run build
-        npm run typeorm migration:run
-        npm run fixtures
-      env:
-        PORT: 3000
-        APP_SECRET: 444a45b38193572dd7d3c0d691d806b487dbdfe1
-        POSTGRES_USER: admin
-        POSTGRES_PASSWORD: wnbaohW7mn
-        POSTGRES_DB: authentication
-        DATABASE_URL: postgres://admin:wnbaohW7mn@localhost:${{ job.services.postgres.ports[5432] }}/authentication
-        ALLOWED_ORIGINS: '*'
-    - name: Run the backend
-      run: npm start &
-      env:
-        PORT: 3000
-        NODE_ENV: production
-        APP_SECRET: 444a45b38193572dd7d3c0d691d806b487dbdfe1
-        DATABASE_URL: postgres://admin:wnbaohW7mn@localhost:${{ job.services.postgres.ports[5432] }}/authentication
-        ALLOWED_ORIGINS: '*'
-    - name: Run Postman collection
-      run: npx newman run https://www.getpostman.com/collections/6b82b259fc751deda654
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 14.x
+      - uses: bahmutov/npm-install@v1
+      - name: Prepare the database
+        run: |
+          npm run build
+          npm run typeorm migration:run
+          npm run fixtures
+        env:
+          PORT: 3000
+          APP_SECRET: 444a45b38193572dd7d3c0d691d806b487dbdfe1
+          POSTGRES_USER: admin
+          POSTGRES_PASSWORD: wnbaohW7mn
+          POSTGRES_DB: authentication
+          DATABASE_URL: postgres://admin:wnbaohW7mn@localhost:${{ job.services.postgres.ports[5432] }}/authentication
+          ALLOWED_ORIGINS: '*'
+      - name: Run the backend
+        run: npm start &
+        env:
+          PORT: 3000
+          NODE_ENV: production
+          APP_SECRET: 444a45b38193572dd7d3c0d691d806b487dbdfe1
+          DATABASE_URL: postgres://admin:wnbaohW7mn@localhost:${{ job.services.postgres.ports[5432] }}/authentication
+          ALLOWED_ORIGINS: '*'
+      - name: Run Postman collection
+        run: npx newman run https://www.getpostman.com/collections/6b82b259fc751deda654

@@ -5,7 +5,7 @@ import faker from 'https://unpkg.com/faker@5.1.0/dist/faker.js';
 
 const loginFailedRate = new Rate('failed login request');
 const registerFailedRate = new Rate('failed register request');
-const emailDomain =  Math.random().toString(36).substring(2, 15) + '.lol';
+const emailDomain = Math.random().toString(36).substring(2, 15) + '.lol';
 
 /**
  * Send a login request
