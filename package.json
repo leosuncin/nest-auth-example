@@ -49,7 +49,7 @@
     "@faker-js/faker": "^7.3.0",
     "@jackfranklin/test-data-bot": "^2.0.0",
     "@nestjs/cli": "^9.0.0",
-    "@nestjs/schematics": "^8.0.0",
+    "@nestjs/schematics": "^9.0.1",
     "@nestjs/testing": "^8.0.0",
     "@suncin/dotenv": "^1.0.0",
     "@types/bcryptjs": "^2.4.2",
