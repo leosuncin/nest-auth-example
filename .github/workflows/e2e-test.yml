@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       postgres:
-        image: postgres:12
+        image: postgres:14
         env:
           POSTGRES_USER: user
           POSTGRES_PASSWORD: password
@@ -21,7 +21,7 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
-          node-version: 14.x
+          node-version: 'lts/*'
       - uses: bahmutov/npm-install@v1
       - name: Run E2E tests
         run: |
@@ -33,11 +33,11 @@ jobs:
         env:
           CI: 'true'
           PORT: 3000
-          APP_SECRET: 444a45b38193572dd7d3c0d691d806b487dbdfe1
+          APP_SECRET: dolore-lorem-duis-quis-cupidatat-ut-esse-commodo-nostrud
           POSTGRES_USER: user
           POSTGRES_PASSWORD: password
           POSTGRES_DB: nestjs
-          DATABASE_URL: postgres://user:password@localhost:${{ job.services.postgres.ports[5432] }}/nestjs
+          DATABASE_URL: postgres://user:password@localhost:${{ job.services.postgres.ports['5432'] }}/nestjs
           ALLOWED_ORIGINS: '*'
 
   run-server:
@@ -45,7 +45,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       postgres:
-        image: postgres:12
+        image: postgres:14
         env:
           POSTGRES_USER: admin
           POSTGRES_PASSWORD: wnbaohW7mn
@@ -58,7 +58,7 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
-          node-version: 14.x
+          node-version: 'lts/*'
       - uses: bahmutov/npm-install@v1
       - name: Prepare the database
         run: |
@@ -66,20 +66,14 @@ jobs:
           npm run typeorm migration:run
           npm run fixtures
         env:
-          PORT: 3000
-          APP_SECRET: 444a45b38193572dd7d3c0d691d806b487dbdfe1
-          POSTGRES_USER: admin
-          POSTGRES_PASSWORD: wnbaohW7mn
-          POSTGRES_DB: authentication
-          DATABASE_URL: postgres://admin:wnbaohW7mn@localhost:${{ job.services.postgres.ports[5432] }}/authentication
-          ALLOWED_ORIGINS: '*'
+          DATABASE_URL: postgres://admin:wnbaohW7mn@localhost:${{ job.services.postgres.ports['5432'] }}/authentication
       - name: Run the backend
         run: npm start &
         env:
           PORT: 3000
           NODE_ENV: production
           APP_SECRET: 444a45b38193572dd7d3c0d691d806b487dbdfe1
-          DATABASE_URL: postgres://admin:wnbaohW7mn@localhost:${{ job.services.postgres.ports[5432] }}/authentication
+          DATABASE_URL: postgres://admin:wnbaohW7mn@localhost:${{ job.services.postgres.ports['5432'] }}/authentication
           ALLOWED_ORIGINS: '*'
       - name: Run Postman collection
         run: npx newman run https://www.getpostman.com/collections/6b82b259fc751deda654
