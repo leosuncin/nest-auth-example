@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [12.x, 14.x]
+        node-version: [16.x, 18.x]
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
@@ -21,23 +21,12 @@ jobs:
         env:
           CI: 'true'
           PORT: 3000
-          APP_SECRET: 444a45b38193572dd7d3c0d691d806b487dbdfe1
+          APP_SECRET: esse-incididunt-qui-deserunt-est-non-ullamco-voluptate-mollit-laboris-nostrud-deserunt-sit-exercitation-et-labore
           POSTGRES_DB: authentication
           POSTGRES_USER: admin
           POSTGRES_PASSWORD: contraseña
           DATABASE_URL: postgres://admin:contraseña@localhost:5432/authentication
           ALLOWED_ORIGINS: '*'
-          MAILGUN_SMTP_SERVER: localhost
-          MAILGUN_SMTP_PORT: 1025
-          MAILGUN_SMTP_LOGIN: admin
-          MAILGUN_SMTP_PASSWORD: wnbaohW7mn
-          MAILGUN_API_KEY: r4nd0mFaK3randomFake
-          MAILGUN_DOMAIN: sandboxr4nd0mFaK3randomFake.mailgun.org
-          MAILGUN_PUBLIC_KEY: pubkey-r4nd0mFaK3randomFake
-          CLIENT_BASE_URL: http://localhost:3001
-          PRODUCT_NAME: Nest.js Auth
-          COMPANY_NAME: ACME Inc
-          SMTP_SECURE: 'false'
       - name: Monitor coverage
         if: "github.event_name == 'pull_request'"
         uses: slavcodev/coverage-monitor-action@1.7.0
@@ -46,7 +35,7 @@ jobs:
           clover_file: coverage/clover.xml
           threshold_alert: 50
           threshold_warning: 80
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           name: unit-coverage
           path: coverage
