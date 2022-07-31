@@ -40,7 +40,7 @@ jobs:
         SMTP_SECURE: 'false'
     - name: Monitor coverage
       if: "github.event_name == 'pull_request'"
-      uses: slavcodev/coverage-monitor-action@1.1.0
+      uses: slavcodev/coverage-monitor-action@1.7.0
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         clover_file: coverage/clover.xml
