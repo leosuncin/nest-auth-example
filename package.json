@@ -24,6 +24,7 @@
     "typeorm": "NODE_OPTIONS='-r dotenv/config -r tsconfig-paths/register' typeorm-ts-node-commonjs -d src/data-source"
   },
   "dependencies": {
+    "@anzerr/bcrypt.pool": "^1.0.5",
     "@nestjs/common": "^9.0.7",
     "@nestjs/core": "^9.0.7",
     "@nestjs/jwt": "^9.0.0",

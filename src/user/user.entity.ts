@@ -1,5 +1,6 @@
-import * as bcrypt from 'bcryptjs';
+import BcryptPool from '@anzerr/bcrypt.pool';
 import { Exclude } from 'class-transformer';
+import { cpus } from 'node:os';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -9,6 +10,8 @@ import {
   BeforeInsert,
   BeforeUpdate,
 } from 'typeorm';
+
+const bcrypt = new BcryptPool(cpus().length, 10);
 
 @Entity()
 export class User {
@@ -38,13 +41,12 @@ export class User {
   @BeforeInsert()
   @BeforeUpdate()
   async hashPassword(): Promise<void> {
-    const salt = await bcrypt.genSalt();
     if (!/^\$2[abxy]?\$\d+\$/.test(this.password)) {
-      this.password = await bcrypt.hash(this.password, salt);
+      this.password = await bcrypt.hash(this.password);
     }
   }
 
   async checkPassword(plainPassword: string): Promise<boolean> {
-    return await bcrypt.compare(plainPassword, this.password);
+    return bcrypt.compare(plainPassword, this.password);
   }
 }
