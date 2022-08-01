@@ -13,7 +13,7 @@ const baseUrl = 'http://localhost:3000';
 
 export const options = {
   vus: 300,
-  duration: '30s',
+  duration: '60s',
   discardResponseBodies: true,
   thresholds: {
     checks: ['rate>0.9'],
@@ -39,7 +39,7 @@ export function setup() {
 }
 
 export default function (data) {
-  const res = http.get(baseUrl);
+  const res = http.get(`${baseUrl}/health`);
 
   check(res, {
     'status is OK': res => res.status === 200,
