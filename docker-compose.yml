@@ -14,8 +14,8 @@ services:
   pgweb:
     image: sosedoff/pgweb
     depends_on:
-      - postgres
-    restart: on-failure
+      posgres:
+        condition: service_healthy
     environment:
       DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?sslmode=disable
     ports:
