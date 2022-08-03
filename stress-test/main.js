@@ -9,7 +9,7 @@ import {
   requestUnauthorizedTodo,
 } from './todo.js';
 
-const baseUrl = 'http://localhost:3000';
+const baseUrl = __ENV.BASE_URL || 'http://localhost:3000';
 
 export const options = {
   vus: 300,
@@ -19,7 +19,7 @@ export const options = {
     checks: ['rate>0.9'],
     'failed login request': ['rate < 0.1'],
     'failed register request': ['rate < 0.1'],
-    'faile update profile request': ['rate < 0.1'],
+    'failed update profile request': ['rate < 0.1'],
     'failed create todo request': ['rate < 0.1'],
     'failed update todo request': ['rate < 0.1'],
     'failed mark todo as done request': ['rate < 0.1'],
@@ -39,10 +39,12 @@ export function setup() {
 }
 
 export default function (data) {
-  const res = http.get(`${baseUrl}/health`);
+  const res = http.get(`${baseUrl}/health`, { responseType: 'text' });
 
   check(res, {
-    'status is OK': res => res.status === 200,
+    'app is healthy': res => res.json('status') === 'ok',
+    'db is connected': res => res.json('details.db.status') === 'up',
+    'memory is enough': res => res.json('details.mem_rss.status') === 'up',
   });
   group('Authorization', () => {
     requestLogin(baseUrl);
