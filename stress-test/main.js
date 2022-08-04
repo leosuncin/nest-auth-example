@@ -1,7 +1,9 @@
+import { check, fail, group, sleep } from 'k6';
 import http from 'k6/http';
-import { sleep, check, group } from 'k6';
+import { textSummary } from 'https://jslib.k6.io/k6-summary/0.0.1/index.js';
+import { htmlReport } from 'https://raw.githubusercontent.com/benc-uk/k6-reporter/main/dist/bundle.js';
 
-import { requestLogin, requestRegister, requestMe } from './auth.js';
+import { requestLogin, requestMe, requestRegister } from './auth.js';
 import { requestProfile, requestUpdateProfile } from './profile.js';
 import {
   requestListTodo,
@@ -33,9 +35,26 @@ export function setup() {
     email: 'jane@doe.me',
     password: 'Pa$$w0rd',
   });
+
+  if (!res.headers.Authorization) fail('Failed to login');
+
   const [, token] = res.headers.Authorization.split(/\s+/);
 
   return { token };
+}
+
+export function handleSummary(data) {
+  const stdout = textSummary(data, { indent: ' ', enableColors: !!__ENV.CI });
+
+  return __ENV.CI
+    ? {
+        'stress-test-result.html': htmlReport(data),
+        'stress-test-result.json': JSON.stringify(data, null, 2),
+        stdout,
+      }
+    : {
+        stdout,
+      };
 }
 
 export default function (data) {
