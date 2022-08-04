@@ -4,6 +4,7 @@ on: [push, pull_request]
 
 permissions:
   pull-requests: write
+  repository-projects: write
 
 jobs:
   test:
