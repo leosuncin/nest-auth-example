@@ -12,9 +12,9 @@ items:
     owner: '@jane'
   todo{1..10}:
     text: '{{lorem.sentence}}'
-    done: '{{random.boolean}}'
+    done: '{{datatype.boolean}}'
     owner: '@john'
   todo{1..100}:
     text: '{{lorem.sentence}}'
-    done: '{{random.boolean}}'
+    done: '{{datatype.boolean}}'
     owner: '@jane'

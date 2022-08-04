@@ -1,5 +1,12 @@
+import {
+  HealthCheckService,
+  HealthIndicator,
+  HealthIndicatorFunction,
+  MemoryHealthIndicator,
+  TerminusModule,
+  TypeOrmHealthIndicator,
+} from '@nestjs/terminus';
 import { Test, TestingModule } from '@nestjs/testing';
-import { HealthIndicator, HealthIndicatorFunction } from '@nestjs/terminus';
 
 import { HealthController } from './health.controller';
 
@@ -19,25 +26,19 @@ describe('HealthController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [HealthController],
-      providers: [
-        {
-          provide: 'TypeOrmHealthIndicator',
-          useClass: MockHealthIndicator,
+      imports: [TerminusModule],
+    })
+      .overrideProvider(HealthCheckService)
+      .useValue({
+        check(indicators: HealthIndicatorFunction[]) {
+          return Promise.resolve(indicators.map(indicator => indicator()));
         },
-        {
-          provide: 'MemoryHealthIndicator',
-          useClass: MockHealthIndicator,
-        },
-        {
-          provide: 'HealthCheckService',
-          useValue: {
-            check(indicators: HealthIndicatorFunction[]) {
-              return Promise.resolve(indicators.map(indicator => indicator()));
-            },
-          },
-        },
-      ],
-    }).compile();
+      })
+      .overrideProvider(TypeOrmHealthIndicator)
+      .useClass(MockHealthIndicator)
+      .overrideInterceptor(MemoryHealthIndicator)
+      .useClass(MockHealthIndicator)
+      .compile();
 
     controller = module.get<HealthController>(HealthController);
   });

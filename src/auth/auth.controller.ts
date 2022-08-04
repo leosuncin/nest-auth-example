@@ -5,11 +5,9 @@ import {
   HttpCode,
   HttpStatus,
   Post,
-  Res,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { Response } from 'express';
 
 import { AuthUser } from '../user/user.decorator';
 import { User } from '../user/user.entity';

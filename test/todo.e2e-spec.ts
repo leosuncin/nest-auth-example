@@ -1,4 +1,5 @@
-import { build, fake } from '@jackfranklin/test-data-bot';
+import { faker } from '@faker-js/faker';
+import { build, perBuild } from '@jackfranklin/test-data-bot';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as supertest from 'supertest';
@@ -8,7 +9,7 @@ import { setup } from '../src/setup';
 
 const createTodoBuilder = build({
   fields: {
-    text: fake(f => f.lorem.sentence()),
+    text: perBuild(() => faker.lorem.sentence()),
   },
 });
 

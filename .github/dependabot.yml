@@ -1,16 +1,14 @@
 version: 2
 updates:
   - package-ecosystem: npm
-    directory: '/'
+    directory: /
     schedule:
       interval: weekly
       day: sunday
     open-pull-requests-limit: 10
     versioning-strategy: widen
-    labels:
-      - dependencies
-      - automerge
-    ignore:
-      - dependency-name: '@types/express'
-        versions:
-          - '> 4.17.1'
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly

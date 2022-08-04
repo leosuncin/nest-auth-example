@@ -3,7 +3,7 @@ import http from 'k6/http';
 import { Rate } from 'k6/metrics';
 import faker from 'https://unpkg.com/faker@5.1.0/dist/faker.js';
 
-const updateProfileFailedRate = new Rate('faile update profile request');
+const updateProfileFailedRate = new Rate('failed update profile request');
 
 export function requestProfile(baseUrl, token) {
   const res = http.get(`${baseUrl}/profile/2`, {

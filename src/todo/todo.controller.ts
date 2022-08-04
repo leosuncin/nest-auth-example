@@ -51,9 +51,7 @@ export class TodoController {
     @Param('id', ParseIntPipe) id: number,
     @AuthUser() user: User,
   ): Promise<Todo> {
-    const todo = await this.service.getTodo(id, user);
-
-    return todo;
+    return this.service.getTodo(id, user);
   }
 
   @Put(':id')
