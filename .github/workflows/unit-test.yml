@@ -2,8 +2,6 @@ name: Unit test
 
 on: [push, pull_request]
 
-permissions:
-  pull-requests: write
 
 jobs:
   test:
@@ -12,6 +10,10 @@ jobs:
     strategy:
       matrix:
         node-version: [16.x, 18.x]
+    permissions:
+      pull-requests: write
+      issues: write
+      repository-projects: write
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
