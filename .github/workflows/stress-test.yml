@@ -47,3 +47,7 @@ jobs:
           ALLOWED_ORIGINS: '*'
       - name: Run k6 local test
         run: ./k6 run stress-test/main.js
+      - uses: actions/upload-artifact@v3
+        with:
+          name: stress-test-result
+          path: stress-test-result.*
