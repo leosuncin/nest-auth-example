@@ -1,51 +1,27 @@
-import { faker } from '@faker-js/faker';
-import { build, perBuild, sequence } from '@jackfranklin/test-data-bot';
 import { Test, TestingModule } from '@nestjs/testing';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { mock } from 'jest-mock-extended';
-import { Repository } from 'typeorm';
+import { createMock } from 'ts-auto-mock';
 
 import { ProfileController } from './profile.controller';
 import { User } from './user.entity';
 import { UserService } from './user.service';
 
-const userBuilder = build<Partial<User>>({
-  fields: {
-    id: sequence(),
-    name: perBuild(() => faker.name.findName()),
-    email: perBuild(() => faker.internet.exampleEmail()),
-    password: perBuild(() => faker.datatype.uuid()),
-    createdAt: perBuild(() => new Date()),
-    updatedAt: perBuild(() => new Date()),
-  },
-  postBuild: u => new User(u),
-});
-const updateBuilder = build({
-  fields: {
-    name: perBuild(() => faker.name.findName()),
-  },
-});
-
 describe('Profile Controller', () => {
   let controller: ProfileController;
-  const repositoryMock = mock<Repository<User>>();
+  let mockedUserService: jest.Mocked<UserService>;
 
   beforeEach(async () => {
-    repositoryMock.save.mockImplementation((entity: any) =>
-      Promise.resolve(userBuilder({ overrides: entity }) as User),
-    );
     const module: TestingModule = await Test.createTestingModule({
       controllers: [ProfileController],
-      providers: [
-        UserService,
-        {
-          provide: getRepositoryToken(User),
-          useValue: repositoryMock,
-        },
-      ],
-    }).compile();
+    })
+    .useMocker((token) => {
+      if (Object.is(token, UserService)) {
+        return createMock<UserService>()
+      }
+    })
+    .compile();
 
     controller = module.get<ProfileController>(ProfileController);
+    mockedUserService = module.get<UserService, jest.Mocked<UserService>>(UserService)
   });
 
   it('should be defined', () => {
@@ -53,31 +29,16 @@ describe('Profile Controller', () => {
   });
 
   it('should get a profile', async () => {
-    repositoryMock.findOne.mockResolvedValueOnce(
-      userBuilder({ overrides: { id: 1 } }) as User,
-    );
-
     await expect(controller.get(1)).resolves.toBeDefined();
   });
 
-  it('should fail to get a profile', async () => {
-    repositoryMock.findOne.mockResolvedValueOnce(undefined);
-
-    await expect(controller.get(0)).rejects.toThrow();
-  });
-
   it('should update a profile', async () => {
-    repositoryMock.findOneBy.mockResolvedValueOnce(
-      userBuilder({ overrides: { id: 1 } }) as User,
-    );
-    repositoryMock.merge.mockImplementation(Object.assign);
+    const updatesUser = {
+      name: 'Johnny Doe'
+    }
 
-    await expect(controller.update(1, updateBuilder())).resolves.toBeDefined();
-  });
+    mockedUserService.update.mockResolvedValueOnce(createMock<User>({ name: updatesUser.name }))
 
-  it('should fail to update a profile', async () => {
-    repositoryMock.findOneBy.mockResolvedValueOnce(undefined);
-
-    await expect(controller.update(0, updateBuilder())).rejects.toBeDefined();
+    await expect(controller.update(1, updatesUser)).resolves.toBeDefined();
   });
 });
