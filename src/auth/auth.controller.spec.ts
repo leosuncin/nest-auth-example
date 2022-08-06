@@ -1,46 +1,33 @@
-import { faker } from '@faker-js/faker';
-import { build, perBuild, sequence } from '@jackfranklin/test-data-bot';
-import { JwtModule } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
-import { getRepositoryToken } from '@nestjs/typeorm';
-import { mock } from 'jest-mock-extended';
-import { Repository } from 'typeorm';
+import { createMock } from 'ts-auto-mock';
 
 import { User } from '../user/user.entity';
-import { UserService } from '../user/user.service';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 
-const userBuilder = build<Partial<User>>({
-  fields: {
-    id: sequence(),
-    name: perBuild(() => faker.name.findName()),
-    email: perBuild(() => faker.internet.exampleEmail()),
-    createdAt: perBuild(() => new Date()),
-    updatedAt: perBuild(() => new Date()),
-  },
-  postBuild: u => new User(u),
-});
-
 describe('Auth Controller', () => {
   let controller: AuthController;
-  const repositoryMock = mock<Repository<User>>();
+  let mockedAuthService: jest.Mocked<AuthService>;
+  const user = createMock<Omit<User, 'password'>>({
+    name: 'John Doe',
+    email: 'john@doe.me',
+  }) as User;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [AuthController],
-      providers: [
-        AuthService,
-        UserService,
-        {
-          provide: getRepositoryToken(User),
-          useValue: repositoryMock,
-        },
-      ],
-      imports: [JwtModule.register({ secret: process.env.APP_SECRET })],
-    }).compile();
+    })
+      .useMocker(token => {
+        if (Object.is(token, AuthService)) {
+          return createMock<AuthService>();
+        }
+      })
+      .compile();
 
     controller = module.get<AuthController>(AuthController);
+    mockedAuthService = module.get<AuthService, jest.Mocked<AuthService>>(
+      AuthService,
+    );
   });
 
   it('should be defined', () => {
@@ -53,8 +40,12 @@ describe('Auth Controller', () => {
       email: 'john@doe.me',
       password: 'Pa$$w0rd',
     };
-    repositoryMock.save.mockResolvedValueOnce(
-      userBuilder({ overrides: register }) as User,
+
+    mockedAuthService.register.mockResolvedValue(
+      createMock<Omit<User, 'password'>>({
+        email: register.email,
+        name: register.name,
+      }) as User,
     );
 
     await expect(controller.register(register)).resolves.not.toHaveProperty(
@@ -63,26 +54,12 @@ describe('Auth Controller', () => {
   });
 
   it('should log in an user', async () => {
-    const user = userBuilder({
-      overrides: {
-        name: 'John Doe',
-        email: 'john@doe.me',
-      },
-    });
-
-    await expect(controller.login(user as User)).resolves.not.toHaveProperty(
+    await expect(controller.login(user)).resolves.not.toHaveProperty(
       'password',
     );
   });
 
   it('should got me logged', () => {
-    const user = userBuilder({
-      overrides: {
-        name: 'John Doe',
-        email: 'john@doe.me',
-      },
-    });
-
-    expect(controller.me(user as User)).toEqual(user);
+    expect(controller.me(user)).toEqual(user);
   });
 });
