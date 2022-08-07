@@ -82,13 +82,13 @@ export class TodoController {
     @Param('id', ParseIntPipe) id: number,
     @AuthUser() user: User,
   ): Promise<Partial<Todo>> {
-    const todo = await this.service.getTodo(id, user);
+    let todo = await this.service.getTodo(id, user);
 
     if (todo.done) {
       return { done: todo.done };
     }
 
-    await this.service.updateTodo(todo, { done: true });
+    todo = await this.service.updateTodo(todo, { done: true });
 
     return { done: todo.done, updatedAt: todo.updatedAt };
   }
@@ -98,13 +98,13 @@ export class TodoController {
     @Param('id', ParseIntPipe) id: number,
     @AuthUser() user: User,
   ): Promise<Partial<Todo>> {
-    const todo = await this.service.getTodo(id, user);
+    let todo = await this.service.getTodo(id, user);
 
     if (!todo.done) {
       return { done: todo.done };
     }
 
-    await this.service.updateTodo(todo, { done: false });
+    todo = await this.service.updateTodo(todo, { done: false });
 
     return { done: todo.done, updatedAt: todo.updatedAt };
   }
