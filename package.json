@@ -69,7 +69,6 @@
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-import": "^2.26.0",
     "jest": "^28.0.0",
-    "jest-mock-extended": "^2.0.0",
     "jest-ts-auto-mock": "^2.1.0",
     "node-mocks-http": "^1.11.0",
     "prettier": "^2.7.1",
