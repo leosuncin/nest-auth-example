@@ -7,18 +7,8 @@ jobs:
   test:
     if: "!contains(github.event.head_commit.message, 'skip ci')"
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [16.x, 18.x]
-    permissions:
-      pull-requests: write
-      issues: write
-      repository-projects: write
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: ${{ matrix.node-version }}
       - uses: bahmutov/npm-install@v1
       - name: Run unit test
         run: |
@@ -32,14 +22,14 @@ jobs:
           POSTGRES_PASSWORD: contraseña
           DATABASE_URL: postgres://admin:contraseña@localhost:5432/authentication
           ALLOWED_ORIGINS: '*'
-      - name: Monitor coverage
-        if: ${{ github.actor != 'dependabot[bot]' }}
-        uses: slavcodev/coverage-monitor-action@1.7.0
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          coverage_path: coverage/clover.xml
-          threshold_alert: 50
-          threshold_warning: 80
+      # - name: Monitor coverage
+      #   if: ${{ github.actor != 'dependabot[bot]' }}
+      #   uses: slavcodev/coverage-monitor-action@1.7.0
+      #   with:
+      #     github_token: ${{ secrets.GITHUB_TOKEN }}
+      #     coverage_path: coverage/clover.xml
+      #     threshold_alert: 50
+      #     threshold_warning: 80
       - uses: actions/upload-artifact@v3
         with:
           name: unit-coverage
