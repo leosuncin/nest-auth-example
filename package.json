@@ -11,7 +11,6 @@
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "fixtures": "fixtures-ts-node-commonjs load --require=dotenv/config --require=tsconfig-paths/register --dataSource=./src/data-source.ts --ignoreDecorators test/fixtures",
     "start": "node dist/main.js",
-    "prepare": "ts-patch install",
     "start:dev": "NODE_OPTIONS='-r @suncin/dotenv' nest start --watch",
     "start:repl": "NODE_OPTIONS='-r @suncin/dotenv' nest start --entryFile repl",
     "start:debug": "NODE_OPTIONS='-r @suncin/dotenv' nest start --debug --watch",
@@ -77,8 +76,8 @@
     "ts-jest": "^28.0.0",
     "ts-loader": "^9.2.3",
     "ts-node": "^10.0.0",
-    "ts-patch": "^2.0.1",
     "tsconfig-paths": "^4.0.0",
+    "ttypescript": "^1.5.13",
     "typeorm-fixtures-cli": "3.0.0",
     "typescript": "^4.7.4"
   },
@@ -101,6 +100,7 @@
     ],
     "globals": {
       "ts-jest": {
+        "compiler": "ttypescript",
         "tsconfig": "tsconfig.test.json"
       }
     }
