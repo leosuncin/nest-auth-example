@@ -1,89 +1,142 @@
+# 🛂 Nest.js Authentication Example
+
+[![MegaLinter](https://github.com/leosuncin/nest-auth-example/workflows/MegaLinter/badge.svg?branch=master)](https://github.com/leosuncin/nest-auth-example/actions/workflows/mega-linter.yml)
+[![Unit rest](https://github.com/leosuncin/nest-auth-example/workflows/CI/badge.svg?branch=master)](https://github.com/leosuncin/nest-auth-example/actions/workflows/unit-test.yml)
+[![E2E rest](https://github.com/leosuncin/nest-auth-example/workflows/CI/badge.svg?branch=master)](https://github.com/leosuncin/nest-auth-example/actions/workflows/e2e-test.yml)
+![Prettier](https://img.shields.io/badge/Code%20style-prettier-informational?logo=prettier&logoColor=white)
+[![GPL v3 License](https://img.shields.io/badge/License-GPLv3-green.svg)](./LICENSE)
+[![HitCount](https://hits.dwyl.com/leosuncin/nest-auth-example.svg)](https://hits.dwyl.com/leosuncin/nest-auth-example)
+
+> Nest.js authentication with Passport. RealWorld example
+
 <p align="center">
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo_text.svg" width="320" alt="Nest Logo" /></a>
 </p>
 
-  
-  <p align="center">A progressive <a href="http://nodejs.org" target="blank">Node.js</a> framework for building efficient and scalable server-side applications, heavily inspired by <a href="https://angular.io" target="blank">Angular</a>.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore"><img src="https://img.shields.io/npm/dm/@nestjs/core.svg" alt="NPM Downloads" /></a>
-<a href="https://travis-ci.org/nestjs/nest"><img src="https://api.travis-ci.org/nestjs/nest.svg?branch=master" alt="Travis" /></a>
-<a href="https://travis-ci.org/nestjs/nest"><img src="https://img.shields.io/travis/nestjs/nest/master.svg?label=linux" alt="Linux" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#5" alt="Coverage" /></a>
-<a href="https://gitter.im/nestjs/nestjs?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=body_badge"><img src="https://badges.gitter.im/nestjs/nestjs.svg" alt="Gitter" /></a>
-<a href="https://opencollective.com/nest#backer"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec"><img src="https://img.shields.io/badge/Donate-PayPal-dc3d53.svg"/></a>
-  <a href="https://twitter.com/nestframework"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor) [![Greenkeeper badge](https://badges.greenkeeper.io/leosuncin/nest-auth-example.svg)](https://greenkeeper.io/)-->
+## Features
 
-## Description
+- Authentication using [Passport](https://www.passportjs.org/)
+- [Local](https://www.passportjs.org/packages/passport-local/) and [JWT](https://www.passportjs.org/packages/passport-local/) strategies are implemented
+- [TypeORM](https://typeorm.io/) to connect with PostgreSQL
+- Unit tests, integration tests and E2E tests
+- [ts-auto-mock](https://typescript-tdd.github.io/ts-auto-mock/) with [ttypescript](https://github.com/cevek/ttypescript) to generate mocks with jest
+- Check code quality with [MegaLinter](https://oxsecurity.github.io/megalinter/latest/)
+- Check continuous integration with [github actions](.github/workflows/unit-test.yml)
+- Run the necessary services with [docker compose](https://docs.docker.com/compose/)
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Run Locally
 
-## Installation
+Clone the project
 
 ```bash
-npm install
-cp .env.example .env
+  git clone https://github.com/leosuncin/nest-auth-example.git
 ```
 
-## Database (development)
+Go to the project directory
 
 ```bash
-# start the database
-$ docker-compose up -d
-
-# run migrations
-$ npm run typeorm migration:run
+  cd nest-auth-example
 ```
 
-## Running the app
+Install dependencies
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+  npm install
 ```
 
-## Test
+Create a `.env` from the example one and customize it with your [environment variables](#environment-variables)
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+  cp .env.example .env
 ```
 
-## Try it
+Start the services using Docker Compose
+
+```bash
+  docker-compose up -d
+```
+
+Run migrations to create the DB schema
+
+```bash
+  npm run typeorm migration:run
+```
+
+Start the server
+
+```bash
+  npm run start:dev
+```
+
+## Environment Variables
+
+To run this project, you will need to add the following environment variables to your .env file
+
+`POSTGRES_DB` the name of the database to connect in the PostgreSQL instance **(required)**
+
+`POSTGRES_USER` The name of the user to connect to the PostgreSQL instance **(required)**
+
+`POSTGRES_PASSWORD` The password of the user to connect to the PostgreSQL instance **(required)**
+
+`DATABASE_URL` a connection string to the PostgreSQL instance, example _postgres://postgres|@localhost/example-db_ **(required)**
+
+`PORT` the port that Nest.js will listen at **(required)**
+
+`APP_SECRET` the secret used to encrypt the session **(required)**
+
+`ALLOWED_ORIGINS` a comma separated list of [origins](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Origin) from which accept request **(required)**
+
+You can copy the example `.env` and edit the values
+
+```bash
+  cp .env.example .env
+```
+
+## Running Tests
+
+To run unit tests, run the following command:
+
+```bash
+  npm test
+```
+
+To run e2e tests (the PostgreSQL instance must be available), run the following command:
+
+```bash
+  npm run test:e2e
+```
+
+To see the code coverage
+
+```bash
+ npm run test:cov
+```
+
+## Try it online
 
 [![Gitpod Try-it](https://img.shields.io/badge/Gitpod-Try--it-blue?logo=gitpod)](https://gitpod.io/#https://github.com/leosuncin/nest-auth-example)
 
-## Support
+## Tech Stack
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+**Server:** Typescript, PostgreSQL, Nest.js, TypeORM, Passport
 
-## Stay in touch
+**Test:** Jest, SuperTest, TS auto mock
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+**DevOps:** Docker Compose
 
-## License
+## Author
 
-  Nest is [MIT licensed](LICENSE).
+👤 **Jaime Leonardo Suncin Cruz**
+
+- Twitter: [@jl_suncin](https://twitter.com/jl_suncin)
+- Github: [@leosuncin](https://github.com/leosuncin)
+<!-- markdown-link-check-disable -->
+- LinkedIn: [@jaimesuncin](https://linkedin.com/in/jaimesuncin)
+<!-- markdown-link-check-enable -->
+
+## Show your support
+
+Give a ⭐️ if this project helped you!
 
 ### :star2: Stargazers
 
@@ -92,3 +145,17 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 ### :fork_and_knife: Forkers
 
 [![Forkers repo roster for @leosuncin/nest-auth-example](https://reporoster.com/forks/leosuncin/nest-auth-example)](https://github.com/leosuncin/nest-auth-example/network/members)
+
+## Related
+
+Here are some more example projects with Nest.js
+
+[![GraphQL example](https://github-readme-stats.vercel.app/api/pin/?username=leosuncin&repo=nest-graphql-example)](https://github.com/leosuncin/nest-graphql-example)
+
+[![API example](https://github-readme-stats.vercel.app/api/pin/?username=leosuncin&repo=nest-api-example)](https://github.com/leosuncin/nest-api-example)
+
+[![TypeORM custom repository](https://github-readme-stats.vercel.app/api/pin/?username=leosuncin&repo=nest-typeorm-custom-repository)](https://github.com/leosuncin/nest-typeorm-custom-repository)
+
+## License
+
+Release under the terms of [MIT](./LICENSE)
