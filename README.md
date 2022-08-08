@@ -1,8 +1,8 @@
 # 🛂 Nest.js Authentication Example
 
 [![MegaLinter](https://github.com/leosuncin/nest-auth-example/workflows/MegaLinter/badge.svg?branch=master)](https://github.com/leosuncin/nest-auth-example/actions/workflows/mega-linter.yml)
-[![Unit rest](https://github.com/leosuncin/nest-auth-example/workflows/CI/badge.svg?branch=master)](https://github.com/leosuncin/nest-auth-example/actions/workflows/unit-test.yml)
-[![E2E rest](https://github.com/leosuncin/nest-auth-example/workflows/CI/badge.svg?branch=master)](https://github.com/leosuncin/nest-auth-example/actions/workflows/e2e-test.yml)
+[![Unit test](https://github.com/leosuncin/nest-auth-example/actions/workflows/unit-test.yml/badge.svg?branch=master)](https://github.com/leosuncin/nest-auth-example/actions/workflows/unit-test.yml)
+[![E2E test](https://github.com/leosuncin/nest-auth-example/actions/workflows/e2e-test.yml/badge.svg?branch=master)](https://github.com/leosuncin/nest-auth-example/actions/workflows/e2e-test.yml)
 ![Prettier](https://img.shields.io/badge/Code%20style-prettier-informational?logo=prettier&logoColor=white)
 [![GPL v3 License](https://img.shields.io/badge/License-GPLv3-green.svg)](./LICENSE)
 [![HitCount](https://hits.dwyl.com/leosuncin/nest-auth-example.svg)](https://hits.dwyl.com/leosuncin/nest-auth-example)
@@ -109,7 +109,7 @@ To run e2e tests (the PostgreSQL instance must be available), run the following 
 To see the code coverage
 
 ```bash
- npm run test:cov
+  npm run test:cov
 ```
 
 ## Try it online
