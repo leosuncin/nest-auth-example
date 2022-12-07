@@ -20,7 +20,7 @@ export class HealthController {
   check(): Promise<HealthCheckResult> {
     return this.health.check([
       () => this.orm.pingCheck('db'),
-      () => this.memory.checkRSS('mem_rss', 768 * 2 ** 20 /* 768 MB */),
+      () => this.memory.checkRSS('mem_rss', 1024 * 2 ** 20 /* 1024 MB */),
     ]);
   }
 }
