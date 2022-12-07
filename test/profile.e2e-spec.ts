@@ -9,7 +9,7 @@ import { setup } from '../src/setup';
 
 const updateBuilder = build({
   fields: {
-    name: perBuild(() => faker.name.findName()),
+    name: perBuild(() => faker.name.fullName()),
   },
 });
 
