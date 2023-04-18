@@ -6,5 +6,5 @@
   "transform": {
     "^.+\\.ts$": "ts-jest"
   },
-  "setupFiles": ["@suncin/dotenv"]
+  "setupFiles": ["dotenv-mono/load"]
 }
