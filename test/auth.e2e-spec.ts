@@ -9,7 +9,7 @@ import { setup } from '../src/setup';
 
 const userBuilder = build({
   fields: {
-    name: perBuild(() => faker.name.fullName()),
+    name: perBuild(() => faker.person.fullName()),
     email: perBuild(() => faker.internet.exampleEmail()),
     password: 'Pa$$w0rd',
   },
