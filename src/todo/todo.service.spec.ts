@@ -60,19 +60,17 @@ describe('TodoService', () => {
 
   it('should get one todo', async () => {
     const id = 1;
-    const owner = createMock<User>({ id: 1 });
 
     mockedTodoRepository.findOneOrFail.mockResolvedValueOnce(
       createMock<Todo>({ owner: 1 }),
     );
-    const todo = await service.getTodo(id, owner);
+    const todo = await service.getTodo(id);
 
     expect(todo).toBeDefined();
   });
 
   it('should throw on get one when the todo not exist', async () => {
     const id = 0;
-    const owner = createMock<User>({ id: 1 });
 
     mockedTodoRepository.findOneOrFail.mockRejectedValueOnce(
       new EntityNotFoundError(Todo, {
@@ -81,24 +79,7 @@ describe('TodoService', () => {
       }),
     );
 
-    await expect(service.getTodo(id, owner)).rejects.toThrow(
-      EntityNotFoundError,
-    );
-  });
-
-  it('should throw on get one when the todo is from other user', async () => {
-    const id = 2;
-    const owner = createMock<User>({ id: 1 });
-
-    mockedTodoRepository.findOne.mockResolvedValueOnce(
-      createMock<Todo>({ id, owner: id }),
-    );
-
-    await expect(
-      service.getTodo(id, owner),
-    ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"Todo does not belong to you"`,
-    );
+    await expect(service.getTodo(id)).rejects.toThrow(EntityNotFoundError);
   });
 
   it('should update one todo', async () => {

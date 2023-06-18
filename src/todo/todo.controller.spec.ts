@@ -53,7 +53,7 @@ describe('Todo Controller', () => {
     const id = 1;
 
     mockedTodoService.getTodo.mockResolvedValueOnce(createMock<Todo>({ id }));
-    const todo = await controller.getTodo(id, user);
+    const todo = await controller.getTodo(id);
 
     expect(todo).toHaveProperty('id', id);
   });
@@ -67,21 +67,21 @@ describe('Todo Controller', () => {
     mockedTodoService.updateTodo.mockResolvedValueOnce(
       createMock<Todo>(updates),
     );
-    const todo = await controller.updateTodo(1, updates, user);
+    const todo = await controller.updateTodo(1, updates);
 
     expect(todo).toHaveProperty('done', updates.done);
     expect(todo).toHaveProperty('text', updates.text);
   });
 
   it('should remove one todo', async () => {
-    await expect(controller.removeTodo(1, user)).resolves.toBeDefined();
+    await expect(controller.removeTodo(1)).resolves.toBeDefined();
   });
 
   it('should mark todo as done', async () => {
     mockedTodoService.updateTodo.mockResolvedValueOnce(
       createMock<Todo>({ done: true }),
     );
-    const todo = await controller.markTodoAsDone(1, user);
+    const todo = await controller.markTodoAsDone(1);
 
     expect(todo).toHaveProperty('done', true);
   });
@@ -93,7 +93,7 @@ describe('Todo Controller', () => {
     mockedTodoService.updateTodo.mockResolvedValueOnce(
       createMock<Todo>({ done: false }),
     );
-    const todo = await controller.markTodoAsPending(1, user);
+    const todo = await controller.markTodoAsPending(1);
 
     expect(todo).toHaveProperty('done', false);
   });

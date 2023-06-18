@@ -25,15 +25,16 @@ import { User } from '../user/user.entity';
 import { Todo } from './todo.entity';
 import { TodoUpdate } from './todo-update.dto';
 import { TodoFilter } from './todo.filter';
+import { IsOwnerInterceptor } from './is-owner.interceptor';
 
 @Controller('todo')
 @UseGuards(SessionAuthGuard, JWTAuthGuard)
 @UseFilters(TodoFilter)
+@UseInterceptors(ClassSerializerInterceptor, IsOwnerInterceptor)
 export class TodoController {
   constructor(private readonly service: TodoService) {}
 
   @Post()
-  @UseInterceptors(ClassSerializerInterceptor)
   createTodo(
     @Body() newTodo: TodoCreate,
     @AuthUser() user: User,
@@ -49,33 +50,24 @@ export class TodoController {
   }
 
   @Get(':id')
-  @UseInterceptors(ClassSerializerInterceptor)
-  getTodo(
-    @Param('id', ParseIntPipe) id: number,
-    @AuthUser() user: User,
-  ): Promise<Todo> {
-    return this.service.getTodo(id, user);
+  getTodo(@Param('id', ParseIntPipe) id: number): Promise<Todo> {
+    return this.service.getTodo(id);
   }
 
   @Put(':id')
-  @UseInterceptors(ClassSerializerInterceptor)
   async updateTodo(
     @Param('id', ParseIntPipe) id: number,
     @Body() updates: TodoUpdate,
-    @AuthUser() user: User,
   ): Promise<Todo> {
-    const todo = await this.service.getTodo(id, user);
+    const todo = await this.service.getTodo(id);
 
     return this.service.updateTodo(todo, updates);
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async removeTodo(
-    @Param('id', ParseIntPipe) id: number,
-    @AuthUser() user: User,
-  ): Promise<Todo> {
-    const todo = await this.service.getTodo(id, user);
+  async removeTodo(@Param('id', ParseIntPipe) id: number): Promise<Todo> {
+    const todo = await this.service.getTodo(id);
 
     return this.service.removeTodo(todo);
   }
@@ -83,32 +75,26 @@ export class TodoController {
   @Patch(':id/done')
   async markTodoAsDone(
     @Param('id', ParseIntPipe) id: number,
-    @AuthUser() user: User,
   ): Promise<Partial<Todo>> {
-    let todo = await this.service.getTodo(id, user);
+    const todo = await this.service.getTodo(id);
 
     if (todo.done) {
-      return { done: todo.done };
+      return todo;
     }
 
-    todo = await this.service.updateTodo(todo, { done: true });
-
-    return { done: todo.done, updatedAt: todo.updatedAt };
+    return this.service.updateTodo(todo, { done: true });
   }
 
   @Patch(':id/pending')
   async markTodoAsPending(
     @Param('id', ParseIntPipe) id: number,
-    @AuthUser() user: User,
   ): Promise<Partial<Todo>> {
-    let todo = await this.service.getTodo(id, user);
+    const todo = await this.service.getTodo(id);
 
     if (!todo.done) {
-      return { done: todo.done };
+      return todo;
     }
 
-    todo = await this.service.updateTodo(todo, { done: false });
-
-    return { done: todo.done, updatedAt: todo.updatedAt };
+    return this.service.updateTodo(todo, { done: false });
   }
 }
