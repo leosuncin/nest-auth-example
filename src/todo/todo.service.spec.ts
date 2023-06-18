@@ -1,7 +1,7 @@
 import { Test, type TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { createMock } from 'ts-auto-mock';
-import type { Repository } from 'typeorm';
+import { EntityNotFoundError, type Repository } from 'typeorm';
 
 import type { User } from '../user/user.entity';
 import type { TodoCreate } from './todo-create.dto';
@@ -62,7 +62,7 @@ describe('TodoService', () => {
     const id = 1;
     const owner = createMock<User>({ id: 1 });
 
-    mockedTodoRepository.findOne.mockResolvedValueOnce(
+    mockedTodoRepository.findOneOrFail.mockResolvedValueOnce(
       createMock<Todo>({ owner: 1 }),
     );
     const todo = await service.getTodo(id, owner);
@@ -74,12 +74,15 @@ describe('TodoService', () => {
     const id = 0;
     const owner = createMock<User>({ id: 1 });
 
-    mockedTodoRepository.findOne.mockResolvedValueOnce(undefined);
+    mockedTodoRepository.findOneOrFail.mockRejectedValueOnce(
+      new EntityNotFoundError(Todo, {
+        where: { id },
+        loadRelationIds: true,
+      }),
+    );
 
-    await expect(
-      service.getTodo(id, owner),
-    ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"Not found any todo with id: 0"`,
+    await expect(service.getTodo(id, owner)).rejects.toThrow(
+      EntityNotFoundError,
     );
   });
 

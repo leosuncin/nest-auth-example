@@ -13,6 +13,7 @@ import {
   HttpCode,
   HttpStatus,
   Patch,
+  UseFilters,
 } from '@nestjs/common';
 
 import { TodoService } from './todo.service';
@@ -23,9 +24,11 @@ import { AuthUser } from '../user/user.decorator';
 import { User } from '../user/user.entity';
 import { Todo } from './todo.entity';
 import { TodoUpdate } from './todo-update.dto';
+import { TodoFilter } from './todo.filter';
 
 @Controller('todo')
 @UseGuards(SessionAuthGuard, JWTAuthGuard)
+@UseFilters(TodoFilter)
 export class TodoController {
   constructor(private readonly service: TodoService) {}
 
@@ -47,7 +50,7 @@ export class TodoController {
 
   @Get(':id')
   @UseInterceptors(ClassSerializerInterceptor)
-  async getTodo(
+  getTodo(
     @Param('id', ParseIntPipe) id: number,
     @AuthUser() user: User,
   ): Promise<Todo> {
