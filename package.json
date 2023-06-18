@@ -29,7 +29,7 @@
     "@nestjs/jwt": "^10.0.1",
     "@nestjs/passport": "^9.0.0",
     "@nestjs/platform-express": "^9.2.1",
-    "@nestjs/terminus": "^9.1.4",
+    "@nestjs/terminus": "^10.0.1",
     "@nestjs/typeorm": "^10.0.0",
     "bcryptjs": "^2.4.3",
     "class-transformer": "^0.5.1",
