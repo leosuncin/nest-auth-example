@@ -8,9 +8,10 @@ import {
 import { Observable, tap } from 'rxjs';
 
 import { Todo } from './todo.entity';
+import { Pagination } from './pagination.dto';
 
 @Injectable()
-export class IsOwnerInterceptor<T extends Todo | Todo[]>
+export class IsOwnerInterceptor<T extends Todo | Pagination<Todo>>
   implements NestInterceptor<T, T>
 {
   intercept(context: ExecutionContext, next: CallHandler<T>): Observable<T> {
@@ -19,7 +20,7 @@ export class IsOwnerInterceptor<T extends Todo | Todo[]>
 
     return next.handle().pipe(
       tap(todo => {
-        if (!user || Array.isArray(todo)) return;
+        if (!user || todo instanceof Pagination) return;
 
         const userId =
           typeof todo.owner === 'object' ? todo.owner.id : todo.owner;

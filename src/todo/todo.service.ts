@@ -6,6 +6,7 @@ import { Todo } from './todo.entity';
 import { TodoCreate } from './todo-create.dto';
 import { User } from '../user/user.entity';
 import { TodoUpdate } from './todo-update.dto';
+import { PaginationQuery } from './pagination-query.dto';
 
 @Injectable()
 export class TodoService {
@@ -20,10 +21,15 @@ export class TodoService {
     return this.repo.save(todo);
   }
 
-  listTodo(owner: User): Promise<Todo[]> {
-    return this.repo.find({
+  listTodo(
+    pagination: PaginationQuery,
+    owner: User,
+  ): Promise<[Todo[], number]> {
+    return this.repo.findAndCount({
       where: { owner: { id: owner.id } },
       order: { createdAt: 'DESC' },
+      skip: pagination.offset,
+      take: pagination.limit,
       loadRelationIds: true,
     });
   }

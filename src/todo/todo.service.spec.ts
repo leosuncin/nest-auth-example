@@ -8,6 +8,7 @@ import type { TodoCreate } from './todo-create.dto';
 import type { TodoUpdate } from './todo-update.dto';
 import { Todo } from './todo.entity';
 import { TodoService } from './todo.service';
+import { PaginationQuery } from './pagination-query.dto';
 
 describe('TodoService', () => {
   let service: TodoService;
@@ -53,9 +54,10 @@ describe('TodoService', () => {
 
   it('should list all todo', async () => {
     const owner = createMock<User>({ id: 1 });
-    const todos = await service.listTodo(owner);
+    const [todos, count] = await service.listTodo(new PaginationQuery(), owner);
 
     expect(Array.isArray(todos)).toBe(true);
+    expect(count).toEqual(expect.any(Number));
   });
 
   it('should get one todo', async () => {

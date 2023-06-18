@@ -7,6 +7,7 @@ import type { TodoUpdate } from './todo-update.dto';
 import { TodoController } from './todo.controller';
 import type { Todo } from './todo.entity';
 import { TodoService } from './todo.service';
+import { PaginationQuery } from './pagination-query.dto';
 
 describe('Todo Controller', () => {
   let controller: TodoController;
@@ -44,9 +45,13 @@ describe('Todo Controller', () => {
   });
 
   it('should list all todos', async () => {
-    const todos = await controller.listTodo(user);
+    const [todos, count] = await controller.listTodo(
+      new PaginationQuery(),
+      user,
+    );
 
     expect(Array.isArray(todos)).toBe(true);
+    expect(count).toEqual(expect.any(Number));
   });
 
   it('should get one todo', async () => {

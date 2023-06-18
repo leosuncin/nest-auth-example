@@ -14,6 +14,7 @@ import {
   HttpStatus,
   Patch,
   UseFilters,
+  Query,
 } from '@nestjs/common';
 
 import { TodoService } from './todo.service';
@@ -27,6 +28,8 @@ import { TodoUpdate } from './todo-update.dto';
 import { TodoFilter } from './todo.filter';
 import { IsOwnerInterceptor } from './is-owner.interceptor';
 import { ParseTodoPipe } from './parse-todo.pipe';
+import { PaginationInterceptor } from './pagination.interceptor';
+import { PaginationQuery } from './pagination-query.dto';
 
 @Controller('todo')
 @UseGuards(SessionAuthGuard, JWTAuthGuard)
@@ -46,8 +49,12 @@ export class TodoController {
   }
 
   @Get()
-  listTodo(@AuthUser() user: User): Promise<Todo[]> {
-    return this.service.listTodo(user);
+  @UseInterceptors(PaginationInterceptor)
+  listTodo(
+    @Query() pagination: PaginationQuery,
+    @AuthUser() user: User,
+  ): Promise<[Todo[], number]> {
+    return this.service.listTodo(pagination, user);
   }
 
   @Get(':id')

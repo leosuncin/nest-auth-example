@@ -2,11 +2,12 @@ import { CallHandler, ForbiddenException } from '@nestjs/common';
 import { ExecutionContextHost } from '@nestjs/core/helpers/execution-context-host';
 import { createMocks } from 'node-mocks-http';
 import { lastValueFrom, of } from 'rxjs';
-import { createMock, createMockList } from 'ts-auto-mock';
+import { createMock } from 'ts-auto-mock';
 
 import { User } from '../user/user.entity';
 import { IsOwnerInterceptor } from './is-owner.interceptor';
 import { Todo } from './todo.entity';
+import { Pagination } from './pagination.dto';
 
 describe('IsOwnerInterceptor', () => {
   it('should be defined', () => {
@@ -56,14 +57,14 @@ describe('IsOwnerInterceptor', () => {
       user: createMock<User>({ id: 1 }),
     });
     const context = new ExecutionContextHost([req, res]);
-    const todos = createMockList<Todo>(1);
-    const next = createMock<CallHandler<Todo[]>>({
-      handle: () => of(todos),
+    const pagination = createMock<Pagination<Todo>>({ items: [] });
+    const next = createMock<CallHandler<Pagination<Todo>>>({
+      handle: () => of(pagination),
     });
-    const interceptor = new IsOwnerInterceptor<Todo[]>();
+    const interceptor = new IsOwnerInterceptor<Pagination<Todo>>();
 
     const result = await lastValueFrom(interceptor.intercept(context, next));
 
-    expect(result).toEqual(todos);
+    expect(result).toEqual(pagination);
   });
 });
