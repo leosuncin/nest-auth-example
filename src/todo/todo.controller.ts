@@ -26,6 +26,7 @@ import { Todo } from './todo.entity';
 import { TodoUpdate } from './todo-update.dto';
 import { TodoFilter } from './todo.filter';
 import { IsOwnerInterceptor } from './is-owner.interceptor';
+import { ParseTodoPipe } from './parse-todo.pipe';
 
 @Controller('todo')
 @UseGuards(SessionAuthGuard, JWTAuthGuard)
@@ -55,29 +56,25 @@ export class TodoController {
   }
 
   @Put(':id')
-  async updateTodo(
-    @Param('id', ParseIntPipe) id: number,
+  updateTodo(
+    @Param('id', ParseIntPipe, ParseTodoPipe) todo: Todo,
     @Body() updates: TodoUpdate,
   ): Promise<Todo> {
-    const todo = await this.service.getTodo(id);
-
     return this.service.updateTodo(todo, updates);
   }
 
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async removeTodo(@Param('id', ParseIntPipe) id: number): Promise<Todo> {
-    const todo = await this.service.getTodo(id);
-
+  removeTodo(
+    @Param('id', ParseIntPipe, ParseTodoPipe) todo: Todo,
+  ): Promise<Todo> {
     return this.service.removeTodo(todo);
   }
 
   @Patch(':id/done')
   async markTodoAsDone(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id', ParseIntPipe, ParseTodoPipe) todo: Todo,
   ): Promise<Partial<Todo>> {
-    const todo = await this.service.getTodo(id);
-
     if (todo.done) {
       return todo;
     }
@@ -87,10 +84,8 @@ export class TodoController {
 
   @Patch(':id/pending')
   async markTodoAsPending(
-    @Param('id', ParseIntPipe) id: number,
+    @Param('id', ParseIntPipe, ParseTodoPipe) todo: Todo,
   ): Promise<Partial<Todo>> {
-    const todo = await this.service.getTodo(id);
-
     if (!todo.done) {
       return todo;
     }

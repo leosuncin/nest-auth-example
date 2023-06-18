@@ -67,33 +67,39 @@ describe('Todo Controller', () => {
     mockedTodoService.updateTodo.mockResolvedValueOnce(
       createMock<Todo>(updates),
     );
-    const todo = await controller.updateTodo(1, updates);
+    const todo = await controller.updateTodo(
+      createMock<Todo>({ id: 1 }),
+      updates,
+    );
 
     expect(todo).toHaveProperty('done', updates.done);
     expect(todo).toHaveProperty('text', updates.text);
   });
 
   it('should remove one todo', async () => {
-    await expect(controller.removeTodo(1)).resolves.toBeDefined();
+    const todo = createMock<Todo>({ id: 1 });
+
+    await expect(controller.removeTodo(todo)).resolves.toBeDefined();
   });
 
   it('should mark todo as done', async () => {
     mockedTodoService.updateTodo.mockResolvedValueOnce(
       createMock<Todo>({ done: true }),
     );
-    const todo = await controller.markTodoAsDone(1);
+    const todo = await controller.markTodoAsDone(
+      createMock<Todo>({ id: 1, done: false }),
+    );
 
     expect(todo).toHaveProperty('done', true);
   });
 
   it('should mark todo as pending', async () => {
-    mockedTodoService.getTodo.mockResolvedValueOnce(
-      createMock<Todo>({ done: true }),
-    );
     mockedTodoService.updateTodo.mockResolvedValueOnce(
       createMock<Todo>({ done: false }),
     );
-    const todo = await controller.markTodoAsPending(1);
+    const todo = await controller.markTodoAsPending(
+      createMock<Todo>({ id: 1, done: true }),
+    );
 
     expect(todo).toHaveProperty('done', false);
   });
