@@ -105,7 +105,21 @@ describe('TodoController (e2e)', () => {
       .expect(HttpStatus.OK)
       .expect('Content-Type', /json/);
 
-    expect(Array.isArray(resp.body)).toBe(true);
+    expect(resp.body).toMatchObject({
+      items: expect.any(Array),
+      meta: {
+        itemCount: expect.any(Number),
+        totalItems: expect.any(Number),
+        itemsPerPage: expect.any(Number),
+        totalPages: expect.any(Number),
+        currentPage: expect.any(Number),
+      },
+      links: {
+        first: expect.stringContaining('http://127.0.0.1'),
+        next: expect.stringContaining('http://127.0.0.1'),
+        last: expect.stringContaining('http://127.0.0.1'),
+      },
+    });
   });
 
   it('should get one todo that belong to user', async () => {
