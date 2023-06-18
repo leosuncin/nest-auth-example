@@ -50,7 +50,7 @@
     "@faker-js/faker": "^8.0.0",
     "@jackfranklin/test-data-bot": "^2.0.0",
     "@nestjs/cli": "^10.0.2",
-    "@nestjs/schematics": "^9.0.3",
+    "@nestjs/schematics": "^10.0.1",
     "@nestjs/testing": "^9.2.1",
     "@types/bcryptjs": "^2.4.2",
     "@types/cookie-parser": "^1.4.3",
