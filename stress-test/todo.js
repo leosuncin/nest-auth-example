@@ -3,6 +3,62 @@ import http from 'k6/http';
 import { Rate } from 'k6/metrics';
 import formUrlencoded from 'https://jslib.k6.io/form-urlencoded/3.0.0/index.js';
 import faker from 'https://unpkg.com/faker@5.1.0/dist/faker.js';
+import Ajv from 'https://jslib.k6.io/ajv/6.12.5/index.js';
+
+const paginationSchema = {
+  type: 'object',
+  properties: {
+    items: {
+      type: 'array',
+    },
+    meta: {
+      type: 'object',
+      properties: {
+        itemCount: {
+          type: 'number',
+        },
+        totalItems: {
+          type: 'number',
+        },
+        itemsPerPage: {
+          type: 'number',
+        },
+        totalPages: {
+          type: 'number',
+        },
+        currentPage: {
+          type: 'number',
+        },
+      },
+      required: [
+        'itemCount',
+        'totalItems',
+        'itemsPerPage',
+        'totalPages',
+        'currentPage',
+      ],
+    },
+    links: {
+      type: 'object',
+      properties: {
+        first: {
+          type: 'string',
+        },
+        previous: {
+          type: 'string',
+        },
+        next: {
+          type: 'string',
+        },
+        last: {
+          type: 'string',
+        },
+      },
+    },
+  },
+};
+const ajv = new Ajv({ allErrors: true });
+const validatePagination = ajv.compile(paginationSchema);
 
 const createTodoFailedRate = new Rate('failed create todo request');
 const updateTodoFailedRate = new Rate('failed update todo request');
@@ -164,7 +220,11 @@ export function requestListTodo(baseUrl, token) {
     const result = check(res, {
       'Todo listed successfully': res => res.status === 200,
       'JSON response': res => /json/.test(res.headers['Content-Type']),
-      'Todo list is array': res => Array.isArray(res.json()),
+      'Todo list is paginated': res => {
+        const valid = validatePagination(res.json());
+
+        return !!valid;
+      },
     });
     createTodoFailedRate.add(!result);
   });
