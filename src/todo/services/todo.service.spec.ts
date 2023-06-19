@@ -3,12 +3,12 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { createMock } from 'ts-auto-mock';
 import { EntityNotFoundError, type Repository } from 'typeorm';
 
-import type { User } from '../user/user.entity';
-import type { TodoCreate } from './todo-create.dto';
-import type { TodoUpdate } from './todo-update.dto';
-import { Todo } from './todo.entity';
+import type { User } from '../../user/user.entity';
+import { PaginationQuery } from '../dtos/pagination-query.dto';
+import type { TodoCreate } from '../dtos/todo-create.dto';
+import type { TodoUpdate } from '../dtos/todo-update.dto';
+import { Todo } from '../entities/todo.entity';
 import { TodoService } from './todo.service';
-import { PaginationQuery } from './pagination-query.dto';
 
 describe('TodoService', () => {
   let service: TodoService;

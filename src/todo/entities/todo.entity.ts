@@ -8,7 +8,7 @@ import {
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
 
-import { User } from '../user/user.entity';
+import { User } from '../../user/user.entity';
 
 @Entity()
 export class Todo {
@@ -21,7 +21,7 @@ export class Todo {
   @Column({ default: false })
   done: boolean;
 
-  @ManyToOne(type => User, { nullable: false, onDelete: 'RESTRICT' })
+  @ManyToOne(() => User, { nullable: false, onDelete: 'RESTRICT' })
   @Exclude()
   owner: User | number;
 

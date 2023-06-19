@@ -2,8 +2,8 @@ import { ExecutionContextHost } from '@nestjs/core/helpers/execution-context-hos
 import { createMocks } from 'node-mocks-http';
 import { lastValueFrom, of } from 'rxjs';
 
-import { PaginationQuery } from './pagination-query.dto';
-import { Pagination } from './pagination.dto';
+import { PaginationQuery } from '../dtos/pagination-query.dto';
+import { Pagination } from '../dtos/pagination.dto';
 import { PaginationInterceptor } from './pagination.interceptor';
 
 const { limit: defaultLimit, page: defaultPage } = new PaginationQuery();

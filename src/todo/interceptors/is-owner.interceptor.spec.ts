@@ -4,10 +4,10 @@ import { createMocks } from 'node-mocks-http';
 import { lastValueFrom, of } from 'rxjs';
 import { createMock } from 'ts-auto-mock';
 
-import { User } from '../user/user.entity';
+import { User } from '../../user/user.entity';
+import { Pagination } from '../dtos/pagination.dto';
+import { Todo } from '../entities/todo.entity';
 import { IsOwnerInterceptor } from './is-owner.interceptor';
-import { Todo } from './todo.entity';
-import { Pagination } from './pagination.dto';
 
 describe('IsOwnerInterceptor', () => {
   it('should be defined', () => {

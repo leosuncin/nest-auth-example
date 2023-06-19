@@ -3,7 +3,7 @@ import { ExecutionContextHost } from '@nestjs/core/helpers/execution-context-hos
 import { createMocks } from 'node-mocks-http';
 import { EntityNotFoundError } from 'typeorm';
 
-import { Todo } from './todo.entity';
+import { Todo } from '../entities/todo.entity';
 import { TodoFilter } from './todo.filter';
 
 describe('TodoFilter', () => {

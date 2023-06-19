@@ -1,7 +1,8 @@
 import { Test } from '@nestjs/testing';
 import { createMock } from 'ts-auto-mock';
+
+import { TodoService } from '../services/todo.service';
 import { ParseTodoPipe } from './parse-todo.pipe';
-import { TodoService } from './todo.service';
 
 describe('ParseTodoPipe', () => {
   let pipe: ParseTodoPipe;

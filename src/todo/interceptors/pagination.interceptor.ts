@@ -6,10 +6,12 @@ import {
 } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 import type { Request } from 'express';
-import { map, Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 
-import { PaginationQuery } from './pagination-query.dto';
-import { Pagination, PaginationLinks, PaginationMeta } from './pagination.dto';
+import { PaginationLink } from '../dtos/pagination-link.dto';
+import { PaginationMeta } from '../dtos/pagination-meta.dto';
+import { PaginationQuery } from '../dtos/pagination-query.dto';
+import { Pagination } from '../dtos/pagination.dto';
 
 @Injectable()
 export class PaginationInterceptor<Item>
@@ -46,7 +48,7 @@ export class PaginationInterceptor<Item>
     );
   }
 
-  #createLinks(request: Request, meta: PaginationMeta): PaginationLinks {
+  #createLinks(request: Request, meta: PaginationMeta): PaginationLink {
     const { limit: defaultLimit } = new PaginationQuery();
     const url = new URL('http://localhost');
     url.protocol = request.protocol;
@@ -57,7 +59,7 @@ export class PaginationInterceptor<Item>
       url.searchParams.set('limit', String(meta.itemsPerPage));
     }
 
-    return plainToInstance(PaginationLinks, {
+    return plainToInstance(PaginationLink, {
       first: url.toString(),
       previous:
         meta.currentPage > 1

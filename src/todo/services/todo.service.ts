@@ -2,11 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
-import { Todo } from './todo.entity';
-import { TodoCreate } from './todo-create.dto';
-import { User } from '../user/user.entity';
-import { TodoUpdate } from './todo-update.dto';
-import { PaginationQuery } from './pagination-query.dto';
+import { User } from '../../user/user.entity';
+import { PaginationQuery } from '../dtos/pagination-query.dto';
+import { TodoCreate } from '../dtos/todo-create.dto';
+import { TodoUpdate } from '../dtos/todo-update.dto';
+import { Todo } from '../entities/todo.entity';
 
 @Injectable()
 export class TodoService {

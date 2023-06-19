@@ -1,6 +1,6 @@
 import { Injectable, PipeTransform } from '@nestjs/common';
 
-import { TodoService } from './todo.service';
+import { TodoService } from '../services/todo.service';
 
 @Injectable()
 export class ParseTodoPipe implements PipeTransform {

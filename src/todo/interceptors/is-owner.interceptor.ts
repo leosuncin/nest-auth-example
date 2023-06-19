@@ -7,8 +7,8 @@ import {
 } from '@nestjs/common';
 import { Observable, tap } from 'rxjs';
 
-import { Todo } from './todo.entity';
-import { Pagination } from './pagination.dto';
+import { Pagination } from '../dtos/pagination.dto';
+import { Todo } from '../entities/todo.entity';
 
 @Injectable()
 export class IsOwnerInterceptor<T extends Todo | Pagination<Todo>>

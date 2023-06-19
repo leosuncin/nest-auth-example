@@ -1,35 +1,35 @@
 import {
-  Controller,
-  Post,
-  UseGuards,
   Body,
-  Get,
-  Param,
-  ParseIntPipe,
-  UseInterceptors,
   ClassSerializerInterceptor,
-  Put,
+  Controller,
   Delete,
+  Get,
   HttpCode,
   HttpStatus,
+  Param,
+  ParseIntPipe,
   Patch,
-  UseFilters,
+  Post,
+  Put,
   Query,
+  UseFilters,
+  UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 
-import { TodoService } from './todo.service';
-import { JWTAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { SessionAuthGuard } from '../auth/guards/session-auth.guard';
-import { TodoCreate } from './todo-create.dto';
-import { AuthUser } from '../user/user.decorator';
-import { User } from '../user/user.entity';
-import { Todo } from './todo.entity';
-import { TodoUpdate } from './todo-update.dto';
-import { TodoFilter } from './todo.filter';
-import { IsOwnerInterceptor } from './is-owner.interceptor';
-import { ParseTodoPipe } from './parse-todo.pipe';
-import { PaginationInterceptor } from './pagination.interceptor';
-import { PaginationQuery } from './pagination-query.dto';
+import { JWTAuthGuard } from '../../auth/guards/jwt-auth.guard';
+import { SessionAuthGuard } from '../../auth/guards/session-auth.guard';
+import { AuthUser } from '../../user/user.decorator';
+import { User } from '../../user/user.entity';
+import { PaginationQuery } from '../dtos/pagination-query.dto';
+import { TodoCreate } from '../dtos/todo-create.dto';
+import { TodoUpdate } from '../dtos/todo-update.dto';
+import { Todo } from '../entities/todo.entity';
+import { TodoFilter } from '../filters/todo.filter';
+import { IsOwnerInterceptor } from '../interceptors/is-owner.interceptor';
+import { PaginationInterceptor } from '../interceptors/pagination.interceptor';
+import { ParseTodoPipe } from '../pipes/parse-todo.pipe';
+import { TodoService } from '../services/todo.service';
 
 @Controller('todo')
 @UseGuards(SessionAuthGuard, JWTAuthGuard)
