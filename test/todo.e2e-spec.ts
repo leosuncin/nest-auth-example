@@ -1,27 +1,75 @@
+import { IntegreSQLClient } from '@devoxa/integresql-client';
 import { faker } from '@faker-js/faker';
 import { build, perBuild } from '@jackfranklin/test-data-bot';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { TypeOrmModule, getDataSourceToken } from '@nestjs/typeorm';
 import * as supertest from 'supertest';
 
 import { AppModule } from '../src/app.module';
+import { dataSourceOptions } from '../src/data-source';
 import { setup } from '../src/setup';
+import { loadFixtures } from './load-fixtures';
 
 const createTodoBuilder = build({
   fields: {
     text: perBuild(() => faker.lorem.sentence()),
   },
 });
+const client = new IntegreSQLClient({
+  url: process.env['INTEGRESQL_URL'] ?? 'http://localhost:5000',
+});
 
 describe('TodoController (e2e)', () => {
   let app: INestApplication;
   let request: supertest.SuperTest<supertest.Test>;
   let token: string;
+  let hash: string;
+
+  beforeAll(async () => {
+    hash = await client.hashFiles([
+      './src/migrations/**/*',
+      './test/fixtures/**/*',
+    ]);
+
+    await client.initializeTemplate(hash, async dbConfig => {
+      const moduleFixture: TestingModule = await Test.createTestingModule({
+        imports: [AppModule],
+      })
+        .overrideModule(TypeOrmModule)
+        .useModule(
+          TypeOrmModule.forRoot({
+            type: 'postgres',
+            url: client.databaseConfigToConnectionUrl(dbConfig),
+            migrations: dataSourceOptions.migrations,
+            synchronize: false,
+          }),
+        )
+        .compile();
+      const dataSource = moduleFixture.get(getDataSourceToken());
+
+      await dataSource.runMigrations();
+      await loadFixtures(dataSource);
+      await dataSource.destroy();
+      await moduleFixture.close();
+    });
+  });
 
   beforeEach(async () => {
+    const dbConfig = await client.getTestDatabase(hash);
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
-    }).compile();
+    })
+      .overrideModule(TypeOrmModule)
+      .useModule(
+        TypeOrmModule.forRoot({
+          type: 'postgres',
+          url: client.databaseConfigToConnectionUrl(dbConfig),
+          migrations: dataSourceOptions.migrations,
+          synchronize: false,
+        }),
+      )
+      .compile();
 
     app = setup(moduleFixture.createNestApplication());
 
