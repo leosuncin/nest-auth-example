@@ -13,6 +13,9 @@ services:
       retries: 5
   pgweb:
     image: sosedoff/pgweb
+    profiles:
+      - develop
+      - testing
     depends_on:
       postgres:
         condition: service_healthy
@@ -23,6 +26,20 @@ services:
     healthcheck:
       test: nc -vz 127.0.0.1 8081
       interval: 5s
+  integresql:
+    image: allaboutapps/integresql
+    profiles:
+      - testing
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      INTEGRESQL_PGPASSWORD: $POSTGRES_PASSWORD
+      INTEGRESQL_PGUSER: $POSTGRES_USER
+      INTEGRESQL_PGDATABASE: $POSTGRES_DB
+      INTEGRESQL_PGHOST: postgres
+    ports:
+      - '5000:5000'
 
 volumes:
   postgres-data:
