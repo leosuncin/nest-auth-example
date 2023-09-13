@@ -49,6 +49,7 @@
     "typeorm": "^0.3.11"
   },
   "devDependencies": {
+    "@devoxa/integresql-client": "^2.0.0",
     "@faker-js/faker": "^8.0.0",
     "@jackfranklin/test-data-bot": "^2.0.0",
     "@nestjs/cli": "^10.0.2",
