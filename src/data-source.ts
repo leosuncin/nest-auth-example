@@ -1,4 +1,5 @@
-import { DataSourceOptions, DataSource } from 'typeorm';
+import { DataSource, type DataSourceOptions } from 'typeorm';
+import { type SeederOptions } from 'typeorm-extension';
 
 import { CreateUser1557166726050 } from './migrations/1557166726050-CreateUser';
 import { CreateProfile1570141220019 } from './migrations/1570141220019-CreateProfile';
@@ -7,8 +8,10 @@ import { CreateTodo1597106889894 } from './migrations/1597106889894-CreateTodo';
 import { Todo } from './todo/entities/todo.entity';
 import { Profile } from './user/profile.entity';
 import { User } from './user/user.entity';
+import { userFactory } from './user/user.factory';
+import { UserSeeder } from './user/user.seeder';
 
-export const dataSourceOptions: DataSourceOptions = {
+export const dataSourceOptions: DataSourceOptions & SeederOptions = {
   type: 'postgres',
   url: process.env.DATABASE_URL,
   entities: [User, Profile, Todo],
@@ -27,6 +30,8 @@ export const dataSourceOptions: DataSourceOptions = {
           }
         : false,
   },
+  factories: [userFactory],
+  seeds: [UserSeeder],
 };
 
 export const appDataSource = new DataSource(dataSourceOptions);
