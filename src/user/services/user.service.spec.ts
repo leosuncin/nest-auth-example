@@ -3,8 +3,8 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { createMock } from 'ts-auto-mock';
 import type { Repository } from 'typeorm';
 
-import { User } from './user.entity';
-import type { UserUpdate } from './dto/user-update.dto';
+import type { UserUpdate } from '../dto/user-update.dto';
+import { User } from '../entities/user.entity';
 import { UserService } from './user.service';
 
 describe('UserService', () => {

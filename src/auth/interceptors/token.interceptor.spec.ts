@@ -5,7 +5,7 @@ import { createMocks } from 'node-mocks-http';
 import { lastValueFrom, of } from 'rxjs';
 import { createMock } from 'ts-auto-mock';
 
-import type { User } from '../../user/user.entity';
+import type { User } from '../../user/entities/user.entity';
 import { TokenInterceptor } from './token.interceptor';
 import { AuthService } from '../auth.service';
 

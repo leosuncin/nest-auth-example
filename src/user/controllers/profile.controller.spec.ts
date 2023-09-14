@@ -2,8 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { createMock } from 'ts-auto-mock';
 
 import { ProfileController } from './profile.controller';
-import { User } from './user.entity';
-import { UserService } from './user.service';
+import { User } from '../entities/user.entity';
+import { UserService } from '../services/user.service';
 
 describe('Profile Controller', () => {
   let controller: ProfileController;
@@ -13,15 +13,17 @@ describe('Profile Controller', () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [ProfileController],
     })
-    .useMocker((token) => {
-      if (Object.is(token, UserService)) {
-        return createMock<UserService>()
-      }
-    })
-    .compile();
+      .useMocker(token => {
+        if (Object.is(token, UserService)) {
+          return createMock<UserService>();
+        }
+      })
+      .compile();
 
     controller = module.get<ProfileController>(ProfileController);
-    mockedUserService = module.get<UserService, jest.Mocked<UserService>>(UserService)
+    mockedUserService = module.get<UserService, jest.Mocked<UserService>>(
+      UserService,
+    );
   });
 
   it('should be defined', () => {
@@ -34,10 +36,12 @@ describe('Profile Controller', () => {
 
   it('should update a profile', async () => {
     const updatesUser = {
-      name: 'Johnny Doe'
-    }
+      name: 'Johnny Doe',
+    };
 
-    mockedUserService.update.mockResolvedValueOnce(createMock<User>({ name: updatesUser.name }))
+    mockedUserService.update.mockResolvedValueOnce(
+      createMock<User>({ name: updatesUser.name }),
+    );
 
     await expect(controller.update(1, updatesUser)).resolves.toBeDefined();
   });

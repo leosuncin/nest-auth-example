@@ -19,8 +19,8 @@ import {
 
 import { JWTAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { SessionAuthGuard } from '../../auth/guards/session-auth.guard';
-import { AuthUser } from '../../user/user.decorator';
-import { User } from '../../user/user.entity';
+import { AuthUser } from '../../user/decorators/user.decorator';
+import { User } from '../../user/entities/user.entity';
 import { PaginationQuery } from '../dtos/pagination-query.dto';
 import { TodoCreate } from '../dtos/todo-create.dto';
 import { TodoUpdate } from '../dtos/todo-update.dto';

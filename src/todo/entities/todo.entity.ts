@@ -8,7 +8,7 @@ import {
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
 
-import { User } from '../../user/user.entity';
+import { User } from '../../user/entities/user.entity';
 
 @Entity()
 export class Todo {

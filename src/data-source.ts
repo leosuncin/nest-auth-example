@@ -6,12 +6,12 @@ import { CreateProfile1570141220019 } from './migrations/1570141220019-CreatePro
 import { CreateSessionStorage1584985637890 } from './migrations/1584985637890-CreateSessionStorage';
 import { CreateTodo1597106889894 } from './migrations/1597106889894-CreateTodo';
 import { Todo } from './todo/entities/todo.entity';
-import { Profile } from './user/profile.entity';
-import { profileFactory } from './user/profile.factory';
-import { ProfileSeeder } from './user/profile.seeder';
-import { User } from './user/user.entity';
-import { userFactory } from './user/user.factory';
-import { UserSeeder } from './user/user.seeder';
+import { Profile } from './user/entities/profile.entity';
+import { User } from './user/entities/user.entity';
+import { profileFactory } from './user/factories/profile.factory';
+import { userFactory } from './user/factories/user.factory';
+import { ProfileSeeder } from './user/seeders/profile.seeder';
+import { UserSeeder } from './user/seeders/user.seeder';
 
 export const dataSourceOptions: DataSourceOptions & SeederOptions = {
   type: 'postgres',

@@ -1,6 +1,6 @@
 import { setSeederFactory } from 'typeorm-extension';
 
-import { Profile } from './profile.entity';
+import { Profile } from '../entities/profile.entity';
 
 export const profileFactory = setSeederFactory(Profile, faker => {
   const profile = new Profile();

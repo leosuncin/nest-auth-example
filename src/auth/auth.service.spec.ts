@@ -2,8 +2,8 @@ import { JwtService } from '@nestjs/jwt';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { createMock } from 'ts-auto-mock';
 
-import { User } from '../user/user.entity';
-import { UserService } from '../user/user.service';
+import { User } from '../user/entities/user.entity';
+import { UserService } from '../user/services/user.service';
 import { AuthService } from './auth.service';
 import type { SignUp } from './dto/sign-up.dto';
 import type { JwtPayload } from './interfaces/jwt-payload.interface';
