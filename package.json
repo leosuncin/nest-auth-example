@@ -8,6 +8,9 @@
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",
+    "db:create": "ts-node -r dotenv-mono/load -r tsconfig-paths/register node_modules/typeorm-extension/bin/cli.cjs db:create -r src/config --synchronize=no --initialDatabase=postgres",
+    "db:drop": "ts-node -r dotenv-mono/load -r tsconfig-paths/register node_modules/typeorm-extension/bin/cli.cjs db:drop -r src/config --initialDatabase=postgres",
+    "db:seed": "ts-node -r dotenv-mono/load -r tsconfig-paths/register node_modules/typeorm-extension/bin/cli.cjs seed:run -r src/config",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "fixtures": "fixtures-ts-node-commonjs load --require=dotenv-mono/load --require=tsconfig-paths/register --dataSource=./src/data-source.ts --ignoreDecorators test/fixtures",
     "start": "node dist/main.js",
@@ -78,6 +81,7 @@
     "ts-node": "^10.9.1",
     "tsconfig-paths": "^4.2.0",
     "ttypescript": "^1.5.13",
+    "typeorm-extension": "^3.0.1",
     "typeorm-fixtures-cli": "3.1.0",
     "typescript": "^4.9.3"
   },
