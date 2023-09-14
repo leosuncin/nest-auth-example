@@ -6,6 +6,8 @@ import { CreateProfile1570141220019 } from './migrations/1570141220019-CreatePro
 import { CreateSessionStorage1584985637890 } from './migrations/1584985637890-CreateSessionStorage';
 import { CreateTodo1597106889894 } from './migrations/1597106889894-CreateTodo';
 import { Todo } from './todo/entities/todo.entity';
+import { todoFactory } from './todo/factories/todo.factory';
+import { TodoSeeder } from './todo/seeders/todo.seeder';
 import { Profile } from './user/entities/profile.entity';
 import { User } from './user/entities/user.entity';
 import { profileFactory } from './user/factories/profile.factory';
@@ -32,8 +34,8 @@ export const dataSourceOptions: DataSourceOptions & SeederOptions = {
           }
         : false,
   },
-  factories: [userFactory, profileFactory],
-  seeds: [UserSeeder, ProfileSeeder],
+  factories: [userFactory, profileFactory, todoFactory],
+  seeds: [UserSeeder, ProfileSeeder, TodoSeeder],
 };
 
 export const appDataSource = new DataSource(dataSourceOptions);
