@@ -7,6 +7,8 @@ import { CreateSessionStorage1584985637890 } from './migrations/1584985637890-Cr
 import { CreateTodo1597106889894 } from './migrations/1597106889894-CreateTodo';
 import { Todo } from './todo/entities/todo.entity';
 import { Profile } from './user/profile.entity';
+import { profileFactory } from './user/profile.factory';
+import { ProfileSeeder } from './user/profile.seeder';
 import { User } from './user/user.entity';
 import { userFactory } from './user/user.factory';
 import { UserSeeder } from './user/user.seeder';
@@ -30,8 +32,8 @@ export const dataSourceOptions: DataSourceOptions & SeederOptions = {
           }
         : false,
   },
-  factories: [userFactory],
-  seeds: [UserSeeder],
+  factories: [userFactory, profileFactory],
+  seeds: [UserSeeder, ProfileSeeder],
 };
 
 export const appDataSource = new DataSource(dataSourceOptions);
