@@ -1,10 +1,14 @@
+import { IntegreSQLClient } from '@devoxa/integresql-client';
 import { faker } from '@faker-js/faker';
 import { build, perBuild } from '@jackfranklin/test-data-bot';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import * as supertest from 'supertest';
+import { runSeeders } from 'typeorm-extension';
 
 import { AppModule } from '../src/app.module';
+import { appDataSource as dataSource } from '../src/data-source';
 import { setup } from '../src/setup';
 
 const updateBuilder = build({
@@ -12,17 +16,57 @@ const updateBuilder = build({
     name: perBuild(() => faker.person.fullName()),
   },
 });
+const client = new IntegreSQLClient({
+  url: process.env['INTEGRESQL_URL'] ?? 'http://localhost:5000',
+});
 
 describe('ProfileController (e2e)', () => {
   let app: INestApplication;
   let request: supertest.SuperTest<supertest.Test>;
-  let token;
+  let token: string;
   let userId;
+  let hash: string;
+
+  beforeAll(async () => {
+    hash = await client.hashFiles([
+      './src/migrations/**/*',
+      './src/**/*.factory.ts',
+      './src/**/*.seeder.ts',
+    ]);
+
+    await client.initializeTemplate(hash, async dbConfig => {
+      dataSource.setOptions({
+        username: dbConfig.username,
+        password: dbConfig.password,
+        database: dbConfig.database,
+        port: dbConfig.port,
+      });
+
+      await dataSource.initialize();
+      await dataSource.runMigrations();
+      await runSeeders(dataSource);
+      await dataSource.destroy();
+    });
+  });
 
   beforeEach(async () => {
+    const dbConfig = await client.getTestDatabase(hash);
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
-    }).compile();
+    })
+      .overrideModule(TypeOrmModule)
+      .useModule(
+        TypeOrmModule.forRoot({
+          type: 'postgres',
+          username: dbConfig.username,
+          password: dbConfig.password,
+          database: dbConfig.database,
+          port: dbConfig.port,
+          synchronize: false,
+          autoLoadEntities: true,
+        }),
+      )
+      .compile();
 
     app = setup(moduleFixture.createNestApplication());
     await app.init();
