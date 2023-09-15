@@ -27,8 +27,9 @@ jobs:
         run: |
           cp .env.example .env
           npm run build
+          npm run db:create
           npm run typeorm migration:run
-          npm run fixtures
+          npm run db:seed
           npm run test:e2e
         env:
           CI: 'true'
@@ -63,8 +64,9 @@ jobs:
       - name: Prepare the database
         run: |
           npm run build
+          npm run db:create
           npm run typeorm migration:run
-          npm run fixtures
+          npm run db:seed
         env:
           DATABASE_URL: postgres://admin:wnbaohW7mn@localhost:${{ job.services.postgres.ports['5432'] }}/authentication
       - name: Run the backend

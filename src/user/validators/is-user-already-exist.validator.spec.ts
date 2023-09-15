@@ -5,7 +5,7 @@ import { createMock } from 'ts-auto-mock';
 import type { FindOptionsWhere, Repository } from 'typeorm';
 
 import { IsUserAlreadyExist } from './is-user-already-exist.validator';
-import { User } from './user.entity';
+import { User } from '../entities/user.entity';
 
 class UserDTO {
   @Validate(IsUserAlreadyExist)

@@ -1,7 +1,7 @@
 import { Test, type TestingModule } from '@nestjs/testing';
 import { createMock } from 'ts-auto-mock';
 
-import type { User } from '../../user/user.entity';
+import type { User } from '../../user/entities/user.entity';
 import { PaginationQuery } from '../dtos/pagination-query.dto';
 import type { TodoCreate } from '../dtos/todo-create.dto';
 import type { TodoUpdate } from '../dtos/todo-update.dto';
