@@ -17,6 +17,15 @@ jobs:
           - 5432:5432
         # needed because the postgres container does not provide a healthcheck
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+      integresql:
+        image: allaboutapps/integresql
+        env:
+          INTEGRESQL_PGUSER: user
+          INTEGRESQL_PGPASSWORD: password
+          INTEGRESQL_PGDATABASE: nestjs
+          INTEGRESQL_PGHOST: postgres
+        ports:
+          - 5000:5000
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
@@ -40,6 +49,7 @@ jobs:
           POSTGRES_DB: nestjs
           DATABASE_URL: postgres://user:password@localhost:${{ job.services.postgres.ports['5432'] }}/nestjs
           ALLOWED_ORIGINS: '*'
+          INTEGRESQL_URL: http://localhost:${{ job.services.integresql.ports['5000'] }}
 
   run-server:
     if: "!contains(github.event.head_commit.message, 'skip ci')"
