@@ -31,8 +31,9 @@ jobs:
       - uses: bahmutov/npm-install@v1
       - name: Setup the project
         run: |
+          npm run db:create
           npm run typeorm migration:run
-          npm run fixtures
+          npm run db:seed
           npm run build
           npm prune --production
         env:
