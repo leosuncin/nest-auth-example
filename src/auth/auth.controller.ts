@@ -1,5 +1,6 @@
 import {
   Body,
+  ClassSerializerInterceptor,
   Controller,
   Get,
   HttpCode,
@@ -19,6 +20,7 @@ import { SessionAuthGuard } from './guards/session-auth.guard';
 import { TokenInterceptor } from './interceptors/token.interceptor';
 
 @Controller('auth')
+@UseInterceptors(ClassSerializerInterceptor)
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 

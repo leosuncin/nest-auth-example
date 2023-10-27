@@ -36,7 +36,6 @@ export class AuthService {
         `Wrong password for user with email: ${email}`,
       );
     }
-    delete user.password;
 
     return user;
   }
@@ -51,7 +50,6 @@ export class AuthService {
         `There isn't any user with email: ${payload.sub}`,
       );
     }
-    delete user.password;
 
     return user;
   }

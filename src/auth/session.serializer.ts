@@ -9,6 +9,7 @@ export class SessionSerializer extends PassportSerializer {
     user: User,
     done: (err: Error | null, id?: User) => void,
   ): void {
+    delete user.password;
     done(null, user);
   }
 

@@ -52,7 +52,6 @@ describe('AuthService', () => {
 
     expect(user).toHaveProperty('email', signUp.email);
     expect(user).toHaveProperty('name', signUp.name);
-    expect(user).not.toHaveProperty('password');
   });
 
   it('should log in an existing user', async () => {
@@ -68,7 +67,6 @@ describe('AuthService', () => {
     const user = await service.login(email, password);
 
     expect(user).toHaveProperty('email', email);
-    expect(user).not.toHaveProperty('password');
   });
 
   it('should throw on log in when the email not exist', async () => {
@@ -117,7 +115,6 @@ describe('AuthService', () => {
     const user = await service.verifyPayload(payload);
 
     expect(user).toHaveProperty('email', payload.sub);
-    expect(user).not.toHaveProperty('password');
   });
 
   it("should throw on verify when JWT's subject not exist", async () => {
