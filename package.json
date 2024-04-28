@@ -74,7 +74,7 @@
     "jest-ts-auto-mock": "^2.1.0",
     "node-mocks-http": "^1.12.1",
     "prettier": "^3.0.0",
-    "supertest": "^6.3.2",
+    "supertest": "^7.0.0",
     "ts-auto-mock": "^3.6.2",
     "ts-jest": "^28.0.0",
     "ts-loader": "^9.4.2",
