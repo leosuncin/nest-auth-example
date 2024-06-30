@@ -82,7 +82,7 @@
     "tsconfig-paths": "^4.2.0",
     "ttypescript": "^1.5.13",
     "typeorm-extension": "^3.0.1",
-    "typescript": "^4.9.3"
+    "typescript": "^5.5.2"
   },
   "jest": {
     "moduleFileExtensions": [
