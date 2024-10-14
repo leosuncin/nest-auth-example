@@ -1,34 +1,31 @@
-FROM node:18-bullseye-slim AS build
+FROM node:20-slim AS dependencies
 
-WORKDIR /var/cache/backend
+WORKDIR /app
 
-RUN chown node:node /var/cache/backend
+RUN --mount=type=cache,id=npm-cache,target=/root/.npm \
+    --mount=type=bind,source=package.json,target=/app/package.json \
+    --mount=type=bind,source=package-lock.json,target=/app/package-lock.json \
+    npm ci
 
-USER node
+FROM dependencies AS build
 
-COPY --chown=node:node package*.json ./
+COPY . .
 
-RUN npm ci
+RUN npm run build &&\
+  rm -rf dist/migrations dist/**/factories dist/**/seeders &&\
+  npm prune --omit=dev
 
-COPY --chown=node:node . .
+FROM gcr.io/distroless/nodejs20-debian12:nonroot AS app
 
-RUN npm run build
+ARG PORT=3000
+ENV NODE_ENV=production PORT=${PORT}
 
-FROM build AS dependencies
+WORKDIR /backend
 
-RUN npm prune --omit=dev
-
-FROM gcr.io/distroless/nodejs:18 AS app
-
-ARG NODE_ENV="production" PORT=3000
-
-ENV NODE_ENV=${NODE_ENV} PORT=${PORT}
-
-WORKDIR /srv/app
-
-COPY --from=dependencies /var/cache/backend/node_modules ./node_modules
-COPY --from=build /var/cache/backend/dist ./
+COPY --from=build --chown=nonroot:nonroot /app/node_modules ./node_modules
+COPY --from=build --chown=nonroot:nonroot /app/dist .
+COPY --chown=nonroot:nonroot ./package.json .
 
 EXPOSE ${PORT}
 
-CMD ["/srv/app/main.js"]
+CMD ["main.js"]
