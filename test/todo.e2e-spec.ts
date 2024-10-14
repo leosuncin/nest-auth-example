@@ -3,12 +3,14 @@ import { faker } from '@faker-js/faker';
 import { build, perBuild } from '@jackfranklin/test-data-bot';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import * as supertest from 'supertest';
+import { DataSource } from 'typeorm';
 import { runSeeders } from 'typeorm-extension';
+import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
 
 import { AppModule } from '../src/app.module';
-import { appDataSource as dataSource } from '../src/data-source';
+import { AuthService } from '../src/auth/auth.service';
+import dataSourceConfig from '../src/config/data-source.config';
 import { setup } from '../src/setup';
 
 const createTodoBuilder = build({
@@ -34,11 +36,16 @@ describe('TodoController (e2e)', () => {
     ]);
 
     await client.initializeTemplate(hash, async dbConfig => {
-      dataSource.setOptions({
-        username: dbConfig.username,
-        password: dbConfig.password,
-        database: dbConfig.database,
-        port: dbConfig.port,
+      const options = (await dataSourceConfig()) as PostgresConnectionOptions;
+      const dataSource = new DataSource({
+        ...options,
+        url: client.databaseConfigToConnectionUrl({
+          username: dbConfig.username,
+          password: dbConfig.password,
+          database: dbConfig.database,
+          port: dbConfig.port,
+          host: 'localhost',
+        }),
       });
 
       await dataSource.initialize();
@@ -53,18 +60,16 @@ describe('TodoController (e2e)', () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     })
-      .overrideModule(TypeOrmModule)
-      .useModule(
-        TypeOrmModule.forRoot({
-          type: 'postgres',
-          username: dbConfig.username,
-          password: dbConfig.password,
-          database: dbConfig.database,
-          port: dbConfig.port,
-          synchronize: false,
-          autoLoadEntities: true,
-        }),
-      )
+      .overridePipe(dataSourceConfig.KEY)
+      .useValue({
+        type: 'postgres',
+        username: dbConfig.username,
+        password: dbConfig.password,
+        database: dbConfig.database,
+        port: dbConfig.port,
+        synchronize: false,
+        autoLoadEntities: true,
+      })
       .compile();
 
     app = setup(moduleFixture.createNestApplication());
@@ -73,12 +78,8 @@ describe('TodoController (e2e)', () => {
 
     request = supertest(app.getHttpServer());
 
-    const {
-      header: { authorization },
-    } = await supertest(app.getHttpServer())
-      .post('/auth/login')
-      .send({ email: 'john@doe.me', password: 'Pa$$w0rd' });
-    [, token] = authorization.split(/\s+/);
+    // @ts-expect-error Fixture
+    token = app.get(AuthService).signToken({ email: 'john@doe.me' });
   });
 
   afterEach(async () => {

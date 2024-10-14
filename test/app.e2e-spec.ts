@@ -1,11 +1,11 @@
 import { IntegreSQLClient } from '@devoxa/integresql-client';
 import { HttpStatus, type INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import * as request from 'supertest';
+import { DataSource } from 'typeorm';
 
 import { AppModule } from '../src/app.module';
-import { appDataSource as dataSource } from '../src/data-source';
+import dataSourceConfig from '../src/config/data-source.config';
 import { setup } from '../src/setup';
 
 const client = new IntegreSQLClient({
@@ -24,11 +24,14 @@ describe('AppController (e2e)', () => {
     ]);
 
     await client.initializeTemplate(hash, async dbConfig => {
-      dataSource.setOptions({
+      const { migrations } = await dataSourceConfig();
+      const dataSource = new DataSource({
+        type: 'postgres',
         username: dbConfig.username,
         password: dbConfig.password,
         database: dbConfig.database,
         port: dbConfig.port,
+        migrations,
       });
 
       await dataSource.initialize();
@@ -42,18 +45,16 @@ describe('AppController (e2e)', () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     })
-      .overrideModule(TypeOrmModule)
-      .useModule(
-        TypeOrmModule.forRoot({
-          type: 'postgres',
-          username: dbConfig.username,
-          password: dbConfig.password,
-          database: dbConfig.database,
-          port: dbConfig.port,
-          synchronize: false,
-          autoLoadEntities: true,
-        }),
-      )
+      .overrideProvider(dataSourceConfig.KEY)
+      .useValue({
+        type: 'postgres',
+        username: dbConfig.username,
+        password: dbConfig.password,
+        database: dbConfig.database,
+        port: dbConfig.port,
+        synchronize: false,
+        autoLoadEntities: true,
+      })
       .compile();
 
     app = setup(moduleFixture.createNestApplication());
