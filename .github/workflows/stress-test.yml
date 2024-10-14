@@ -43,7 +43,9 @@ jobs:
         env:
           PORT: 3000
           NODE_ENV: production
-          APP_SECRET: laborum-cupidatat-officia-duis-dolor-nisi-esse
+          JWT_SECRET: excepteur-excepteur-consectetur
+          COOKIE_SECRET: non-ullamco-esse
+          SESSION_SECRET: incididunt-magna-est
           DATABASE_URL: postgres://tighten:rename@localhost:${{ job.services.postgres.ports['5432'] }}/embassy
           ALLOWED_ORIGINS: '*'
       - name: Run k6 local test

@@ -4,7 +4,7 @@ on: [push]
 
 jobs:
   e2e-test:
-    if: "!contains(github.event.head_commit.message, 'skip ci')"
+    if: ${{ !contains(github.event.head_commit.message, 'skip ci') }}
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -43,16 +43,15 @@ jobs:
         env:
           CI: 'true'
           PORT: 3000
-          APP_SECRET: dolore-lorem-duis-quis-cupidatat-ut-esse-commodo-nostrud
-          POSTGRES_USER: user
-          POSTGRES_PASSWORD: password
-          POSTGRES_DB: nestjs
+          JWT_SECRET: veniam-excepteur-aliqua-eiusmod
+          COOKIE_SECRET: est-enim-cillum-qui
+          SESSION_SECRET: laboris-elit-excepteur-anim
           DATABASE_URL: postgres://user:password@localhost:${{ job.services.postgres.ports['5432'] }}/nestjs
           ALLOWED_ORIGINS: '*'
           INTEGRESQL_URL: http://localhost:${{ job.services.integresql.ports['5000'] }}
 
   run-server:
-    if: "!contains(github.event.head_commit.message, 'skip ci')"
+    if: ${{ !contains(github.event.head_commit.message, 'skip ci') }}
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -84,7 +83,9 @@ jobs:
         env:
           PORT: 3000
           NODE_ENV: production
-          APP_SECRET: 444a45b38193572dd7d3c0d691d806b487dbdfe1
+          JWT_SECRET: cupidatat-adipisicing-eiusmod-exercitation
+          COOKIE_SECRET: aliquip-nulla-magna-aute
+          SESSION_SECRET: cupidatat-laborum-consequat-aliquip
           DATABASE_URL: postgres://admin:wnbaohW7mn@localhost:${{ job.services.postgres.ports['5432'] }}/authentication
           ALLOWED_ORIGINS: '*'
       - name: Run Postman collection

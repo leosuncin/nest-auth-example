@@ -2,34 +2,47 @@ name: Unit test
 
 on: [push, pull_request]
 
-
 jobs:
   test:
-    if: "!contains(github.event.head_commit.message, 'skip ci')"
+    if: ${{ !contains(github.event.head_commit.message, 'skip ci') }}
     runs-on: ubuntu-latest
+    permissions:
+      # Access to your repository.
+      contents: read
+      # Access to pull request. The `write` access if you the `comment` is enabled
+      # within the action, otherwise can be `read`.
+      pull-requests: write
+      # Access to pull request statuses. The `write` access if you the `check` is enabled
+      # within the action, otherwise can be `read`.
+      statuses: write
+      checks: write
     steps:
       - uses: actions/checkout@v4
       - uses: bahmutov/npm-install@v1
       - name: Run unit test
-        run: |
-          npm run test:cov
+        run: npm run test:cov -- --ci --json --testLocationInResults --outputFile=result.json
         env:
           CI: 'true'
           PORT: 3000
-          APP_SECRET: esse-incididunt-qui-deserunt-est-non-ullamco-voluptate-mollit-laboris-nostrud-deserunt-sit-exercitation-et-labore
-          POSTGRES_DB: authentication
-          POSTGRES_USER: admin
-          POSTGRES_PASSWORD: contraseña
+          JWT_SECRET: adipisicing-ipsum-dolor
+          COOKIE_SECRET: enim-proident-adipisicing
+          SESSION_SECRET: dolor-sunt-mollit
           DATABASE_URL: postgres://admin:contraseña@localhost:5432/authentication
           ALLOWED_ORIGINS: '*'
-      # - name: Monitor coverage
-      #   if: ${{ github.actor != 'dependabot[bot]' }}
-      #   uses: slavcodev/coverage-monitor-action@1.7.0
-      #   with:
-      #     github_token: ${{ secrets.GITHUB_TOKEN }}
-      #     coverage_path: coverage/clover.xml
-      #     threshold_alert: 50
-      #     threshold_warning: 80
+      - name: Report test results 📝
+        uses: tanmen/jest-reporter@v1
+        if: always()
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Monitor coverage 📫
+        uses: slavcodev/coverage-monitor-action@1.9.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          coverage_format: clover
+          coverage_path: coverage/clover.xml
+          check: github.event_name == 'pull_request'
+          threshold_alert: 50
+          threshold_warning: 80
       - uses: actions/upload-artifact@v4
         with:
           name: unit-coverage
