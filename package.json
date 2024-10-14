@@ -13,9 +13,9 @@
     "db:seed": "ts-node -r dotenv-mono/load -r tsconfig-paths/register node_modules/typeorm-extension/bin/cli.cjs seed:run -d src/config/data-source",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "node dist/main.js",
-    "start:dev": "NODE_OPTIONS='-r dotenv-mono/load' nest start --watch",
-    "start:repl": "NODE_OPTIONS='-r dotenv-mono/load' nest start --entryFile repl",
-    "start:debug": "NODE_OPTIONS='-r dotenv-mono/load' nest start --debug --watch",
+    "start:dev": "cross-env NODE_OPTIONS=\"-r dotenv-mono/load\" nest start --watch",
+    "start:repl": "cross-env NODE_OPTIONS=\"-r dotenv-mono/load\" nest start --entryFile repl",
+    "start:debug": "cross-env NODE_OPTIONS=\"-r dotenv-mono/load\" nest start --debug --watch",
     "migration:run": "typeorm migration:run -d dist/data-source",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",
@@ -23,7 +23,7 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "typeorm": "NODE_OPTIONS='-r dotenv-mono/load -r tsconfig-paths/register' typeorm-ts-node-commonjs -d src/config/data-source"
+    "typeorm": "cross-env NODE_OPTIONS=\"-r dotenv-mono/load -r tsconfig-paths/register\" typeorm-ts-node-commonjs -d src/config/data-source"
   },
   "dependencies": {
     "@nestjs/common": "^10.0.1",
@@ -67,6 +67,7 @@
     "@types/supertest": "^2.0.12",
     "@typescript-eslint/eslint-plugin": "^5.45.1",
     "@typescript-eslint/parser": "^5.45.1",
+    "cross-env": "^7.0.3",
     "dotenv-mono": "^1.3.10",
     "eslint": "^8.29.0",
     "eslint-config-prettier": "^9.0.0",
