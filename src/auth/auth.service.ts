@@ -2,9 +2,9 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
 import { User } from '../user/entities/user.entity';
+import { UserService } from '../user/services/user.service';
 import { SignUp } from './dto/sign-up.dto';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
-import { UserService } from '../user/services/user.service';
 
 @Injectable()
 export class AuthService {
@@ -25,9 +25,10 @@ export class AuthService {
 
     try {
       user = await this.userService.findOne({ where: { email } });
-    } catch (err) {
+    } catch (error) {
       throw new UnauthorizedException(
         `There isn't any user with email: ${email}`,
+        { cause: error },
       );
     }
 
@@ -48,6 +49,7 @@ export class AuthService {
     } catch (error) {
       throw new UnauthorizedException(
         `There isn't any user with email: ${payload.sub}`,
+        { cause: error },
       );
     }
 

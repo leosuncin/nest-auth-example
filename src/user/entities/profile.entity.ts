@@ -1,9 +1,9 @@
 import {
-  Entity,
-  PrimaryGeneratedColumn,
   Column,
-  OneToOne,
+  Entity,
   JoinColumn,
+  OneToOne,
+  PrimaryGeneratedColumn,
 } from 'typeorm';
 
 import { User } from './user.entity';
@@ -25,7 +25,7 @@ export class Profile {
   @Column()
   occupation: string;
 
-  @OneToOne(type => User)
+  @OneToOne(() => User)
   @JoinColumn()
   user: User;
 }
