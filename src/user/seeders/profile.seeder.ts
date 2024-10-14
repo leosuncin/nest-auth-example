@@ -16,13 +16,17 @@ export class ProfileSeeder implements Seeder {
       id: 1,
       phone: '(802) 698-1134',
       birthday: new Date(1981, 9, 2), // 2 Oct 1981
-      user: await userRepository.findOneOrFail({ where: { email: 'john@doe.me' } }),
+      user: await userRepository.findOneOrFail({
+        where: { email: 'john@doe.me' },
+      }),
     });
     await profileFactory.save({
       id: 2,
       phone: '(802) 798-1134',
       birthday: new Date(1982, 9, 12), // 12 Oct 1982
-      user: await userRepository.findOneOrFail({ where: { email: 'jane@doe.me' } }),
+      user: await userRepository.findOneOrFail({
+        where: { email: 'jane@doe.me' },
+      }),
     });
   }
 }

@@ -1,8 +1,8 @@
 import { type DataSource } from 'typeorm';
 import { Seeder, type SeederFactoryManager } from 'typeorm-extension';
 
-import { Todo } from '../entities/todo.entity';
 import { User } from '../../user/entities/user.entity';
+import { Todo } from '../entities/todo.entity';
 
 export class TodoSeeder implements Seeder {
   public async run(
@@ -11,8 +11,12 @@ export class TodoSeeder implements Seeder {
   ): Promise<void> {
     const userRepository = dataSource.getRepository(User);
     const todoFactory = factoryManager.get(Todo);
-    const john = await userRepository.findOneOrFail({ where: { email: 'john@doe.me' } });
-    const jane = await userRepository.findOneOrFail({ where: { email: 'jane@doe.me' } });
+    const john = await userRepository.findOneOrFail({
+      where: { email: 'john@doe.me' },
+    });
+    const jane = await userRepository.findOneOrFail({
+      where: { email: 'jane@doe.me' },
+    });
 
     await todoFactory.save({
       id: 1,
