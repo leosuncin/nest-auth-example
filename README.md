@@ -82,7 +82,11 @@ To run this project, you will need to add the following environment variables to
 
 `PORT` the port that Nest.js will listen at **(required)**
 
-`APP_SECRET` the secret used to encrypt the session **(required)**
+`JWT_SECRET` the secret used to sign the JSON Web Tokens **(required)**
+
+`COOKIE_SECRET` the secret used to sign the cookies **(required)**
+
+`SESSION_SECRET` the secret used to sign the session **(required)**
 
 `ALLOWED_ORIGINS` a comma separated list of [origins](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Origin) from which accept request **(required)**
 
