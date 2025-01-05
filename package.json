@@ -50,7 +50,7 @@
   },
   "devDependencies": {
     "@devoxa/integresql-client": "^2.0.0",
-    "@faker-js/faker": "^8.0.0",
+    "@faker-js/faker": "^9.3.0",
     "@jackfranklin/test-data-bot": "^2.0.0",
     "@nestjs/cli": "^10.0.2",
     "@nestjs/schematics": "^10.0.1",
