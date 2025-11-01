@@ -30,7 +30,7 @@ jobs:
       #     coverage_path: coverage/clover.xml
       #     threshold_alert: 50
       #     threshold_warning: 80
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: unit-coverage
           path: coverage
