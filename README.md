@@ -112,10 +112,6 @@ To see the code coverage
   npm run test:cov
 ```
 
-## Try it online
-
-[![Gitpod Try-it](https://img.shields.io/badge/Gitpod-Try--it-blue?logo=gitpod)](https://gitpod.io/#https://github.com/leosuncin/nest-auth-example)
-
 ## Tech Stack
 
 **Server:** Typescript, PostgreSQL, Nest.js, TypeORM, Passport
