@@ -25,7 +25,7 @@ export class Profile {
   @Column()
   occupation: string;
 
-  @OneToOne(type => User)
+  @OneToOne(() => User)
   @JoinColumn()
   user: User;
 }
