@@ -25,9 +25,10 @@ export class AuthService {
 
     try {
       user = await this.userService.findOne({ where: { email } });
-    } catch (err) {
+    } catch (error) {
       throw new UnauthorizedException(
         `There isn't any user with email: ${email}`,
+        { cause: error }
       );
     }
 
@@ -48,6 +49,7 @@ export class AuthService {
     } catch (error) {
       throw new UnauthorizedException(
         `There isn't any user with email: ${payload.sub}`,
+        { cause: error }
       );
     }
 
