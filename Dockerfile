@@ -1,34 +1,42 @@
-FROM node:18-bullseye-slim AS build
+FROM node:26 AS dependencies
 
-WORKDIR /var/cache/backend
+WORKDIR /app
 
-RUN chown node:node /var/cache/backend
+RUN --mount=type=cache,target=/root/.npm \
+    --mount=type=bind,source=package.json,target=/app/package.json \
+    --mount=type=bind,source=package-lock.json,target=/app/package-lock.json \
+    npm i -g corepack &&\
+    corepack enable  &&\
+    npm ci --prefer-offline
 
-USER node
+FROM dependencies AS build
 
-COPY --chown=node:node package*.json ./
+COPY --chown=node:node src /app/src
 
-RUN npm ci
+RUN --mount=type=bind,source=package.json,target=/app/package.json \
+    --mount=type=bind,source=nest-cli.json,target=/app/nest-cli.json \
+    --mount=type=bind,source=tsconfig.json,target=/app/tsconfig.json \
+    --mount=type=bind,source=tsconfig.build.json,target=/app/tsconfig.build.json \
+    npm run build
 
-COPY --chown=node:node . .
+FROM dependencies AS pruner
 
-RUN npm run build
+RUN --mount=type=bind,source=package.json,target=/app/package.json \
+    --mount=type=bind,source=package-lock.json,target=/app/package-lock.json \
+    curl -sf https://gobinaries.com/tj/node-prune | sh &&\
+    npm ci --omit=dev &&\
+    node-prune node_modules
 
-FROM build AS dependencies
+FROM gcr.io/distroless/nodejs26-debian13:nonroot AS app
 
-RUN npm prune --omit=dev
-
-FROM gcr.io/distroless/nodejs:18 AS app
-
-ARG NODE_ENV="production" PORT=3000
-
-ENV NODE_ENV=${NODE_ENV} PORT=${PORT}
+ENV NODE_ENV="production"
 
 WORKDIR /srv/app
 
-COPY --from=dependencies /var/cache/backend/node_modules ./node_modules
-COPY --from=build /var/cache/backend/dist ./
+COPY --chown=nonroot:nonroot --from=pruner /app/node_modules ./node_modules
+COPY --chown=nonroot:nonroot --from=build /app/dist ./
+COPY --chown=nonroot:nonroot package.json ./
 
-EXPOSE ${PORT}
+EXPOSE 3000
 
 CMD ["/srv/app/main.js"]
