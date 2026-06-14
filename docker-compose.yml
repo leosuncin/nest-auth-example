@@ -1,11 +1,11 @@
 services:
   postgres:
-    image: postgres:14
+    image: postgres:18
     env_file: .env
     volumes:
-      - postgres-data:/var/lib/postgresql/data
+      - postgres-data:/var/lib/postgresql
     ports:
-      - '5432:5432'
+      - "127.0.0.1:5432:5432"
     healthcheck:
       test: pg_isready
       interval: 10s
@@ -22,7 +22,7 @@ services:
     environment:
       PGWEB_DATABASE_URL: postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?sslmode=disable
     ports:
-      - '8091:8081'
+      - "127.0.0.1:8091:8081"
     healthcheck:
       test: nc -vz 127.0.0.1 8081
       interval: 5s
@@ -39,7 +39,7 @@ services:
       INTEGRESQL_PGDATABASE: $POSTGRES_DB
       INTEGRESQL_PGHOST: postgres
     ports:
-      - '5000:5000'
+      - "127.0.0.1:5000:5000"
 
 volumes:
   postgres-data:

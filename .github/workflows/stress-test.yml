@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     services:
       postgres:
-        image: postgres:14
+        image: postgres:18
         env:
           POSTGRES_USER: tighten
           POSTGRES_PASSWORD: rename
@@ -24,7 +24,7 @@ jobs:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
         with:
-          node-version: 'lts/*'
+          node-version: "lts/*"
       - name: Install k6
         run: |
           curl https://github.com/grafana/k6/releases/download/v0.39.0/k6-v0.39.0-linux-amd64.tar.gz -L | tar xvz --strip-components 1
@@ -45,7 +45,7 @@ jobs:
           NODE_ENV: production
           APP_SECRET: laborum-cupidatat-officia-duis-dolor-nisi-esse
           DATABASE_URL: postgres://tighten:rename@localhost:${{ job.services.postgres.ports['5432'] }}/embassy
-          ALLOWED_ORIGINS: '*'
+          ALLOWED_ORIGINS: "*"
       - name: Run k6 local test
         run: ./k6 run stress-test/main.js
       - uses: actions/upload-artifact@v7
