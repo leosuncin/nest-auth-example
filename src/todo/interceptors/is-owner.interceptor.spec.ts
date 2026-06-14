@@ -1,12 +1,12 @@
-import { CallHandler, ForbiddenException } from '@nestjs/common';
+import { type CallHandler, ForbiddenException } from '@nestjs/common';
 import { ExecutionContextHost } from '@nestjs/core/helpers/execution-context-host';
 import { createMocks } from 'node-mocks-http';
 import { lastValueFrom, of } from 'rxjs';
 import { createMock } from 'ts-auto-mock';
 
-import { User } from '../../user/entities/user.entity';
-import { Pagination } from '../dtos/pagination.dto';
-import { Todo } from '../entities/todo.entity';
+import type { User } from '../../user/entities/user.entity';
+import type { Pagination } from '../dtos/pagination.dto';
+import type { Todo } from '../entities/todo.entity';
 import { IsOwnerInterceptor } from './is-owner.interceptor';
 
 describe('IsOwnerInterceptor', () => {
@@ -46,7 +46,7 @@ describe('IsOwnerInterceptor', () => {
     const interceptor = new IsOwnerInterceptor<Todo>();
 
     await expect(
-      lastValueFrom(interceptor.intercept(context, next)),
+      lastValueFrom(interceptor.intercept(context, next))
     ).rejects.toThrow(ForbiddenException);
   });
 
@@ -57,7 +57,7 @@ describe('IsOwnerInterceptor', () => {
       user: createMock<User>({ id: 1 }),
     });
     const context = new ExecutionContextHost([req, res]);
-    const pagination = createMock<Pagination<Todo>>({ items: [] });
+    const pagination = createMock<Pagination<Todo>>({ items: [] as any });
     const next = createMock<CallHandler<Pagination<Todo>>>({
       handle: () => of(pagination),
     });
