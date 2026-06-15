@@ -1,5 +1,5 @@
-import { Test, type TestingModule } from '@nestjs/testing';
-import { createMock } from 'ts-auto-mock';
+import { type Mocked, mock } from '@suites/doubles.jest';
+import { TestBed } from '@suites/unit';
 
 import type { User } from '../../user/entities/user.entity';
 import { PaginationQuery } from '../dtos/pagination-query.dto';
@@ -11,22 +11,14 @@ import { TodoController } from './todo.controller';
 
 describe('Todo Controller', () => {
   let controller: TodoController;
-  let mockedTodoService: jest.Mocked<TodoService>;
-  const user = createMock<User>({ id: 1 });
+  let mockedTodoService: Mocked<TodoService>;
+  const user = mock<User>({ id: 1 });
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      controllers: [TodoController],
-    })
-      .useMocker(token => {
-        if (Object.is(token, TodoService)) {
-          return createMock<TodoService>();
-        }
-      })
-      .compile();
+    const { unit, unitRef } = await TestBed.solitary(TodoController).compile();
 
-    controller = module.get<TodoController>(TodoController);
-    mockedTodoService = module.get(TodoService);
+    controller = unit;
+    mockedTodoService = unitRef.get(TodoService);
   });
 
   it('should be defined', () => {
@@ -39,15 +31,16 @@ describe('Todo Controller', () => {
       owner: user,
     };
 
-    mockedTodoService.createTodo.mockResolvedValue(createMock<Todo>(newTodo));
+    mockedTodoService.createTodo.mockResolvedValue(mock<Todo>(newTodo));
 
     await expect(controller.createTodo(newTodo, user)).resolves.toBeDefined();
   });
 
   it('should list all todos', async () => {
+    mockedTodoService.listTodo.mockResolvedValueOnce([[], 0]);
     const [todos, count] = await controller.listTodo(
       new PaginationQuery(),
-      user,
+      user
     );
 
     expect(Array.isArray(todos)).toBe(true);
@@ -57,7 +50,7 @@ describe('Todo Controller', () => {
   it('should get one todo', async () => {
     const id = 1;
 
-    mockedTodoService.getTodo.mockResolvedValueOnce(createMock<Todo>({ id }));
+    mockedTodoService.getTodo.mockResolvedValueOnce(mock<Todo>({ id }));
     const todo = await controller.getTodo(id);
 
     expect(todo).toHaveProperty('id', id);
@@ -69,30 +62,27 @@ describe('Todo Controller', () => {
       text: 'Duis do labore enim in irure.',
     };
 
-    mockedTodoService.updateTodo.mockResolvedValueOnce(
-      createMock<Todo>(updates),
-    );
-    const todo = await controller.updateTodo(
-      createMock<Todo>({ id: 1 }),
-      updates,
-    );
+    mockedTodoService.updateTodo.mockResolvedValueOnce(mock<Todo>(updates));
+    const todo = await controller.updateTodo(mock<Todo>({ id: 1 }), updates);
 
     expect(todo).toHaveProperty('done', updates.done);
     expect(todo).toHaveProperty('text', updates.text);
   });
 
   it('should remove one todo', async () => {
-    const todo = createMock<Todo>({ id: 1 });
+    const todo = mock<Todo>({ id: 1 });
+
+    mockedTodoService.removeTodo.mockResolvedValueOnce(todo);
 
     await expect(controller.removeTodo(todo)).resolves.toBeDefined();
   });
 
   it('should mark todo as done', async () => {
     mockedTodoService.updateTodo.mockResolvedValueOnce(
-      createMock<Todo>({ done: true }),
+      mock<Todo>({ done: true })
     );
     const todo = await controller.markTodoAsDone(
-      createMock<Todo>({ id: 1, done: false }),
+      mock<Todo>({ id: 1, done: false })
     );
 
     expect(todo).toHaveProperty('done', true);
@@ -100,10 +90,10 @@ describe('Todo Controller', () => {
 
   it('should mark todo as pending', async () => {
     mockedTodoService.updateTodo.mockResolvedValueOnce(
-      createMock<Todo>({ done: false }),
+      mock<Todo>({ done: false })
     );
     const todo = await controller.markTodoAsPending(
-      createMock<Todo>({ id: 1, done: true }),
+      mock<Todo>({ id: 1, done: true })
     );
 
     expect(todo).toHaveProperty('done', false);

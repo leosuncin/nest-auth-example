@@ -1,11 +1,11 @@
 import { Test, type TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { useContainer, validate, Validate } from 'class-validator';
-import { createMock } from 'ts-auto-mock';
-import type { FindOptionsWhere, Repository } from 'typeorm';
+import { type Mocked, mock } from '@suites/doubles.jest';
+import { useContainer, Validate, validate } from 'class-validator';
+import type { Repository } from 'typeorm';
 
-import { IsUserAlreadyExist } from './is-user-already-exist.validator';
 import { User } from '../entities/user.entity';
+import { IsUserAlreadyExist } from './is-user-already-exist.validator';
 
 class UserDTO {
   @Validate(IsUserAlreadyExist)
@@ -17,37 +17,34 @@ class UserDTO {
 }
 
 describe('IsUserAlreadyExist', () => {
+  let mockedUserRepository: Mocked<Repository<User>>;
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [IsUserAlreadyExist],
-    })
-      .useMocker(token => {
-        if (Object.is(token, getRepositoryToken(User))) {
-          return createMock<Repository<User>>({
-            findOneBy: jest
-              .fn()
-              .mockImplementation((where: FindOptionsWhere<User>) => {
-                if (where.email === 'john@doe.me') {
-                  return createMock<User>();
-                }
-              }),
-          });
-        }
-      })
-      .compile();
+      providers: [
+        IsUserAlreadyExist,
+        {
+          provide: getRepositoryToken(User),
+          useValue: mock<Repository<User>>(),
+        },
+      ],
+    }).compile();
 
     useContainer(module, { fallbackOnErrors: true });
+
+    mockedUserRepository = module.get(getRepositoryToken(User));
   });
 
   it.each([
     ['john@doe.me', 1],
     ['newuser@example.com', 0],
-  ])(
-    'should validate whether the user already exist by their email',
-    async (email, errors) => {
-      const user = new UserDTO(email);
+  ])('should validate whether the user already exist by their email', async (email, errors) => {
+    const user = new UserDTO(email);
 
-      await expect(validate(user)).resolves.toHaveLength(errors);
-    },
-  );
+    mockedUserRepository.findOneBy.mockResolvedValueOnce(
+      email === 'john@doe.me' ? ({} as User) : null
+    );
+
+    await expect(validate(user)).resolves.toHaveLength(errors);
+  });
 });

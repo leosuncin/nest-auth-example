@@ -1,11 +1,11 @@
 import {
   HealthCheckService,
-  HealthIndicatorFunction,
+  type HealthIndicatorFunction,
   MemoryHealthIndicator,
   TypeOrmHealthIndicator,
 } from '@nestjs/terminus';
-import { Test, TestingModule } from '@nestjs/testing';
-import { createMock } from 'ts-auto-mock';
+import { Test, type TestingModule } from '@nestjs/testing';
+import { mock, stub } from '@suites/doubles.jest';
 
 import { HealthController } from './health.controller';
 
@@ -16,29 +16,27 @@ describe('HealthController', () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [HealthController],
     })
-      .useMocker(token => {
+      .useMocker((token) => {
         const getStatus = (key: string) => ({ [key]: { status: 'up' } });
 
         if (Object.is(token, HealthCheckService)) {
-          return createMock<HealthCheckService>({
-            check: jest
-              .fn()
-              .mockImplementation((indicators: HealthIndicatorFunction[]) =>
-                Promise.all(indicators.map(indicator => indicator())),
-              ),
+          return mock<HealthCheckService>({
+            check: stub((indicators: HealthIndicatorFunction[]) =>
+              Promise.all(indicators.map((indicator) => indicator()))
+            ),
           });
         }
 
         if (Object.is(token, TypeOrmHealthIndicator)) {
-          return createMock<TypeOrmHealthIndicator>({
-            pingCheck: jest.fn().mockImplementation(getStatus),
+          return mock<TypeOrmHealthIndicator>({
+            pingCheck: stub(getStatus),
           });
         }
 
         if (Object.is(token, MemoryHealthIndicator)) {
-          return createMock<MemoryHealthIndicator>({
-            checkHeap: jest.fn().mockImplementation(getStatus),
-            checkRSS: jest.fn().mockImplementation(getStatus),
+          return mock<MemoryHealthIndicator>({
+            checkHeap: stub(getStatus),
+            checkRSS: stub(getStatus),
           });
         }
       })
@@ -53,18 +51,18 @@ describe('HealthController', () => {
 
   it('should check health', async () => {
     await expect(controller.check()).resolves.toMatchInlineSnapshot(`
-      Array [
-        Object {
-          "db": Object {
+      [
+        {
+          "db": {
             "status": "up",
           },
         },
-        Object {
-          "mem_rss": Object {
+        {
+          "mem_rss": {
             "status": "up",
           },
         },
       ]
-    `);
+`);
   });
 });

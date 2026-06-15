@@ -1,10 +1,10 @@
 import { IntegreSQLClient } from '@devoxa/integresql-client';
 import { faker } from '@faker-js/faker';
 import { build, perBuild } from '@jackfranklin/test-data-bot';
-import { HttpStatus, INestApplication } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { HttpStatus, type INestApplication } from '@nestjs/common';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import * as supertest from 'supertest';
+import supertest from 'supertest';
 import { runSeeders } from 'typeorm-extension';
 
 import { AppModule } from '../src/app.module';
@@ -33,7 +33,7 @@ describe('TodoController (e2e)', () => {
       './src/**/*.seeder.ts',
     ]);
 
-    await client.initializeTemplate(hash, async dbConfig => {
+    await client.initializeTemplate(hash, async (dbConfig) => {
       dataSource.setOptions({
         username: dbConfig.username,
         password: dbConfig.password,
@@ -63,7 +63,7 @@ describe('TodoController (e2e)', () => {
           port: dbConfig.port,
           synchronize: false,
           autoLoadEntities: true,
-        }),
+        })
       )
       .compile();
 

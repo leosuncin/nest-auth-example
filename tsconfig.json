@@ -8,8 +8,8 @@
     "target": "es2021",
     "sourceMap": true,
     "outDir": "./dist",
-    "baseUrl": "./",
-    "incremental": true
+    "incremental": true,
+    "esModuleInterop": true
   },
   "exclude": ["node_modules", "dist"]
 }

@@ -1,8 +1,7 @@
 import { JwtService } from '@nestjs/jwt';
-import { Test, type TestingModule } from '@nestjs/testing';
-import { createMock } from 'ts-auto-mock';
-
-import { User } from '../user/entities/user.entity';
+import { type Mocked, mock } from '@suites/doubles.jest';
+import { TestBed } from '@suites/unit';
+import type { User } from '../user/entities/user.entity';
 import { UserService } from '../user/services/user.service';
 import { AuthService } from './auth.service';
 import type { SignUp } from './dto/sign-up.dto';
@@ -10,30 +9,15 @@ import type { JwtPayload } from './interfaces/jwt-payload.interface';
 
 describe('AuthService', () => {
   let service: AuthService;
-  let mockedUserService: jest.Mocked<UserService>;
-  let mockedJwtService: jest.Mocked<JwtService>;
+  let mockedUserService: Mocked<UserService>;
+  let mockedJwtService: Mocked<JwtService>;
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [AuthService],
-    })
-      .useMocker(token => {
-        if (Object.is(token, UserService)) {
-          return createMock<UserService>();
-        }
-        if (Object.is(token, JwtService)) {
-          return createMock<JwtService>();
-        }
-      })
-      .compile();
+    const { unit, unitRef } = await TestBed.solitary(AuthService).compile();
 
-    service = module.get(AuthService);
-    mockedUserService = module.get<UserService, jest.Mocked<UserService>>(
-      UserService,
-    );
-    mockedJwtService = module.get<JwtService, jest.Mocked<JwtService>>(
-      JwtService,
-    );
+    service = unit;
+    mockedUserService = unitRef.get(UserService);
+    mockedJwtService = unitRef.get(JwtService);
   });
 
   it('should be an instanceof AuthService', () => {
@@ -47,7 +31,7 @@ describe('AuthService', () => {
       password: 'Pa$$w0rd',
     };
 
-    mockedUserService.create.mockResolvedValueOnce(createMock<User>(signUp));
+    mockedUserService.create.mockResolvedValueOnce(signUp as User);
     const user = await service.register(signUp);
 
     expect(user).toHaveProperty('email', signUp.email);
@@ -57,13 +41,10 @@ describe('AuthService', () => {
   it('should log in an existing user', async () => {
     const email = 'john@doe.me';
     const password = 'Pa$$w0rd';
+    const userMocked = mock<User>({ email });
 
-    mockedUserService.findOne.mockResolvedValueOnce(
-      createMock<User>({
-        email,
-        checkPassword: jest.fn().mockResolvedValue(true),
-      }),
-    );
+    userMocked.checkPassword.mockResolvedValueOnce(true);
+    mockedUserService.findOne.mockResolvedValueOnce(userMocked);
     const user = await service.login(email, password);
 
     expect(user).toHaveProperty('email', email);
@@ -76,10 +57,8 @@ describe('AuthService', () => {
 
     mockedUserService.findOne.mockRejectedValueOnce('NotFound');
 
-    await expect(
-      service.login(email, password),
-    ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"There isn't any user with email: notfound@example.com"`,
+    await expect(service.login(email, password)).rejects.toThrow(
+      "There isn't any user with email: notfound@example.com"
     );
   });
 
@@ -87,18 +66,12 @@ describe('AuthService', () => {
     const email = 'john@doe.me';
     /* spell-checker:dictionaries lorem-ipsum */
     const password = 'Exercitation esse labore anim';
+    const userMocked = mock<User>({ email });
 
-    mockedUserService.findOne.mockResolvedValueOnce(
-      createMock<User>({
-        email,
-        checkPassword: jest.fn().mockResolvedValue(false),
-      }),
-    );
+    mockedUserService.findOne.mockResolvedValueOnce(userMocked);
 
-    await expect(
-      service.login(email, password),
-    ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"Wrong password for user with email: john@doe.me"`,
+    await expect(service.login(email, password)).rejects.toThrow(
+      'Wrong password for user with email: john@doe.me'
     );
   });
 
@@ -108,10 +81,9 @@ describe('AuthService', () => {
       iat: 0,
       exp: 0,
     };
+    const userMocked = mock<User>({ email: payload.sub });
 
-    mockedUserService.findOne.mockResolvedValueOnce(
-      createMock<User>({ email: payload.sub }),
-    );
+    mockedUserService.findOne.mockResolvedValueOnce(userMocked);
     const user = await service.verifyPayload(payload);
 
     expect(user).toHaveProperty('email', payload.sub);
@@ -126,15 +98,13 @@ describe('AuthService', () => {
 
     mockedUserService.findOne.mockRejectedValueOnce('NotFound');
 
-    await expect(
-      service.verifyPayload(payload),
-    ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"There isn't any user with email: notregistered@example.com"`,
+    await expect(service.verifyPayload(payload)).rejects.toThrow(
+      "There isn't any user with email: notregistered@example.com"
     );
   });
 
   it('should sign a new JWT', () => {
-    const user = createMock<User>({ email: 'john@doe.me' });
+    const user = { email: 'john@doe.me' } as User;
 
     mockedJwtService.sign.mockReturnValueOnce('j.w.t');
     const token = service.signToken(user);

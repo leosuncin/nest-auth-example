@@ -54,26 +54,27 @@
     "@nestjs/cli": "^11.0.2",
     "@nestjs/schematics": "^11.0.0",
     "@nestjs/testing": "^11.0.1",
+    "@suites/di.nestjs": "^3.1.0",
+    "@suites/doubles.jest": "^3.1.0",
+    "@suites/unit": "^3.1.1",
     "@types/bcryptjs": "^3.0.0",
+    "@types/connect-pg-simple": "^7.0.3",
     "@types/cookie-parser": "^1.4.3",
     "@types/express": "^5.0.0",
     "@types/express-session": "^1.17.5",
-    "@types/jest": "^29.2.4",
+    "@types/jest": "^30.0.0",
     "@types/node": "^24.0.10",
     "@types/passport-jwt": "^4.0.1",
     "@types/passport-local": "^1.0.34",
     "@types/supertest": "^2.0.12",
     "dotenv-mono": "^1.3.10",
-    "jest": "^28.0.0",
-    "jest-ts-auto-mock": "^2.1.0",
+    "jest": "^30.0.0",
     "node-mocks-http": "^1.12.1",
     "supertest": "^7.0.0",
-    "ts-auto-mock": "^3.6.2",
-    "ts-jest": "^28.0.0",
+    "ts-jest": "^29.2.5",
     "ts-loader": "^9.4.2",
     "ts-node": "^10.9.1",
     "tsconfig-paths": "^4.2.0",
-    "ttypescript": "^1.5.13",
     "typeorm-extension": "^3.0.1",
     "typescript": "^5.9.3",
     "ultracite": "^7.8.3"
@@ -92,14 +93,12 @@
     "coverageDirectory": "../coverage",
     "testEnvironment": "node",
     "setupFiles": [
-      "dotenv-mono/load",
-      "jest-ts-auto-mock"
-    ],
-    "globals": {
-      "ts-jest": {
-        "compiler": "ttypescript",
-        "tsconfig": "tsconfig.test.json"
-      }
-    }
+      "dotenv-mono/load"
+    ]
+  },
+  "allowScripts": {
+    "@suites/di.nestjs@3.1.0": true,
+    "@suites/doubles.jest@3.1.0": true,
+    "unrs-resolver@1.12.2": true
   }
 }

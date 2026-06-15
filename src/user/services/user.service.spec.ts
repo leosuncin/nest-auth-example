@@ -1,6 +1,6 @@
-import { Test, type TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { createMock } from 'ts-auto-mock';
+import type { Mocked } from '@suites/doubles.jest';
+import { TestBed } from '@suites/unit';
 import type { Repository } from 'typeorm';
 
 import type { UserUpdate } from '../dto/user-update.dto';
@@ -9,21 +9,13 @@ import { UserService } from './user.service';
 
 describe('UserService', () => {
   let service: UserService;
-  let mockedUserRepository: jest.Mocked<Repository<User>>;
+  let mockedUserRepository: Mocked<Repository<User>>;
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [UserService],
-    })
-      .useMocker(token => {
-        if (Object.is(token, getRepositoryToken(User))) {
-          return createMock<Repository<User>>();
-        }
-      })
-      .compile();
+    const { unit, unitRef } = await TestBed.solitary(UserService).compile();
 
-    service = module.get<UserService>(UserService);
-    mockedUserRepository = module.get(getRepositoryToken(User));
+    service = unit;
+    mockedUserRepository = unitRef.get(getRepositoryToken(User) as string);
   });
 
   it('should be an instanceof UserService', () => {
@@ -35,9 +27,9 @@ describe('UserService', () => {
       name: 'John Doe',
       email: 'john@doe.me',
       password: 'Pa$$w0rd',
-    };
+    } as User;
 
-    mockedUserRepository.save.mockResolvedValueOnce(createMock<User>(data));
+    mockedUserRepository.save.mockResolvedValueOnce(data);
     const user = await service.create(data);
 
     expect(user).toBeDefined();
@@ -46,9 +38,7 @@ describe('UserService', () => {
   it('should find one user', async () => {
     const email = 'john@doe.me';
 
-    mockedUserRepository.findOne.mockResolvedValueOnce(
-      createMock<User>({ email }),
-    );
+    mockedUserRepository.findOne.mockResolvedValueOnce({ email } as User);
     const user = await service.findOne({ where: { email } });
 
     expect(user).toBeDefined();
@@ -56,12 +46,12 @@ describe('UserService', () => {
   });
 
   it('should throw on find one when the user not exist', async () => {
-    mockedUserRepository.findOne.mockResolvedValueOnce(undefined);
+    mockedUserRepository.findOne.mockResolvedValueOnce(null);
 
     await expect(
-      service.findOne({ where: { email: 'notexisting@example.com' } }),
+      service.findOne({ where: { email: 'notexisting@example.com' } })
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"There isn't any user with identifier: [object Object]"`,
+      `"There isn't any user with identifier: [object Object]"`
     );
   });
 
@@ -71,7 +61,8 @@ describe('UserService', () => {
       name: 'Jhonny Doe',
     };
 
-    mockedUserRepository.save.mockResolvedValueOnce(createMock<User>(updates));
+    mockedUserRepository.findOneBy.mockResolvedValueOnce({ id } as User);
+    mockedUserRepository.save.mockResolvedValueOnce({ ...updates, id } as User);
     const user = await service.update(id, updates);
 
     expect(user).toBeDefined();
@@ -83,12 +74,12 @@ describe('UserService', () => {
     const updates: UserUpdate = {
       name: 'Jhonny Doe',
     };
-    mockedUserRepository.findOneBy.mockResolvedValueOnce(undefined);
+    mockedUserRepository.findOneBy.mockResolvedValueOnce(null);
 
     await expect(
-      service.update(id, updates),
+      service.update(id, updates)
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"There isn't any user with id: 0"`,
+      `"There isn't any user with id: 0"`
     );
   });
 });

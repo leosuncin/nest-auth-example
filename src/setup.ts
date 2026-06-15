@@ -1,9 +1,13 @@
-import { ValidationPipe, HttpStatus, INestApplication } from '@nestjs/common';
+import {
+  HttpStatus,
+  type INestApplication,
+  ValidationPipe,
+} from '@nestjs/common';
 import { useContainer } from 'class-validator';
-import * as cookieParser from 'cookie-parser';
-import * as session from 'express-session';
-import * as passport from 'passport';
-import * as connectPgSimple from 'connect-pg-simple';
+import connectPgSimple from 'connect-pg-simple';
+import cookieParser from 'cookie-parser';
+import session from 'express-session';
+import passport from 'passport';
 
 import { AppModule } from './app.module';
 
@@ -13,7 +17,7 @@ export function setup(app: INestApplication): INestApplication {
       transform: true,
       whitelist: true,
       errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
-    }),
+    })
   );
 
   app.use(cookieParser(process.env.APP_SECRET));
@@ -33,7 +37,7 @@ export function setup(app: INestApplication): INestApplication {
         sameSite: 'strict',
         secure: process.env.NODE_ENV === 'production',
       },
-    }),
+    })
   );
 
   app.use(passport.initialize());
