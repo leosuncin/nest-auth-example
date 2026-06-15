@@ -8,11 +8,11 @@ import {
 } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 import { PassportModule } from '@nestjs/passport';
-import { Test, type TestingModule } from '@nestjs/testing';
+import { Test } from '@nestjs/testing';
+import { mock } from '@suites/doubles.jest';
 import type { Request as Req } from 'express';
-import * as session from 'express-session';
-import * as request from 'supertest';
-import { createMock } from 'ts-auto-mock';
+import session from 'express-session';
+import request from 'supertest';
 
 import type { User } from '../../user/entities/user.entity';
 import { AuthService } from '../auth.service';
@@ -33,7 +33,7 @@ describe('LocalAuthGuard', () => {
   let mockedAuthService: jest.Mocked<AuthService>;
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
+    const module = await Test.createTestingModule({
       imports: [PassportModule.register({ session: true })],
       controllers: [TestController],
       providers: [
@@ -43,14 +43,12 @@ describe('LocalAuthGuard', () => {
           provide: APP_GUARD,
           useClass: LocalAuthGuard,
         },
+        {
+          provide: AuthService,
+          useFactory: mock,
+        },
       ],
-    })
-      .useMocker(token => {
-        if (Object.is(token, AuthService)) {
-          return createMock<AuthService>();
-        }
-      })
-      .compile();
+    }).compile();
 
     mockedAuthService = module.get(AuthService);
     app = module.createNestApplication();
@@ -59,20 +57,18 @@ describe('LocalAuthGuard', () => {
         secret: 'secret',
         resave: false,
         saveUninitialized: false,
-      }),
+      })
     );
 
     await app.init();
   });
 
   it('should authenticate using email and password', async () => {
-    mockedAuthService.login.mockResolvedValueOnce(
-      createMock<User>({
-        email: 'john@doe.me',
-        id: 1,
-        name: 'John Doe ',
-      }),
-    );
+    mockedAuthService.login.mockResolvedValueOnce({
+      email: 'john@doe.me',
+      id: 1,
+      name: 'John Doe ',
+    } as User);
 
     await request(app.getHttpServer())
       .post('/')
@@ -80,7 +76,7 @@ describe('LocalAuthGuard', () => {
       .expect(HttpStatus.OK)
       .expect(({ headers }) => {
         expect(headers['set-cookie'][0]).toEqual(
-          expect.stringContaining('connect.sid'),
+          expect.stringContaining('connect.sid')
         );
       });
   });

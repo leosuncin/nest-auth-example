@@ -1,10 +1,10 @@
 import { IntegreSQLClient } from '@devoxa/integresql-client';
 import { faker } from '@faker-js/faker';
 import { build, perBuild } from '@jackfranklin/test-data-bot';
-import { HttpStatus, INestApplication } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { HttpStatus, type INestApplication } from '@nestjs/common';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import * as supertest from 'supertest';
+import supertest from 'supertest';
 import { runSeeders } from 'typeorm-extension';
 
 import { AppModule } from '../src/app.module';
@@ -34,7 +34,7 @@ describe('AuthController (e2e)', () => {
       './src/**/*.seeder.ts',
     ]);
 
-    await client.initializeTemplate(hash, async dbConfig => {
+    await client.initializeTemplate(hash, async (dbConfig) => {
       dataSource.setOptions({
         url: undefined,
         username: dbConfig.username,
@@ -65,7 +65,7 @@ describe('AuthController (e2e)', () => {
           port: dbConfig.port,
           synchronize: false,
           autoLoadEntities: true,
-        }),
+        })
       )
       .compile();
 
@@ -101,16 +101,15 @@ describe('AuthController (e2e)', () => {
       { email: 'john@doe.me', password: '' },
       HttpStatus.UNAUTHORIZED,
     ],
-  ])(
-    'should make a POST request to %s with %p and expect %d status',
-    async (url, body, statusCode) => {
-      const resp = await request.post(url).send(body).expect(statusCode);
+  ])('should make a POST request to %s with %p and expect %d status', async (url, body, statusCode) => {
+    const resp = await request.post(url).send(body).expect(statusCode);
 
-      expect(resp.body).toBeDefined();
-      expect(resp.body.password).toBeUndefined();
-      if (resp.ok) expect(resp.header.authorization).toMatch(/Bearer\s+.*/);
-    },
-  );
+    expect(resp.body).toBeDefined();
+    expect(resp.body.password).toBeUndefined();
+    if (resp.ok) {
+      expect(resp.header.authorization).toMatch(/Bearer\s+.*/);
+    }
+  });
 
   it('should get session user', async () => {
     const {

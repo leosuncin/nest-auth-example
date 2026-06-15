@@ -1,8 +1,8 @@
 import { IntegreSQLClient } from '@devoxa/integresql-client';
 import { HttpStatus, type INestApplication } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import * as request from 'supertest';
+import request from 'supertest';
 
 import { AppModule } from '../src/app.module';
 import { appDataSource as dataSource } from '../src/data-source';
@@ -23,7 +23,7 @@ describe('AppController (e2e)', () => {
       './src/**/*.seeder.ts',
     ]);
 
-    await client.initializeTemplate(hash, async dbConfig => {
+    await client.initializeTemplate(hash, async (dbConfig) => {
       dataSource.setOptions({
         username: dbConfig.username,
         password: dbConfig.password,
@@ -52,7 +52,7 @@ describe('AppController (e2e)', () => {
           port: dbConfig.port,
           synchronize: false,
           autoLoadEntities: true,
-        }),
+        })
       )
       .compile();
 
@@ -69,7 +69,7 @@ describe('AppController (e2e)', () => {
     await request(app.getHttpServer())
       .get('/health')
       .expect(HttpStatus.OK)
-      .expect(response =>
+      .expect((response) =>
         expect(response.body).toMatchObject(
           expect.objectContaining({
             details: {
@@ -90,8 +90,8 @@ describe('AppController (e2e)', () => {
               },
             },
             status: 'ok',
-          }),
-        ),
+          })
+        )
       );
   });
 });

@@ -1,33 +1,23 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { createMock } from 'ts-auto-mock';
+import type { Mocked } from '@suites/doubles.jest';
+import { TestBed } from '@suites/unit';
 
-import { User } from '../user/entities/user.entity';
+import type { User } from '../user/entities/user.entity';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 
 describe('Auth Controller', () => {
   let controller: AuthController;
-  let mockedAuthService: jest.Mocked<AuthService>;
-  const user = createMock<Omit<User, 'password'>>({
+  let mockedAuthService: Mocked<AuthService>;
+  const user = {
     name: 'John Doe',
     email: 'john@doe.me',
-  }) as User;
+  } as User;
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      controllers: [AuthController],
-    })
-      .useMocker(token => {
-        if (Object.is(token, AuthService)) {
-          return createMock<AuthService>();
-        }
-      })
-      .compile();
+    const { unit, unitRef } = await TestBed.solitary(AuthController).compile();
 
-    controller = module.get<AuthController>(AuthController);
-    mockedAuthService = module.get<AuthService, jest.Mocked<AuthService>>(
-      AuthService,
-    );
+    controller = unit;
+    mockedAuthService = unitRef.get(AuthService);
   });
 
   it('should be defined', () => {
@@ -41,12 +31,10 @@ describe('Auth Controller', () => {
       password: 'Pa$$w0rd',
     };
 
-    mockedAuthService.register.mockResolvedValue(
-      createMock<Omit<User, 'password'>>({
-        email: register.email,
-        name: register.name,
-      }) as User,
-    );
+    mockedAuthService.register.mockResolvedValue({
+      email: register.email,
+      name: register.name,
+    } as User);
 
     await expect(controller.register(register)).resolves.toBeDefined();
   });

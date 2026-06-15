@@ -1,8 +1,8 @@
 import { type CallHandler, ForbiddenException } from '@nestjs/common';
 import { ExecutionContextHost } from '@nestjs/core/helpers/execution-context-host';
+import { mock } from '@suites/doubles.jest';
 import { createMocks } from 'node-mocks-http';
 import { lastValueFrom, of } from 'rxjs';
-import { createMock } from 'ts-auto-mock';
 
 import type { User } from '../../user/entities/user.entity';
 import type { Pagination } from '../dtos/pagination.dto';
@@ -18,12 +18,12 @@ describe('IsOwnerInterceptor', () => {
     const { req, res } = createMocks({
       method: 'GET',
       url: '/todo/1',
-      user: createMock<User>({ id: 1 }),
+      user: mock<User>({ id: 1 }),
     });
     const context = new ExecutionContextHost([req, res]);
-    const todo = createMock<Todo>({ owner: 1 });
+    const todo = { owner: 1 } as Todo;
 
-    const next = createMock<CallHandler<Todo>>({
+    const next = mock<CallHandler<Todo>>({
       handle: () => of(todo),
     });
     const interceptor = new IsOwnerInterceptor<Todo>();
@@ -37,11 +37,11 @@ describe('IsOwnerInterceptor', () => {
     const { req, res } = createMocks({
       method: 'GET',
       url: '/todo/2',
-      user: createMock<User>({ id: 1 }),
+      user: mock<User>({ id: 1 }),
     });
     const context = new ExecutionContextHost([req, res]);
-    const next = createMock<CallHandler<Todo>>({
-      handle: () => of(createMock<Todo>({ owner: 2 })),
+    const next = mock<CallHandler<Todo>>({
+      handle: () => of({ owner: 2 } as Todo),
     });
     const interceptor = new IsOwnerInterceptor<Todo>();
 
@@ -54,11 +54,26 @@ describe('IsOwnerInterceptor', () => {
     const { req, res } = createMocks({
       method: 'GET',
       url: '/todo',
-      user: createMock<User>({ id: 1 }),
+      user: mock<User>({ id: 1 }),
     });
     const context = new ExecutionContextHost([req, res]);
-    const pagination = createMock<Pagination<Todo>>({ items: [] as any });
-    const next = createMock<CallHandler<Pagination<Todo>>>({
+    const pagination: Pagination<Todo> = {
+      items: [],
+      links: {
+        first: '',
+        previous: '',
+        next: '',
+        last: '',
+      },
+      meta: {
+        totalItems: 0,
+        itemCount: 0,
+        itemsPerPage: 10,
+        totalPages: 0,
+        currentPage: 1,
+      },
+    };
+    const next = mock<CallHandler<Pagination<Todo>>>({
       handle: () => of(pagination),
     });
     const interceptor = new IsOwnerInterceptor<Pagination<Todo>>();
