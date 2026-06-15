@@ -1,11 +1,11 @@
+import faker from 'https://unpkg.com/faker@5.1.0/dist/faker.js';
 import { check } from 'k6';
 import http from 'k6/http';
 import { Rate } from 'k6/metrics';
-import faker from 'https://unpkg.com/faker@5.1.0/dist/faker.js';
 
-const loginFailedRate = new Rate('failed login request');
-const registerFailedRate = new Rate('failed register request');
-const emailDomain = Math.random().toString(36).substring(2, 15) + '.lol';
+const loginFailedRate = new Rate('failed_login_request');
+const registerFailedRate = new Rate('failed_register_request');
+const emailDomain = `${Math.random().toString(36).slice(2, 15)}.lol`;
 
 /**
  * Send a login request
@@ -25,13 +25,16 @@ export function requestLogin(baseUrl) {
   const res = http.post(`${baseUrl}/auth/login`, payload, params);
 
   const result = check(res, {
-    'Login successfully': res => res.status === 200,
-    'Authorization header': /Bearer\s+.*/.test(res.headers.Authorization),
-    'JSON response': res => /json/.test(res.headers['Content-Type']),
+    'Login successfully': (res) => res.status === 200,
+    'Authorization header': bearerTokenRegex.test(res.headers.Authorization),
+    'JSON response': (res) =>
+      jsonContentTypeRegex.test(res.headers['Content-Type']),
   });
   loginFailedRate.add(!result);
 }
 
+const bearerTokenRegex = /Bearer\s+.*/;
+const jsonContentTypeRegex = /json/;
 /**
  * Send a register request
  *
@@ -51,9 +54,10 @@ export function requestRegister(baseUrl) {
   const res = http.post(`${baseUrl}/auth/register`, payload, params);
 
   const result = check(res, {
-    'Register successfully': res => res.status === 201,
-    'Authorization header': /Bearer\s+.*/.test(res.headers.Authorization),
-    'JSON response': res => /json/.test(res.headers['Content-Type']),
+    'Register successfully': (res) => res.status === 201,
+    'Authorization header': bearerTokenRegex.test(res.headers.Authorization),
+    'JSON response': (res) =>
+      jsonContentTypeRegex.test(res.headers['Content-Type']),
   });
   registerFailedRate.add(!result);
 }
@@ -73,6 +77,6 @@ export function requestMe(baseUrl, token) {
   const res = http.get(`${baseUrl}/auth/me`, params);
 
   check(res, {
-    'Get user session': res => res.status === 200,
+    'Get user session': (res) => res.status === 200,
   });
 }

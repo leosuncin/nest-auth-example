@@ -1,7 +1,7 @@
 import {
   IsDefined,
-  IsNotEmpty,
   IsEmail,
+  IsNotEmpty,
   MinLength,
   Validate,
 } from 'class-validator';

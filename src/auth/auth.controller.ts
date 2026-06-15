@@ -5,14 +5,16 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Inject,
   Post,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 
 import { AuthUser } from '../user/decorators/user.decorator';
-import { User } from '../user/entities/user.entity';
+import type { User } from '../user/entities/user.entity';
 import { AuthService } from './auth.service';
+// biome-ignore lint/style/useImportType: Reflect metadata
 import { SignUp } from './dto/sign-up.dto';
 import { JWTAuthGuard } from './guards/jwt-auth.guard';
 import { LocalAuthGuard } from './guards/local-auth.guard';
@@ -22,7 +24,8 @@ import { TokenInterceptor } from './interceptors/token.interceptor';
 @Controller('auth')
 @UseInterceptors(ClassSerializerInterceptor)
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  @Inject(AuthService)
+  private readonly authService: AuthService;
 
   @Post('register')
   @HttpCode(HttpStatus.CREATED)
@@ -35,7 +38,7 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @HttpCode(HttpStatus.OK)
   @UseInterceptors(TokenInterceptor)
-  async login(@AuthUser() user: User): Promise<User> {
+  login(@AuthUser() user: User): User {
     return user;
   }
 

@@ -1,8 +1,4 @@
-import {
-  IsDefined, IsOptional,
-  IsString
-} from 'class-validator';
-
+import { IsDefined, IsOptional, IsString } from 'class-validator';
 
 export class PaginationLink {
   /**

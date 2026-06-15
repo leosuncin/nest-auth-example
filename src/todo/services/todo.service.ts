@@ -1,19 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import type { Repository } from 'typeorm';
 
-import { User } from '../../user/entities/user.entity';
-import { PaginationQuery } from '../dtos/pagination-query.dto';
-import { TodoCreate } from '../dtos/todo-create.dto';
-import { TodoUpdate } from '../dtos/todo-update.dto';
+import type { User } from '../../user/entities/user.entity';
+import type { PaginationQuery } from '../dtos/pagination-query.dto';
+import type { TodoCreate } from '../dtos/todo-create.dto';
+import type { TodoUpdate } from '../dtos/todo-update.dto';
 import { Todo } from '../entities/todo.entity';
 
 @Injectable()
 export class TodoService {
-  constructor(
-    @InjectRepository(Todo)
-    private readonly repo: Repository<Todo>,
-  ) {}
+  @InjectRepository(Todo)
+  private readonly repo: Repository<Todo>;
 
   createTodo(newTodo: TodoCreate): Promise<Todo> {
     const todo = this.repo.create(newTodo);
@@ -23,7 +21,7 @@ export class TodoService {
 
   listTodo(
     pagination: PaginationQuery,
-    owner: User,
+    owner: User
   ): Promise<[Todo[], number]> {
     return this.repo.findAndCount({
       where: { owner: { id: owner.id } },

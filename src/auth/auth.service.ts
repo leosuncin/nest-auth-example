@@ -1,21 +1,22 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
-import { User } from '../user/entities/user.entity';
-import { SignUp } from './dto/sign-up.dto';
-import { JwtPayload } from './interfaces/jwt-payload.interface';
+import type { User } from '../user/entities/user.entity';
 import { UserService } from '../user/services/user.service';
+import type { SignUp } from './dto/sign-up.dto';
+import type { JwtPayload } from './interfaces/jwt-payload.interface';
 
 @Injectable()
 export class AuthService {
-  constructor(
-    private readonly userService: UserService,
-    private readonly jwtService: JwtService,
-  ) {}
+  @Inject(UserService)
+  private readonly userService: UserService;
+
+  @Inject(JwtService)
+  private readonly jwtService: JwtService;
 
   async register(signUp: SignUp): Promise<User> {
     const user = await this.userService.create(signUp);
-    delete user.password;
+    user.password = undefined;
 
     return user;
   }
@@ -34,7 +35,7 @@ export class AuthService {
 
     if (!(await user.checkPassword(password))) {
       throw new UnauthorizedException(
-        `Wrong password for user with email: ${email}`,
+        `Wrong password for user with email: ${email}`
       );
     }
 

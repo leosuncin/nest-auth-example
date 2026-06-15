@@ -9,7 +9,7 @@ import { appDataSource as dataSource } from '../src/data-source';
 import { setup } from '../src/setup';
 
 const client = new IntegreSQLClient({
-  url: process.env['INTEGRESQL_URL'] ?? 'http://localhost:5000',
+  url: process.env.INTEGRESQL_URL ?? 'http://localhost:5000',
 });
 
 describe('AppController (e2e)', () => {
@@ -74,19 +74,19 @@ describe('AppController (e2e)', () => {
           expect.objectContaining({
             details: {
               db: {
-                status: expect.stringMatching(/up/i),
+                status: expect.stringMatching('up'),
               },
               mem_rss: {
-                status: expect.stringMatching(/up/i),
+                status: expect.stringMatching('up'),
               },
             },
             error: {},
             info: {
               db: {
-                status: expect.stringMatching(/up/i),
+                status: expect.stringMatching('up'),
               },
               mem_rss: {
-                status: expect.stringMatching(/up/i),
+                status: expect.stringMatching('up'),
               },
             },
             status: 'ok',

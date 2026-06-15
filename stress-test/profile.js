@@ -1,9 +1,9 @@
+import faker from 'https://unpkg.com/faker@5.1.0/dist/faker.js';
 import { check } from 'k6';
 import http from 'k6/http';
 import { Rate } from 'k6/metrics';
-import faker from 'https://unpkg.com/faker@5.1.0/dist/faker.js';
 
-const updateProfileFailedRate = new Rate('failed update profile request');
+const updateProfileFailedRate = new Rate('failed_update_profile_request');
 
 export function requestProfile(baseUrl, token) {
   const res = http.get(`${baseUrl}/profile/2`, {
@@ -13,7 +13,7 @@ export function requestProfile(baseUrl, token) {
   });
 
   check(res, {
-    'Show user profile': res => res.status === 200,
+    'Show user profile': (res) => res.status === 200,
   });
 }
 
@@ -28,7 +28,7 @@ export function requestUpdateProfile(baseUrl, token) {
   const res = http.put(`${baseUrl}/profile/2`, payload, params);
 
   const result = check(res, {
-    'Update user profile': res => res.status === 200,
+    'Update user profile': (res) => res.status === 200,
   });
   updateProfileFailedRate.add(!result);
 }

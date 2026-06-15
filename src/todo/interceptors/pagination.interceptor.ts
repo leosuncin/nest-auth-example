@@ -1,30 +1,33 @@
 import {
-  CallHandler,
-  ExecutionContext,
+  type CallHandler,
+  type ExecutionContext,
   Injectable,
-  NestInterceptor,
+  type NestInterceptor,
 } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 import type { Request } from 'express';
-import { Observable, map } from 'rxjs';
-
+import { map, type Observable } from 'rxjs';
+import { Pagination } from '../dtos/pagination.dto';
 import { PaginationLink } from '../dtos/pagination-link.dto';
 import { PaginationMeta } from '../dtos/pagination-meta.dto';
 import { PaginationQuery } from '../dtos/pagination-query.dto';
-import { Pagination } from '../dtos/pagination.dto';
+
+type PartialWritable<T> = {
+  -readonly [P in keyof T]?: T[P];
+} & {};
 
 @Injectable()
 export class PaginationInterceptor<Item>
-  implements NestInterceptor<[Array<Item>, number], Pagination<Item>>
+  implements NestInterceptor<[Item[], number], Pagination<Item>>
 {
   intercept(
     context: ExecutionContext,
-    next: CallHandler<[Array<Item>, number]>,
+    next: CallHandler<[Item[], number]>
   ): Observable<Pagination<Item>> {
     const request = context.switchToHttp().getRequest<Request>();
     const { limit: itemsPerPage, page: currentPage } = plainToInstance(
       PaginationQuery,
-      request.query,
+      request.query
     );
 
     return next.handle().pipe(
@@ -44,7 +47,7 @@ export class PaginationInterceptor<Item>
           meta,
           links: this.#createLinks(request, meta),
         });
-      }),
+      })
     );
   }
 
@@ -52,30 +55,35 @@ export class PaginationInterceptor<Item>
     const { limit: defaultLimit } = new PaginationQuery();
     const url = new URL('http://localhost');
     url.protocol = request.protocol;
-    url.host = request.get('host')!; // eslint-disable-line @typescript-eslint/no-non-null-assertion
+    url.host = request.get('host');
     url.pathname = request.path;
+    const plain: PartialWritable<PaginationLink> = {
+      first: url.toString(),
+      previous: undefined,
+      next: undefined,
+      last: undefined,
+    };
 
     if (meta.itemsPerPage !== defaultLimit) {
       url.searchParams.set('limit', String(meta.itemsPerPage));
+      plain.first = url.toString();
     }
 
-    return plainToInstance(PaginationLink, {
-      first: url.toString(),
-      previous:
-        meta.currentPage > 1
-          ? (url.searchParams.set('page', String(meta.currentPage - 1)),
-            url.toString())
-          : undefined,
-      next:
-        meta.currentPage < meta.totalPages
-          ? (url.searchParams.set('page', String(meta.currentPage + 1)),
-            url.toString())
-          : undefined,
-      last:
-        meta.totalPages > 1
-          ? (url.searchParams.set('page', String(meta.totalPages)),
-            url.toString())
-          : undefined,
-    });
+    if (meta.currentPage > 1) {
+      url.searchParams.set('page', String(meta.currentPage - 1));
+      plain.previous = url.toString();
+    }
+
+    if (meta.currentPage < meta.totalPages) {
+      url.searchParams.set('page', String(meta.currentPage + 1));
+      plain.next = url.toString();
+    }
+
+    if (meta.totalPages > 1) {
+      url.searchParams.set('page', String(meta.totalPages));
+      plain.last = url.toString();
+    }
+
+    return plainToInstance(PaginationLink, plain);
   }
 }

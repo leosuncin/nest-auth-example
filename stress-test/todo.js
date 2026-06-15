@@ -1,10 +1,11 @@
+import Ajv from 'https://jslib.k6.io/ajv/6.12.5/index.js';
+import formUrlencoded from 'https://jslib.k6.io/form-urlencoded/3.0.0/index.js';
+import faker from 'https://unpkg.com/faker@5.1.0/dist/faker.js';
 import { check, fail, group } from 'k6';
 import http from 'k6/http';
 import { Rate } from 'k6/metrics';
-import formUrlencoded from 'https://jslib.k6.io/form-urlencoded/3.0.0/index.js';
-import faker from 'https://unpkg.com/faker@5.1.0/dist/faker.js';
-import Ajv from 'https://jslib.k6.io/ajv/6.12.5/index.js';
 
+const jsonContentTypeRegex = /json/;
 const paginationSchema = {
   type: 'object',
   properties: {
@@ -60,11 +61,11 @@ const paginationSchema = {
 const ajv = new Ajv({ allErrors: true });
 const validatePagination = ajv.compile(paginationSchema);
 
-const createTodoFailedRate = new Rate('failed create todo request');
-const updateTodoFailedRate = new Rate('failed update todo request');
-const doneTodoFailedRate = new Rate('failed mark todo as done request');
-const pendingTodoFailedRate = new Rate('failed mark todo as pending request');
-const deleteTodoFailedRate = new Rate('failed delete todo request');
+const createTodoFailedRate = new Rate('failed_create_todo_request');
+const updateTodoFailedRate = new Rate('failed_update_todo_request');
+const doneTodoFailedRate = new Rate('failed_mark_todo_as_done_request');
+const pendingTodoFailedRate = new Rate('failed_mark_todo_as_pending_request');
+const deleteTodoFailedRate = new Rate('failed_delete_todo_request');
 
 export function requestTodoWorkflow(baseUrl, token) {
   group('Create a new todo', () => {
@@ -76,15 +77,15 @@ export function requestTodoWorkflow(baseUrl, token) {
       },
     };
 
-    const res = http.post(
-      `${baseUrl}/todo`,
-      payload,
-      Object.assign({ responseType: 'text' }, params),
-    );
+    const res = http.post(`${baseUrl}/todo`, payload, {
+      responseType: 'text',
+      ...params,
+    });
 
     const result = check(res, {
-      'Todo created successfully': res => res.status === 201,
-      'JSON response': res => /json/.test(res.headers['Content-Type']),
+      'Todo created successfully': (res) => res.status === 201,
+      'JSON response': (res) =>
+        jsonContentTypeRegex.test(res.headers['Content-Type']),
     });
 
     if (!result) {
@@ -98,8 +99,9 @@ export function requestTodoWorkflow(baseUrl, token) {
       const res = http.get(`${baseUrl}/todo/${todo.id}`, params);
 
       check(res, {
-        'Todo retrieved successfully': res => res.status === 200,
-        'JSON response': res => /json/.test(res.headers['Content-Type']),
+        'Todo retrieved successfully': (res) => res.status === 200,
+        'JSON response': (res) =>
+          jsonContentTypeRegex.test(res.headers['Content-Type']),
       });
     });
 
@@ -108,8 +110,9 @@ export function requestTodoWorkflow(baseUrl, token) {
       const res = http.put(`${baseUrl}/todo/${todo.id}`, payload, params);
 
       const result = check(res, {
-        'Todo updated successfully': res => res.status === 200,
-        'JSON response': res => /json/.test(res.headers['Content-Type']),
+        'Todo updated successfully': (res) => res.status === 200,
+        'JSON response': (res) =>
+          jsonContentTypeRegex.test(res.headers['Content-Type']),
       });
       updateTodoFailedRate.add(!result);
     });
@@ -118,8 +121,9 @@ export function requestTodoWorkflow(baseUrl, token) {
       const res = http.patch(`${baseUrl}/todo/${todo.id}/done`, null, params);
 
       const result = check(res, {
-        'Todo marked as done successfully': res => res.status === 200,
-        'JSON response': res => /json/.test(res.headers['Content-Type']),
+        'Todo marked as done successfully': (res) => res.status === 200,
+        'JSON response': (res) =>
+          jsonContentTypeRegex.test(res.headers['Content-Type']),
       });
       doneTodoFailedRate.add(!result);
 
@@ -127,12 +131,13 @@ export function requestTodoWorkflow(baseUrl, token) {
         const res = http.patch(
           `${baseUrl}/todo/${todo.id}/pending`,
           null,
-          params,
+          params
         );
 
         const result = check(res, {
-          'Todo marked as pending successfully': res => res.status === 200,
-          'JSON response': res => /json/.test(res.headers['Content-Type']),
+          'Todo marked as pending successfully': (res) => res.status === 200,
+          'JSON response': (res) =>
+            jsonContentTypeRegex.test(res.headers['Content-Type']),
         });
         pendingTodoFailedRate.add(!result);
 
@@ -140,7 +145,7 @@ export function requestTodoWorkflow(baseUrl, token) {
           const res = http.del(`${baseUrl}/todo/${todo.id}`, null, params);
 
           const result = check(res, {
-            'Todo removed successfully': res => res.status === 204,
+            'Todo removed successfully': (res) => res.status === 204,
           });
 
           deleteTodoFailedRate.add(!result);
@@ -200,7 +205,7 @@ export function requestUnauthorizedTodo(baseUrl) {
     ]);
 
     check(responses, {
-      'status is UNAUTHORIZED': responses =>
+      'status is UNAUTHORIZED': (responses) =>
         responses.every(({ status }) => status === 401),
     });
   });
@@ -218,9 +223,10 @@ export function requestListTodo(baseUrl, token) {
     const res = http.get(`${baseUrl}/todo`, params);
 
     const result = check(res, {
-      'Todo listed successfully': res => res.status === 200,
-      'JSON response': res => /json/.test(res.headers['Content-Type']),
-      'Todo list is paginated': res => {
+      'Todo listed successfully': (res) => res.status === 200,
+      'JSON response': (res) =>
+        jsonContentTypeRegex.test(res.headers['Content-Type']),
+      'Todo list is paginated': (res) => {
         const valid = validatePagination(res.json());
 
         return !!valid;

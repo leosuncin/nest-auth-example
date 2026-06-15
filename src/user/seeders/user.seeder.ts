@@ -1,12 +1,12 @@
-import { type DataSource } from 'typeorm';
-import { Seeder, type SeederFactoryManager } from 'typeorm-extension';
+import type { DataSource } from 'typeorm';
+import type { Seeder, SeederFactoryManager } from 'typeorm-extension';
 
 import { User } from '../entities/user.entity';
 
 export class UserSeeder implements Seeder {
-  public async run(
+  async run(
     _: DataSource,
-    factoryManager: SeederFactoryManager,
+    factoryManager: SeederFactoryManager
   ): Promise<void> {
     const userFactory = factoryManager.get(User);
 

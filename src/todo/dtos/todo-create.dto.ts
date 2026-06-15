@@ -1,7 +1,7 @@
-import { IsDefined, IsNotEmpty, IsString, MinLength } from 'class-validator';
 import { Exclude } from 'class-transformer';
+import { IsDefined, IsNotEmpty, IsString, MinLength } from 'class-validator';
 
-import { User } from '../../user/entities/user.entity';
+import type { User } from '../../user/entities/user.entity';
 
 export class TodoCreate {
   @IsDefined()

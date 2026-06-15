@@ -1,7 +1,7 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Inject } from '@nestjs/common';
 import {
   HealthCheck,
-  HealthCheckResult,
+  type HealthCheckResult,
   HealthCheckService,
   MemoryHealthIndicator,
   TypeOrmHealthIndicator,
@@ -9,11 +9,14 @@ import {
 
 @Controller('health')
 export class HealthController {
-  constructor(
-    private health: HealthCheckService,
-    private orm: TypeOrmHealthIndicator,
-    private memory: MemoryHealthIndicator,
-  ) {}
+  @Inject(HealthCheckService)
+  private readonly health!: HealthCheckService;
+
+  @Inject(TypeOrmHealthIndicator)
+  private readonly orm!: TypeOrmHealthIndicator;
+
+  @Inject(MemoryHealthIndicator)
+  private readonly memory!: MemoryHealthIndicator;
 
   @Get()
   @HealthCheck()

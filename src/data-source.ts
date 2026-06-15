@@ -1,10 +1,10 @@
 import { DataSource, type DataSourceOptions } from 'typeorm';
-import { type SeederOptions } from 'typeorm-extension';
+import type { SeederOptions } from 'typeorm-extension';
 
-import { CreateUser1557166726050 } from './migrations/1557166726050-CreateUser';
-import { CreateProfile1570141220019 } from './migrations/1570141220019-CreateProfile';
-import { CreateSessionStorage1584985637890 } from './migrations/1584985637890-CreateSessionStorage';
-import { CreateTodo1597106889894 } from './migrations/1597106889894-CreateTodo';
+import { CreateUser1557166726050 } from './migrations/1557166726050-create-user';
+import { CreateProfile1570141220019 } from './migrations/1570141220019-create-profile';
+import { CreateSessionStorage1584985637890 } from './migrations/1584985637890-create-session-storage';
+import { CreateTodo1597106889894 } from './migrations/1597106889894-create-todo';
 import { Todo } from './todo/entities/todo.entity';
 import { todoFactory } from './todo/factories/todo.factory';
 import { TodoSeeder } from './todo/seeders/todo.seeder';
