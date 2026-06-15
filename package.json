@@ -7,9 +7,9 @@
   "author": "Jaime Leonardo Suncin Cruz <leosuncin@gmail.com>",
   "scripts": {
     "build": "nest build",
-    "db:create": "ts-node -r dotenv-mono/load -r tsconfig-paths/register node_modules/typeorm-extension/bin/cli.cjs db:create -r src/config --synchronize=no --initialDatabase=postgres",
-    "db:drop": "ts-node -r dotenv-mono/load -r tsconfig-paths/register node_modules/typeorm-extension/bin/cli.cjs db:drop -r src/config --initialDatabase=postgres",
-    "db:seed": "ts-node -r dotenv-mono/load -r tsconfig-paths/register node_modules/typeorm-extension/bin/cli.cjs seed:run -r src/config",
+    "db:create": "ts-node -r dotenv-mono/load -r tsconfig-paths/register node_modules/typeorm-extension/bin/cli.mjs db:create -r src/config --synchronize=no --initialDatabase=postgres",
+    "db:drop": "ts-node -r dotenv-mono/load -r tsconfig-paths/register node_modules/typeorm-extension/bin/cli.mjs db:drop -r src/config --initialDatabase=postgres",
+    "db:seed": "ts-node -r dotenv-mono/load -r tsconfig-paths/register node_modules/typeorm-extension/bin/cli.mjs seed:run -r src/config",
     "format": "ultracite fix",
     "lint": "ultracite check",
     "migration:run": "typeorm migration:run -d dist/data-source",
@@ -20,7 +20,7 @@
     "test": "jest",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "test:e2e": "NODE_OPTIONS='--experimental-vm-modules' jest --config ./test/jest-e2e.json",
     "test:watch": "jest --watch",
     "typeorm": "NODE_OPTIONS='-r dotenv-mono/load -r tsconfig-paths/register' typeorm-ts-node-commonjs -d src/data-source"
   },
@@ -61,7 +61,7 @@
     "pg": "^8.11.0",
     "reflect-metadata": "^0.2.1",
     "rxjs": "^7.8.0",
-    "typeorm": "^0.3.11"
+    "typeorm": "^1.0.0"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.4.16",
@@ -93,7 +93,7 @@
     "ts-loader": "^9.4.2",
     "ts-node": "^10.9.1",
     "tsconfig-paths": "^4.2.0",
-    "typeorm-extension": "^3.0.1",
+    "typeorm-extension": "^4.0.0-beta.0",
     "typescript": "^5.9.3",
     "ultracite": "^7.8.3"
   },
