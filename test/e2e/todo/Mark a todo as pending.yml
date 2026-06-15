@@ -1,0 +1,45 @@
+info:
+  name: Mark a todo as pending
+  type: http
+  seq: 6
+
+http:
+  method: PATCH
+  url: "{{API_URL}}/todo/{{TODO_ID}}/done"
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        const tv4 = require('tv4');
+
+        test('given the response body when it satisfies the todo schema then it is correct', () => {
+          const schema = {
+            $ref: 'todoSchema'
+          };
+
+          expect(tv4.validate(res.getBody(), schema)).to.equal(true);
+        });
+
+        test('given a todo when todo\'s done is true then it is correct', () => {
+          expect(res.getBody()).to.have.property('done', true);
+        });
+  assertions:
+    - expression: res.status
+      operator: eq
+      value: "200"
+    - expression: res.headers['content-type']
+      operator: contains
+      value: application/json
+    - expression: res.body
+      operator: isJson
+    - expression: res.responseTime
+      operator: lt
+      value: "1000"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

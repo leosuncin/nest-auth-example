@@ -1,0 +1,65 @@
+info:
+  name: Sign up
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{API_URL}}/auth/register"
+  headers:
+    - name: Content-Type
+      value: application/x-www-form-urlencoded
+  body:
+    type: form-urlencoded
+    data:
+      - name: name
+        value: "{{$randomFullName}}"
+      - name: email
+        value: "{{$randomExampleEmail}}"
+      - name: password
+        value: Pa$$w0rd
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: after-response
+      code: |-
+        const authorization = res.getHeader('authorization');
+        const [, token] = authorization?.split(' ') ?? [];
+
+        bru.setVar('TOKEN', token);
+    - type: tests
+      code: |-
+        const tv4 = require('tv4');
+
+        test('given the response headers when they have an authorization header then the response is correct', () => {
+          expect(res.getHeaders()).to.have.property('authorization').and.to.match(/Bearer .*/);
+        });
+
+        test('given the response body when it satisfies the user schema then it is correct', () => {
+          const schema = {
+            $ref: 'userSchema'
+          };
+
+          expect(tv4.validate(res.getBody(), schema)).to.equal(true);
+        });
+  assertions:
+    - expression: res.status
+      operator: eq
+      value: "201"
+    - expression: res.headers['content-type']
+      operator: contains
+      value: application/json
+    - expression: res.body
+      operator: isJson
+    - expression: res.responseTime
+      operator: lt
+      value: "1000"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: Register a new user

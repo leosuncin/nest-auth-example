@@ -1,0 +1,45 @@
+info:
+  name: Get Profile
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: "{{API_URL}}/profile/1"
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: before-request
+      code: req.setHeader('authorization', bru.getVar('TOKEN'));
+    - type: tests
+      code: |-
+        const tv4 = require('tv4');
+
+        test('given the response body when it satisfies the user schema then it is correct', () => {
+          const schema = {
+            $ref: 'userSchema'
+          };
+
+          expect(tv4.validate(res.getBody(), schema)).to.equal(true);
+        });
+  assertions:
+    - expression: res.status
+      operator: eq
+      value: "200"
+    - expression: res.headers['content-type']
+      operator: contains
+      value: application/json
+    - expression: res.body
+      operator: isJson
+    - expression: res.responseTime
+      operator: lt
+      value: "1000"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
+
+docs: Get current user profile

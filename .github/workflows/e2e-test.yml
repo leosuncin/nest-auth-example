@@ -87,5 +87,10 @@ jobs:
           APP_SECRET: 444a45b38193572dd7d3c0d691d806b487dbdfe1
           DATABASE_URL: postgres://admin:wnbaohW7mn@localhost:${{ job.services.postgres.ports['5432'] }}/authentication
           ALLOWED_ORIGINS: "*"
-      - name: Run Postman collection
-        run: npx newman run https://www.getpostman.com/collections/6b82b259fc751deda654
+      - name: Run Bruno collection
+        working-directory: test/e2e
+        run: npm exec -- bru run --reporter-html results.html
+      - uses: actions/upload-artifact@v7
+        with:
+          name: e2e-results
+          path: test/e2e/results.html
