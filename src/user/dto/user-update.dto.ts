@@ -1,4 +1,4 @@
-import { IsDefined, IsString, IsNotEmpty } from 'class-validator';
+import { IsDefined, IsNotEmpty, IsString } from 'class-validator';
 
 export class UserUpdate {
   @IsDefined()

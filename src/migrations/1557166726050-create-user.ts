@@ -1,8 +1,8 @@
-import { MigrationInterface, QueryRunner } from 'typeorm';
+import type { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class CreateUser1557166726050 implements MigrationInterface {
-  public async up(queryRunner: QueryRunner): Promise<any> {
-    await queryRunner.query(`CREATE TABLE "user" (
+  async up(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(/* sql */ `CREATE TABLE "user" (
           "id" SERIAL NOT NULL,
           "name" character varying NOT NULL,
           "email" character varying NOT NULL,
@@ -14,7 +14,7 @@ export class CreateUser1557166726050 implements MigrationInterface {
         )`);
   }
 
-  public async down(queryRunner: QueryRunner): Promise<any> {
-    await queryRunner.query(`DROP TABLE "user"`);
+  async down(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(/* sql */ `DROP TABLE "user"`);
   }
 }

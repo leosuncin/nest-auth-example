@@ -1,18 +1,23 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-import { Strategy, ExtractJwt, JwtFromRequestFunction } from 'passport-jwt';
-
+import {
+  ExtractJwt,
+  type JwtFromRequestFunction,
+  Strategy,
+} from 'passport-jwt';
+import type { User } from '../../user/entities/user.entity';
 import { AuthService } from '../auth.service';
-import { User } from '../../user/entities/user.entity';
-import { JwtPayload } from '../interfaces/jwt-payload.interface';
+import type { JwtPayload } from '../interfaces/jwt-payload.interface';
 
-const extractJwtFromCookie: JwtFromRequestFunction = request => {
-  return request.signedCookies['token']!; // eslint-disable-line @typescript-eslint/no-non-null-assertion
-};
+const extractJwtFromCookie: JwtFromRequestFunction = (request) =>
+  request.signedCookies.token;
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
-  constructor(private readonly authService: AuthService) {
+  @Inject(AuthService)
+  private readonly authService: AuthService;
+
+  constructor() {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
         extractJwtFromCookie,

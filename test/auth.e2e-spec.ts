@@ -19,9 +19,10 @@ const userBuilder = build({
   },
 });
 const client = new IntegreSQLClient({
-  url: process.env['INTEGRESQL_URL'] ?? 'http://localhost:5000',
+  url: process.env.INTEGRESQL_URL ?? 'http://localhost:5000',
 });
 
+const bearerTokenRegex = /Bearer\s+.*/;
 describe('AuthController (e2e)', () => {
   let app: INestApplication;
   let request: supertest.SuperTest<supertest.Test>;
@@ -107,7 +108,7 @@ describe('AuthController (e2e)', () => {
     expect(resp.body).toBeDefined();
     expect(resp.body.password).toBeUndefined();
     if (resp.ok) {
-      expect(resp.header.authorization).toMatch(/Bearer\s+.*/);
+      expect(resp.header.authorization).toMatch(bearerTokenRegex);
     }
   });
 

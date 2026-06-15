@@ -6,6 +6,7 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Inject,
   Param,
   ParseIntPipe,
   Patch,
@@ -20,11 +21,14 @@ import {
 import { JWTAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { SessionAuthGuard } from '../../auth/guards/session-auth.guard';
 import { AuthUser } from '../../user/decorators/user.decorator';
-import { User } from '../../user/entities/user.entity';
+import type { User } from '../../user/entities/user.entity';
+// biome-ignore lint/style/useImportType: Reflect metadata
 import { PaginationQuery } from '../dtos/pagination-query.dto';
+// biome-ignore lint/style/useImportType: Reflect metadata
 import { TodoCreate } from '../dtos/todo-create.dto';
+// biome-ignore lint/style/useImportType: Reflect metadata
 import { TodoUpdate } from '../dtos/todo-update.dto';
-import { Todo } from '../entities/todo.entity';
+import type { Todo } from '../entities/todo.entity';
 import { TodoFilter } from '../filters/todo.filter';
 import { IsOwnerInterceptor } from '../interceptors/is-owner.interceptor';
 import { PaginationInterceptor } from '../interceptors/pagination.interceptor';
@@ -36,12 +40,13 @@ import { TodoService } from '../services/todo.service';
 @UseFilters(TodoFilter)
 @UseInterceptors(ClassSerializerInterceptor, IsOwnerInterceptor)
 export class TodoController {
-  constructor(private readonly service: TodoService) {}
+  @Inject(TodoService)
+  private readonly service: TodoService;
 
   @Post()
   createTodo(
     @Body() newTodo: TodoCreate,
-    @AuthUser() user: User,
+    @AuthUser() user: User
   ): Promise<Todo> {
     newTodo.owner = user;
 
@@ -52,7 +57,7 @@ export class TodoController {
   @UseInterceptors(PaginationInterceptor)
   listTodo(
     @Query() pagination: PaginationQuery,
-    @AuthUser() user: User,
+    @AuthUser() user: User
   ): Promise<[Todo[], number]> {
     return this.service.listTodo(pagination, user);
   }
@@ -65,7 +70,7 @@ export class TodoController {
   @Put(':id')
   updateTodo(
     @Param('id', ParseIntPipe, ParseTodoPipe) todo: Todo,
-    @Body() updates: TodoUpdate,
+    @Body() updates: TodoUpdate
   ): Promise<Todo> {
     return this.service.updateTodo(todo, updates);
   }
@@ -73,15 +78,15 @@ export class TodoController {
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   removeTodo(
-    @Param('id', ParseIntPipe, ParseTodoPipe) todo: Todo,
+    @Param('id', ParseIntPipe, ParseTodoPipe) todo: Todo
   ): Promise<Todo> {
     return this.service.removeTodo(todo);
   }
 
   @Patch(':id/done')
-  async markTodoAsDone(
-    @Param('id', ParseIntPipe, ParseTodoPipe) todo: Todo,
-  ): Promise<Partial<Todo>> {
+  markTodoAsDone(
+    @Param('id', ParseIntPipe, ParseTodoPipe) todo: Todo
+  ): Promise<Todo> | Todo {
     if (todo.done) {
       return todo;
     }
@@ -90,9 +95,9 @@ export class TodoController {
   }
 
   @Patch(':id/pending')
-  async markTodoAsPending(
-    @Param('id', ParseIntPipe, ParseTodoPipe) todo: Todo,
-  ): Promise<Partial<Todo>> {
+  markTodoAsPending(
+    @Param('id', ParseIntPipe, ParseTodoPipe) todo: Todo
+  ): Promise<Todo> | Todo {
     if (!todo.done) {
       return todo;
     }

@@ -1,8 +1,8 @@
-import { MigrationInterface, QueryRunner } from 'typeorm';
+import type { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class CreateProfile1570141220019 implements MigrationInterface {
-  public async up(queryRunner: QueryRunner): Promise<any> {
-    await queryRunner.query(`CREATE TABLE "profile" (
+  async up(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.query(/* sql */ `CREATE TABLE "profile" (
           "id" SERIAL NOT NULL,
           "phone" character varying NOT NULL,
           "birthday" date NOT NULL,
@@ -21,10 +21,10 @@ export class CreateProfile1570141220019 implements MigrationInterface {
         )`);
   }
 
-  public async down(queryRunner: QueryRunner): Promise<any> {
+  async down(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
-      `ALTER TABLE "profile" DROP CONSTRAINT "FK_a24972ebd73b106250713dcddd9"`,
+      /* sql */ `ALTER TABLE "profile" DROP CONSTRAINT "FK_a24972ebd73b106250713dcddd9"`
     );
-    await queryRunner.query(`DROP TABLE "profile"`);
+    await queryRunner.query(/* sql */ `DROP TABLE "profile"`);
   }
 }

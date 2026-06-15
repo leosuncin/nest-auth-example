@@ -1,14 +1,16 @@
-import * as bcrypt from 'bcryptjs';
+import bcrypt from 'bcryptjs';
 import { Exclude } from 'class-transformer';
 import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  CreateDateColumn,
-  UpdateDateColumn,
   BeforeInsert,
   BeforeUpdate,
+  Column,
+  CreateDateColumn,
+  Entity,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
+
+const bcryptRegex = /^\$2[abxy]?\$\d+\$/;
 
 @Entity()
 export class User {
@@ -39,7 +41,7 @@ export class User {
   @BeforeUpdate()
   async hashPassword(): Promise<void> {
     const salt = await bcrypt.genSalt();
-    if (!/^\$2[abxy]?\$\d+\$/.test(this.password)) {
+    if (!bcryptRegex.test(this.password)) {
       this.password = await bcrypt.hash(this.password, salt);
     }
   }

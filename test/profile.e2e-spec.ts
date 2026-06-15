@@ -17,14 +17,14 @@ const updateBuilder = build({
   },
 });
 const client = new IntegreSQLClient({
-  url: process.env['INTEGRESQL_URL'] ?? 'http://localhost:5000',
+  url: process.env.INTEGRESQL_URL ?? 'http://localhost:5000',
 });
 
 describe('ProfileController (e2e)', () => {
   let app: INestApplication;
   let request: supertest.SuperTest<supertest.Test>;
   let token: string;
-  let userId;
+  let userId: number;
   let hash: string;
 
   beforeAll(async () => {
@@ -79,7 +79,7 @@ describe('ProfileController (e2e)', () => {
     } = await supertest(app.getHttpServer())
       .post('/auth/login')
       .send({ email: 'john@doe.me', password: 'Pa$$w0rd' });
-    [, token] = authorization.split(/\s+/);
+    [, token] = authorization.split(' ');
     userId = id;
   });
 

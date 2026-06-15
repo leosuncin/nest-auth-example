@@ -17,8 +17,9 @@ const createTodoBuilder = build({
   },
 });
 const client = new IntegreSQLClient({
-  url: process.env['INTEGRESQL_URL'] ?? 'http://localhost:5000',
+  url: process.env.INTEGRESQL_URL ?? 'http://localhost:5000',
 });
+const jsonContentTypeRegex = /application\/json/i;
 
 describe('TodoController (e2e)', () => {
   let app: INestApplication;
@@ -78,7 +79,7 @@ describe('TodoController (e2e)', () => {
     } = await supertest(app.getHttpServer())
       .post('/auth/login')
       .send({ email: 'john@doe.me', password: 'Pa$$w0rd' });
-    [, token] = authorization.split(/\s+/);
+    [, token] = authorization.split(' ');
   });
 
   afterEach(async () => {
@@ -94,28 +95,30 @@ describe('TodoController (e2e)', () => {
     ['patch', '/todo/1/done'],
     ['patch', '/todo/1/pending'],
   ])('should require authentication', async (method, url) => {
-    switch (method) {
-      case 'post':
-        await request
-          .post(url)
-          .send(createTodoBuilder())
-          .expect(HttpStatus.UNAUTHORIZED);
-        break;
-      case 'get':
-        await request.get(url).expect(HttpStatus.UNAUTHORIZED);
-        break;
-      case 'put':
-        await request
-          .put(url)
-          .send(createTodoBuilder())
-          .expect(HttpStatus.UNAUTHORIZED);
-        break;
-      case 'delete':
-        await request.delete(url).expect(HttpStatus.UNAUTHORIZED);
-        break;
-      case 'patch':
-        await request.patch(url).expect(HttpStatus.UNAUTHORIZED);
-        break;
+    if (method === 'post') {
+      await request
+        .post(url)
+        .send(createTodoBuilder())
+        .expect(HttpStatus.UNAUTHORIZED);
+    }
+
+    if (method === 'get') {
+      await request.get(url).expect(HttpStatus.UNAUTHORIZED);
+    }
+
+    if (method === 'put') {
+      await request
+        .put(url)
+        .send(createTodoBuilder())
+        .expect(HttpStatus.UNAUTHORIZED);
+    }
+
+    if (method === 'delete') {
+      await request.delete(url).expect(HttpStatus.UNAUTHORIZED);
+    }
+
+    if (method === 'patch') {
+      await request.patch(url).expect(HttpStatus.UNAUTHORIZED);
     }
   });
 
@@ -137,7 +140,7 @@ describe('TodoController (e2e)', () => {
       .set('Authorization', `Bearer ${token}`)
       .send({})
       .expect(HttpStatus.UNPROCESSABLE_ENTITY)
-      .expect('Content-Type', /json/);
+      .expect('Content-Type', jsonContentTypeRegex);
 
     expect(resp.body).toHaveProperty('error', 'Unprocessable Entity');
   });
@@ -147,7 +150,7 @@ describe('TodoController (e2e)', () => {
       .get('/todo')
       .set('Authorization', `Bearer ${token}`)
       .expect(HttpStatus.OK)
-      .expect('Content-Type', /json/);
+      .expect('Content-Type', jsonContentTypeRegex);
 
     expect(resp.body).toMatchObject({
       items: expect.any(Array),
@@ -171,7 +174,7 @@ describe('TodoController (e2e)', () => {
       .get('/todo/1')
       .set('Authorization', `Bearer ${token}`)
       .expect(HttpStatus.OK)
-      .expect('Content-Type', /json/);
+      .expect('Content-Type', jsonContentTypeRegex);
 
     expect(resp.body).toBeDefined();
     expect(resp.body).not.toHaveProperty('owner');

@@ -1,11 +1,11 @@
+import { Transform } from 'class-transformer';
 import {
+  IsBoolean,
+  IsNotEmpty,
   IsOptional,
   IsString,
-  IsNotEmpty,
   MinLength,
-  IsBoolean,
 } from 'class-validator';
-import { Transform } from 'class-transformer';
 
 export class TodoUpdate {
   @IsOptional()
@@ -19,7 +19,7 @@ export class TodoUpdate {
   @Transform(({ value }) =>
     typeof value === 'string'
       ? ['true', '1', 'yes'].includes(value.toLowerCase())
-      : Boolean(value),
+      : Boolean(value)
   )
   readonly done?: boolean;
 }

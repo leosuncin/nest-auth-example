@@ -1,11 +1,6 @@
-import {
-  IsArray,
-  IsDefined,
-  IsObject,
-} from 'class-validator';
-
-import { PaginationMeta } from './pagination-meta.dto';
-import { PaginationLink } from './pagination-link.dto';
+import { IsArray, IsDefined, IsObject } from 'class-validator';
+import type { PaginationLink } from './pagination-link.dto';
+import type { PaginationMeta } from './pagination-meta.dto';
 
 export class Pagination<Item> {
   /**
@@ -13,7 +8,7 @@ export class Pagination<Item> {
    */
   @IsDefined()
   @IsArray()
-  readonly items: Array<Item>;
+  readonly items: Item[];
   /**
    * The associated meta information
    */

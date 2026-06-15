@@ -1,3 +1,4 @@
+/// <reference types="jest" />
 import type { CallHandler } from '@nestjs/common';
 import { ExecutionContextHost } from '@nestjs/core/helpers/execution-context-host';
 import { type Mocked, mock } from '@suites/doubles.jest';

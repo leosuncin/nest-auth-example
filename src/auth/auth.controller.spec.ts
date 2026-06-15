@@ -39,8 +39,8 @@ describe('Auth Controller', () => {
     await expect(controller.register(register)).resolves.toBeDefined();
   });
 
-  it('should log in an user', async () => {
-    await expect(controller.login(user)).resolves.toBeDefined();
+  it('should log in an user', () => {
+    expect(controller.login(user)).toBeDefined();
   });
 
   it('should got me logged', () => {

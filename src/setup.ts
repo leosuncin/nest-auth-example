@@ -11,6 +11,7 @@ import passport from 'passport';
 
 import { AppModule } from './app.module';
 
+const splitOriginRegex = /\s*,\s*/;
 export function setup(app: INestApplication): INestApplication {
   app.useGlobalPipes(
     new ValidationPipe({
@@ -44,7 +45,7 @@ export function setup(app: INestApplication): INestApplication {
   app.use(passport.session());
 
   app.enableCors({
-    origin: process.env.ALLOWED_ORIGINS?.split(/\s*,\s*/) ?? '*',
+    origin: process.env.ALLOWED_ORIGINS?.split(splitOriginRegex) ?? '*',
     credentials: true,
     exposedHeaders: ['Authorization'],
   });

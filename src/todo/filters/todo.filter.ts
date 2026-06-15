@@ -1,12 +1,13 @@
 import {
-  ArgumentsHost,
+  type ArgumentsHost,
   Catch,
-  ExceptionFilter,
+  type ExceptionFilter,
   HttpStatus,
 } from '@nestjs/common';
 import type { Request, Response } from 'express';
 import { EntityNotFoundError } from 'typeorm';
 
+// biome-ignore lint/complexity/noStaticOnlyClass: Filter EntityNotFoundError exception
 class TodoNotFoundConstraintErrorToCatch {
   static [Symbol.hasInstance](instance: unknown) {
     return instance instanceof EntityNotFoundError;

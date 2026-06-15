@@ -1,14 +1,14 @@
 import {
-  CallHandler,
-  ExecutionContext,
+  type CallHandler,
+  type ExecutionContext,
   ForbiddenException,
   Injectable,
-  NestInterceptor,
+  type NestInterceptor,
 } from '@nestjs/common';
-import { Observable, tap } from 'rxjs';
+import { type Observable, tap } from 'rxjs';
 
 import { Pagination } from '../dtos/pagination.dto';
-import { Todo } from '../entities/todo.entity';
+import type { Todo } from '../entities/todo.entity';
 
 @Injectable()
 export class IsOwnerInterceptor<T extends Todo | Pagination<Todo>>
@@ -19,17 +19,19 @@ export class IsOwnerInterceptor<T extends Todo | Pagination<Todo>>
     const user = request.user;
 
     return next.handle().pipe(
-      tap(todo => {
-        if (!user || todo instanceof Pagination) return;
+      tap((todo) => {
+        if (!user || todo instanceof Pagination) {
+          return;
+        }
 
         const userId =
           typeof todo.owner === 'object' ? todo.owner.id : todo.owner;
         const isOwner = userId === user.id;
 
         if (!isOwner) {
-          throw new ForbiddenException(`Todo does not belong to you`);
+          throw new ForbiddenException('Todo does not belong to you');
         }
-      }),
+      })
     );
   }
 }

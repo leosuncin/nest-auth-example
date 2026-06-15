@@ -1,26 +1,28 @@
 import {
-  Controller,
-  UseGuards,
-  Get,
-  UseInterceptors,
+  Body,
   ClassSerializerInterceptor,
+  Controller,
+  Get,
+  Inject,
   Param,
   ParseIntPipe,
   Put,
-  Body,
+  UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
-
-import { UserService } from '../services/user.service';
-import { UserUpdate } from '../dto/user-update.dto';
 import { JWTAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { SessionAuthGuard } from '../../auth/guards/session-auth.guard';
-import { User } from '../entities/user.entity';
+// biome-ignore lint/style/useImportType: Reflect metadata
+import { UserUpdate } from '../dto/user-update.dto';
+import type { User } from '../entities/user.entity';
+import { UserService } from '../services/user.service';
 
 @Controller('profile')
 @UseGuards(JWTAuthGuard, SessionAuthGuard)
 @UseInterceptors(ClassSerializerInterceptor)
 export class ProfileController {
-  constructor(private readonly userService: UserService) {}
+  @Inject(UserService)
+  private readonly userService: UserService;
 
   @Get(':id')
   get(@Param('id', new ParseIntPipe()) id: number): Promise<User> {
@@ -30,7 +32,7 @@ export class ProfileController {
   @Put(':id')
   update(
     @Param('id', new ParseIntPipe()) id: number,
-    @Body() updatesUser: UserUpdate,
+    @Body() updatesUser: UserUpdate
   ): Promise<User> {
     return this.userService.update(id, updatesUser);
   }

@@ -78,14 +78,14 @@ describe('PaginationInterceptor', () => {
     expect(result.meta.itemCount).toBe(items.length);
     expect(result.meta.totalItems).toBe(totalItems);
     expect(result.meta.itemsPerPage).toBe(
-      limit ? Number.parseInt(limit) : defaultLimit
+      limit ? Number.parseInt(limit, 10) : defaultLimit
     );
     expect(result.meta.totalPages).toBe(pages);
     expect(result.meta.currentPage).toBe(
-      page ? Number.parseInt(page) : defaultPage
+      page ? Number.parseInt(page, 10) : defaultPage
     );
 
-    const shouldIncludeTheLimit = Boolean(limit && +limit !== defaultLimit);
+    const shouldIncludeTheLimit = limit ? +limit !== defaultLimit : false;
 
     if (result.links.first) {
       const first = new URL(result.links.first);
