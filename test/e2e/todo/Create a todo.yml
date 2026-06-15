@@ -1,0 +1,53 @@
+info:
+  name: Create a todo
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{API_URL}}/todo"
+  body:
+    type: json
+    data: |-
+      {
+        "text": "{{$randomLoremText}}"
+      }
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: after-response
+      code: bru.setVar('TODO_ID', res.getBody().id);
+    - type: tests
+      code: |-
+        const tv4 = require('tv4');
+
+        test('given the response body when it satisfies the todo schema then it is correct', () => {
+          const schema = {
+            $ref: 'todoSchema'
+          };
+
+          expect(tv4.validate(res.getBody(), schema)).to.equal(true);
+        });
+
+        test('given a todo when it is created then it must not be done', () => {
+          expect(res.getBody()).to.have.property('done', false);
+        });
+  assertions:
+    - expression: res.status
+      operator: eq
+      value: "201"
+    - expression: res.headers['content-type']
+      operator: contains
+      value: application/json
+    - expression: res.body
+      operator: isJson
+    - expression: res.responseTime
+      operator: lt
+      value: "1000"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

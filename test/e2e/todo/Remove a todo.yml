@@ -1,0 +1,30 @@
+info:
+  name: Remove a todo
+  type: http
+  seq: 7
+
+http:
+  method: DELETE
+  url: "{{API_URL}}/todo/{{TODO_ID}}"
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test('given a todo when it contains the changes then it is correct', () => {
+          expect(res.getBody()).to.be.empty;
+        });
+  assertions:
+    - expression: res.status
+      operator: eq
+      value: "204"
+    - expression: res.responseTime
+      operator: lt
+      value: "1000"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

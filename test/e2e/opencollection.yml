@@ -1,0 +1,175 @@
+$schema: https://schema.opencollection.com/opencollection/v1.0.0.json
+
+opencollection: 1.0.0
+
+info:
+  name: Nest Auth Example
+config:
+  proxy:
+    inherit: true
+    config:
+      protocol: http
+      hostname: ""
+      port: ""
+      auth:
+        username: ""
+        password: ""
+      bypassProxy: ""
+
+request:
+  auth:
+    type: bearer
+    token: "{{TOKEN}}"
+  variables:
+    - name: API_URL
+      value: http://localhost:3000
+    - name: TOKEN
+      value: ""
+  scripts:
+    - type: after-response
+      code: |-
+        const tv4 = require("tv4");
+
+        const userSchema = {
+          type: 'object',
+          properties: {
+            id: {
+              type: 'integer'
+            },
+            name: {
+              type: 'string',
+              minLength: 1
+            },
+            email: {
+              type: 'string',
+              format: 'email'
+            },
+            createdAt: {
+              type: 'string',
+              format: 'date-time'
+            },
+            updatedAt: {
+              type: 'string',
+              format: 'date-time'
+            }
+          },
+          required: ['id', 'name', 'email', 'createdAt', 'updatedAt']
+        };
+        const todoSchema = {
+          type: 'object',
+          properties: {
+            text: {
+              type: 'string',
+              minLength: 2
+            },
+            id: {
+              type: 'integer'
+            },
+            done: {
+              type: 'boolean'
+            },
+            createdAt: {
+              type: 'string',
+              format: 'date-time'
+            },
+            updatedAt: {
+              type: 'string',
+              format: 'date-time'
+            }
+          },
+          required: ['id', 'text', 'done', 'createdAt', 'updatedAt']
+        };
+        const paginationTodoSchema = {
+          type: 'object',
+          properties: {
+            items: {
+              type: 'array',
+              items: {
+                $ref: 'todoSchema'
+              }
+            },
+            meta: {
+              type: 'object',
+              properties: {
+                itemCount: {
+                  type: 'integer',
+                  min: 0
+                },
+                totalItems: {
+                  type: 'integer',
+                  min: 0
+                },
+                itemsPerPage: {
+                  type: 'integer',
+                  min: 0
+                },
+                totalPages: {
+                  type: 'integer',
+                  min: 0
+                },
+                currentPage: {
+                  type: 'integer',
+                  min: 0
+                }
+              },
+              required: [
+                'itemCount',
+                'totalItems',
+                'itemsPerPage',
+                'totalPages',
+                'currentPage'
+              ]
+            },
+            links: {
+              type: 'object',
+              properties: {
+                first: {
+                  type: 'string',
+                  format: 'url'
+                },
+                next: {
+                  type: 'string',
+                  format: 'url'
+                },
+                last: {
+                  type: 'string',
+                  format: 'url'
+                }
+              },
+              required: ['first', 'next', 'last']
+            }
+          },
+          required: ['items', 'meta', 'links']
+        };
+
+        tv4.addSchema('userSchema', userSchema);
+        tv4.addSchema('todoSchema', todoSchema);
+        tv4.addSchema('paginationTodoSchema', paginationTodoSchema);
+    - type: tests
+      code: |-
+        test('given the response status when it is 200, 201 or 204 then it is acceptable', () => {
+          expect(res.getStatus()).to.be.oneOf([200, 201, 204]);
+        });
+
+        test('given the response body when it has a JSON content then it is acceptable', () => {
+          if (res.getStatus() !== 204) {
+            expect(res.getHeader('content-type')).to.include('application/json');
+          }
+
+          expect(res.getBody()).not.to.be.undefined;
+        });
+
+        test("given the response time when it is less than 1000ms then it is acceptable", () => {
+          expect(res.getResponseTime()).to.be.below(1000);
+        });
+
+docs:
+  content: NestJS authentication example
+  type: text/markdown
+bundled: false
+extensions:
+  bruno:
+    ignore:
+      - node_modules
+      - .git
+

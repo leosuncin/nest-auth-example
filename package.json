@@ -1,28 +1,45 @@
 {
   "name": "nest-auth-example",
   "version": "0.0.1",
-  "description": "Nest.js authentication with Passport. Realworld example",
-  "author": "Jaime Leonardo Suncin Cruz <leosuncin@gmail.com>",
   "private": true,
+  "description": "Nest.js authentication with Passport. Realworld example",
   "license": "MIT",
+  "author": "Jaime Leonardo Suncin Cruz <leosuncin@gmail.com>",
   "scripts": {
     "build": "nest build",
     "db:create": "ts-node -r dotenv-mono/load -r tsconfig-paths/register node_modules/typeorm-extension/bin/cli.cjs db:create -r src/config --synchronize=no --initialDatabase=postgres",
     "db:drop": "ts-node -r dotenv-mono/load -r tsconfig-paths/register node_modules/typeorm-extension/bin/cli.cjs db:drop -r src/config --initialDatabase=postgres",
     "db:seed": "ts-node -r dotenv-mono/load -r tsconfig-paths/register node_modules/typeorm-extension/bin/cli.cjs seed:run -r src/config",
     "format": "ultracite fix",
+    "lint": "ultracite check",
+    "migration:run": "typeorm migration:run -d dist/data-source",
     "start": "node dist/main.js",
+    "start:debug": "NODE_OPTIONS='-r dotenv-mono/load' nest start --debug --watch",
     "start:dev": "NODE_OPTIONS='-r dotenv-mono/load' nest start --watch",
     "start:repl": "NODE_OPTIONS='-r dotenv-mono/load' nest start --entryFile repl",
-    "start:debug": "NODE_OPTIONS='-r dotenv-mono/load' nest start --debug --watch",
-    "migration:run": "typeorm migration:run -d dist/data-source",
-    "lint": "ultracite check",
     "test": "jest",
-    "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
+    "test:watch": "jest --watch",
     "typeorm": "NODE_OPTIONS='-r dotenv-mono/load -r tsconfig-paths/register' typeorm-ts-node-commonjs -d src/data-source"
+  },
+  "jest": {
+    "coverageDirectory": "../coverage",
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "ts"
+    ],
+    "rootDir": "src",
+    "setupFiles": [
+      "dotenv-mono/load"
+    ],
+    "testEnvironment": "node",
+    "testRegex": ".spec.ts$",
+    "transform": {
+      "^.+\\.ts$": "ts-jest"
+    }
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
@@ -67,6 +84,7 @@
     "@types/passport-jwt": "^4.0.1",
     "@types/passport-local": "^1.0.34",
     "@types/supertest": "^2.0.12",
+    "@usebruno/cli": "^3.4.2",
     "dotenv-mono": "^1.3.10",
     "jest": "^30.0.0",
     "node-mocks-http": "^1.12.1",
@@ -78,23 +96,6 @@
     "typeorm-extension": "^3.0.1",
     "typescript": "^5.9.3",
     "ultracite": "^7.8.3"
-  },
-  "jest": {
-    "moduleFileExtensions": [
-      "js",
-      "json",
-      "ts"
-    ],
-    "rootDir": "src",
-    "testRegex": ".spec.ts$",
-    "transform": {
-      "^.+\\.ts$": "ts-jest"
-    },
-    "coverageDirectory": "../coverage",
-    "testEnvironment": "node",
-    "setupFiles": [
-      "dotenv-mono/load"
-    ]
   },
   "allowScripts": {
     "@suites/di.nestjs@3.1.0": true,
