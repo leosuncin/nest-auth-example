@@ -7,6 +7,20 @@
     },
     "parser": {
       "unsafeParameterDecoratorsEnabled": true
-    }
+    },
+    "globals": [
+      "afterAll",
+      "afterEach",
+      "beforeAll",
+      "beforeEach",
+      "describe",
+      "expect",
+      "it",
+      "jest",
+      "test",
+      "__ENV",
+      "__VU",
+      "__ITER"
+    ]
   }
 }
