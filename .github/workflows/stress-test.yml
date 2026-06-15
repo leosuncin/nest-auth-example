@@ -26,8 +26,7 @@ jobs:
         with:
           node-version: "lts/*"
       - name: Install k6
-        run: |
-          curl https://github.com/grafana/k6/releases/download/v0.39.0/k6-v0.39.0-linux-amd64.tar.gz -L | tar xvz --strip-components 1
+        uses: grafana/setup-k6-action@v1
       - uses: bahmutov/npm-install@v1
       - name: Setup the project
         run: |
@@ -47,7 +46,10 @@ jobs:
           DATABASE_URL: postgres://tighten:rename@localhost:${{ job.services.postgres.ports['5432'] }}/embassy
           ALLOWED_ORIGINS: "*"
       - name: Run k6 local test
-        run: ./k6 run stress-test/main.js
+        uses: grafana/run-k6-action@v1
+        with:
+          path: |
+            ./stress-test/main.js
       - uses: actions/upload-artifact@v7
         with:
           name: stress-test-result
