@@ -74,7 +74,6 @@
     "@suites/di.nestjs": "^3.1.0",
     "@suites/doubles.jest": "^3.1.0",
     "@suites/unit": "^3.1.1",
-    "@types/bcryptjs": "^3.0.0",
     "@types/connect-pg-simple": "^7.0.3",
     "@types/cookie-parser": "^1.4.3",
     "@types/express": "^5.0.0",
@@ -100,6 +99,8 @@
   "allowScripts": {
     "@suites/di.nestjs@3.1.0": true,
     "@suites/doubles.jest@3.1.0": true,
-    "unrs-resolver@1.12.2": true
+    "unrs-resolver@1.12.2": true,
+    "protobufjs@8.6.3": true,
+    "protobufjs@7.6.4": true
   }
 }
