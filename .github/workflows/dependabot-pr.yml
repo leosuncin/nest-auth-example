@@ -31,3 +31,18 @@ jobs:
         uses: codepunkt/npm-lockfile-changes@v1.0.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+
+  raid_changes:
+    runs-on: ubuntu-latest
+    name: Refactoring Detection
+      steps:
+        - name: Checkout
+          uses: actions/checkout@v7
+          with:
+            fetch-depth: 0
+        - name: Refactoring Aware Diff
+          uses: rodrigo-brito/refactoring-aware-diff@action
+          env:
+            LANGUAGE: ${{ github.event.repository.language }} # Supports Java, Javascrit, C and Go.
+            REV_BEFORE: ${{ github.event.pull_request.base.sha }}
+            REV_AFTER: ${{ github.event.pull_request.head.sha }}
