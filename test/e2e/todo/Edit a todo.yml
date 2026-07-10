@@ -5,7 +5,7 @@ info:
 
 http:
   method: PUT
-  url: "{{API_URL}}/todo/{{TODO_ID}}"
+  url: "{{BASE_URL}}/todo/{{TODO_ID}}"
   body:
     type: json
     data: |-

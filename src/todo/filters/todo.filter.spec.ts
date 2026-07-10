@@ -7,11 +7,7 @@ import { Todo } from '../entities/todo.entity';
 import { TodoFilter } from './todo.filter';
 
 describe('TodoFilter', () => {
-  it('should be defined', () => {
-    expect(new TodoFilter()).toBeDefined();
-  });
-
-  it('should catch EntityNotFoundError', () => {
+  it('given the filter is called when the exception is EntityNotFoundError then it responds with Not Found', () => {
     const { req, res } = createMocks({
       method: 'GET',
       url: '/todo/0',

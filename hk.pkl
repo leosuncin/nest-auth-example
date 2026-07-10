@@ -1,0 +1,40 @@
+amends "package://github.com/jdx/hk/releases/download/v1.45.0/hk@1.45.0#/Config.pkl"
+import "package://github.com/jdx/hk/releases/download/v1.45.0/hk@1.45.0#/Builtins.pkl"
+
+local linters = new Mapping<String, Step> {
+    // Add linters here. Examples:
+    // ["prettier"] = Builtins.prettier
+    // ["eslint"] = Builtins.eslint
+    // ["ruff"] = Builtins.ruff
+    // ["biome"] = Builtins.biome
+
+    // Or define custom steps:
+    // ["custom"] {
+    //     glob = "**/*.py"
+    //     check = "mypy {{ files }}"
+    // }
+    ["ultracite"] = (Builtins.biome) {
+        check = "ultracite check {{ files }}"
+        fix = "ultracite fix {{ files }}"
+    }
+    ["sort-package-json"] {
+    	glob = "**/package.json"
+    	check = "sort-package-json --check {{ files }}"
+    	fix = "sort-package-json {{ files }}"
+    }
+}
+
+hooks {
+    ["pre-commit"] {
+        fix = true
+        stash = "git"
+        steps = linters
+    }
+    ["fix"] {
+        fix = true
+        steps = linters
+    }
+    ["check"] {
+        steps = linters
+    }
+}

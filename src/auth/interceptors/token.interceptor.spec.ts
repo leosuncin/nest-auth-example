@@ -1,12 +1,13 @@
-/// <reference types="jest" />
 import type { CallHandler } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { ExecutionContextHost } from '@nestjs/core/helpers/execution-context-host';
-import { type Mocked, mock } from '@suites/doubles.jest';
+import { type Mocked, mock } from '@suites/doubles.vitest';
 import { TestBed } from '@suites/unit';
 import { createMocks } from 'node-mocks-http';
 import { lastValueFrom, of } from 'rxjs';
-import type { User } from '../../user/entities/user.entity';
-import { AuthService } from '../auth.service';
+
+import { User } from '../entities/user.entity';
+import { AuthService } from '../services/auth.service';
 import { TokenInterceptor } from './token.interceptor';
 
 describe('TokenInterceptor', () => {
@@ -14,15 +15,23 @@ describe('TokenInterceptor', () => {
   let mockedAuthService: Mocked<AuthService>;
 
   beforeEach(async () => {
-    const { unit, unitRef } =
-      await TestBed.solitary(TokenInterceptor).compile();
+    const { unit, unitRef } = await TestBed.solitary(TokenInterceptor)
+      .mock(ConfigService)
+      .final({
+        get() {
+          return 'token';
+        },
+      })
+      .compile();
     interceptor = unit;
-    mockedAuthService = unitRef.get(AuthService);
+    mockedAuthService = unitRef.get(
+      AuthService
+    ) as unknown as Mocked<AuthService>;
   });
 
-  it('should add the token to the response', async () => {
+  it('given the interceptor is executed when a user is returned then it adds the token', async () => {
     const { req, res } = createMocks();
-    const user = {} as User;
+    const user = new User({ email: 'user@example.net' });
     const context = new ExecutionContextHost([req, res]);
     const next = mock<CallHandler<User>>({
       handle: () => of(user),

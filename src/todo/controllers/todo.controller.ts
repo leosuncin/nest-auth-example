@@ -8,7 +8,7 @@ import {
   HttpStatus,
   Inject,
   Param,
-  ParseIntPipe,
+  ParseUUIDPipe,
   Patch,
   Post,
   Put,
@@ -18,10 +18,10 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 
+import { AuthUser } from '../../auth/decorators/user.decorator';
+import type { User } from '../../auth/entities/user.entity';
 import { JWTAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { SessionAuthGuard } from '../../auth/guards/session-auth.guard';
-import { AuthUser } from '../../user/decorators/user.decorator';
-import type { User } from '../../user/entities/user.entity';
 // biome-ignore lint/style/useImportType: Reflect metadata
 import { PaginationQuery } from '../dtos/pagination-query.dto';
 // biome-ignore lint/style/useImportType: Reflect metadata
@@ -41,7 +41,7 @@ import { TodoService } from '../services/todo.service';
 @UseInterceptors(ClassSerializerInterceptor, IsOwnerInterceptor)
 export class TodoController {
   @Inject(TodoService)
-  private readonly service: TodoService;
+  private readonly service!: TodoService;
 
   @Post()
   createTodo(
@@ -63,13 +63,15 @@ export class TodoController {
   }
 
   @Get(':id')
-  getTodo(@Param('id', ParseIntPipe) id: number): Promise<Todo> {
+  getTodo(
+    @Param('id', new ParseUUIDPipe({ version: '7' })) id: Todo['id']
+  ): Promise<Todo> {
     return this.service.getTodo(id);
   }
 
   @Put(':id')
   updateTodo(
-    @Param('id', ParseIntPipe, ParseTodoPipe) todo: Todo,
+    @Param('id', new ParseUUIDPipe({ version: '7' }), ParseTodoPipe) todo: Todo,
     @Body() updates: TodoUpdate
   ): Promise<Todo> {
     return this.service.updateTodo(todo, updates);
@@ -78,14 +80,14 @@ export class TodoController {
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
   removeTodo(
-    @Param('id', ParseIntPipe, ParseTodoPipe) todo: Todo
+    @Param('id', new ParseUUIDPipe({ version: '7' }), ParseTodoPipe) todo: Todo
   ): Promise<Todo> {
     return this.service.removeTodo(todo);
   }
 
   @Patch(':id/done')
   markTodoAsDone(
-    @Param('id', ParseIntPipe, ParseTodoPipe) todo: Todo
+    @Param('id', new ParseUUIDPipe({ version: '7' }), ParseTodoPipe) todo: Todo
   ): Promise<Todo> | Todo {
     if (todo.done) {
       return todo;
@@ -96,7 +98,7 @@ export class TodoController {
 
   @Patch(':id/pending')
   markTodoAsPending(
-    @Param('id', ParseIntPipe, ParseTodoPipe) todo: Todo
+    @Param('id', new ParseUUIDPipe({ version: '7' }), ParseTodoPipe) todo: Todo
   ): Promise<Todo> | Todo {
     if (!todo.done) {
       return todo;

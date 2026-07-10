@@ -8,26 +8,30 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-import { User } from '../../user/entities/user.entity';
+import { User } from '../../auth/entities/user.entity';
 
 @Entity()
 export class Todo {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id!: string;
 
   @Column()
-  text: string;
+  text!: string;
 
   @Column({ default: false })
-  done: boolean;
+  done!: boolean;
 
   @ManyToOne(() => User, { nullable: false, onDelete: 'RESTRICT' })
   @Exclude()
-  owner: User | number;
+  owner!: User | User['id'];
 
   @CreateDateColumn()
-  createdAt: Date;
+  createdAt!: Date;
 
   @UpdateDateColumn()
-  updatedAt: Date;
+  updatedAt!: Date;
+
+  constructor(data: Partial<Todo> = {}) {
+    Object.assign(this, data);
+  }
 }

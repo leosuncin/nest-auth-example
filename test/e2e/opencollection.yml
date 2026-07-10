@@ -21,7 +21,7 @@ request:
     type: bearer
     token: "{{TOKEN}}"
   variables:
-    - name: API_URL
+    - name: BASE_URL
       value: http://localhost:3000
     - name: TOKEN
       value: ""
@@ -34,7 +34,7 @@ request:
           type: 'object',
           properties: {
             id: {
-              type: 'integer'
+              type: 'string',
             },
             name: {
               type: 'string',
@@ -63,7 +63,7 @@ request:
               minLength: 2
             },
             id: {
-              type: 'integer'
+              type: 'string'
             },
             done: {
               type: 'boolean'

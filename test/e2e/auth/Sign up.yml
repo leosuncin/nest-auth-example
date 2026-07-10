@@ -5,7 +5,7 @@ info:
 
 http:
   method: POST
-  url: "{{API_URL}}/auth/register"
+  url: "{{BASE_URL}}/auth/register"
   headers:
     - name: Content-Type
       value: application/x-www-form-urlencoded
@@ -55,6 +55,15 @@ runtime:
     - expression: res.responseTime
       operator: lt
       value: "1000"
+  actions:
+    - type: set-variable
+      phase: after-response
+      selector:
+        expression: res.body.email
+        method: jsonq
+      variable:
+        name: USER_EMAIL
+        scope: runtime
 
 settings:
   encodeUrl: true

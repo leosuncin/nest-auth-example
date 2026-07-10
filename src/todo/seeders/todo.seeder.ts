@@ -1,35 +1,38 @@
 import type { DataSource } from 'typeorm';
 import type { Seeder, SeederFactoryManager } from 'typeorm-extension';
-import { User } from '../../user/entities/user.entity';
+
+import { jane, john } from '../../auth/seeders/user.seeder';
 import { Todo } from '../entities/todo.entity';
+
+export const johnTodo = new Todo({
+  id: '019ede08-9e4d-7d1d-bb0b-24362f13ae1f',
+  text: 'Make a sandwich',
+  done: false,
+  owner: john,
+  createdAt: new Date(1_781_841_567_309),
+  updatedAt: new Date(1_781_841_567_309),
+});
+
+export const janeTodo = new Todo({
+  id: '019ede17-2090-7408-b827-43046b608ccd',
+  text: 'Make a salad',
+  done: false,
+  owner: jane,
+  createdAt: new Date(1_781_842_518_160),
+  updatedAt: new Date(1_781_842_518_160),
+});
 
 export class TodoSeeder implements Seeder {
   async run(
     dataSource: DataSource,
     factoryManager: SeederFactoryManager
   ): Promise<void> {
-    const userRepository = dataSource.getRepository(User);
+    const todoRepository = dataSource.getRepository(Todo);
     const todoFactory = factoryManager.get(Todo);
-    const john = await userRepository.findOneOrFail({
-      where: { email: 'john@doe.me' },
-    });
-    const jane = await userRepository.findOneOrFail({
-      where: { email: 'jane@doe.me' },
-    });
 
-    await todoFactory.save({
-      id: 1,
-      text: 'Make a sandwich',
-      done: false,
-      owner: john,
-    });
-    await todoFactory.save({
-      id: 2,
-      text: 'Make a salad',
-      done: false,
-      owner: jane,
-    });
-    await todoFactory.saveMany(10, { owner: john });
+    await todoRepository.save(johnTodo);
+    await todoRepository.save(janeTodo);
+    await todoFactory.saveMany(30, { owner: john });
     await todoFactory.saveMany(100, { owner: jane });
   }
 }

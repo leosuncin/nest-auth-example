@@ -1,0 +1,32 @@
+services:
+  workspace:
+    image: mcr.microsoft.com/devcontainers/typescript-node:4-24-trixie
+    command: sleep infinity
+    user: node
+    group_add:
+      - docker
+    environment:
+      APP_SECRET: ${APP_SECRET:-"e̶y̶J̶h̵b̵G̷c̴i̶O̵i̸J̶I̸U̸z̷M̷4̶N̴C̶I̷s̸I̸n̵R̵5̴c̵C̷I̵6̵I̵k̴p̷X̴V̵C̸J̴9̴"}
+    volumes:
+      - ..:/workspace:cached
+  postgres:
+    image: postgres:18
+    environment:
+      TZ: ${TZ:-America/El_Salvador}
+      POSTGRES_USER: postgres
+      POSTGRES_DB: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-"W̵!̴n̶d̸$̴$̶u̵r̴f̷D̵!̸$̶$̶c̶0̴r̶d̶I̶m̷p̵r̴0̷v̵3̴"}
+    network_mode: service:workspace
+    volumes:
+      - postgres-data:/var/lib/postgresql
+    healthcheck:
+      test: pg_isready -U postgres -d postgres
+  aspire:
+    image: mcr.microsoft.com/dotnet/aspire-dashboard:13
+    network_mode: service:workspace
+    environment:
+      ASPIRE_DASHBOARD_UNSECURED_ALLOW_ANONYMOUS: true
+      DASHBOARD__OTLP__CORS__ALLOWEDORIGINS: http://localhost:3000
+
+volumes:
+  postgres-data:

@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import type { Repository } from 'typeorm';
 
-import type { User } from '../../user/entities/user.entity';
+import type { User } from '../../auth/entities/user.entity';
 import type { PaginationQuery } from '../dtos/pagination-query.dto';
 import type { TodoCreate } from '../dtos/todo-create.dto';
 import type { TodoUpdate } from '../dtos/todo-update.dto';
@@ -11,19 +11,19 @@ import { Todo } from '../entities/todo.entity';
 @Injectable()
 export class TodoService {
   @InjectRepository(Todo)
-  private readonly repo: Repository<Todo>;
+  private readonly todoRepository!: Repository<Todo>;
 
   createTodo(newTodo: TodoCreate): Promise<Todo> {
-    const todo = this.repo.create(newTodo);
+    const todo = this.todoRepository.create(newTodo);
 
-    return this.repo.save(todo);
+    return this.todoRepository.save(todo);
   }
 
   listTodo(
     pagination: PaginationQuery,
     owner: User
   ): Promise<[Todo[], number]> {
-    return this.repo.findAndCount({
+    return this.todoRepository.findAndCount({
       where: { owner: { id: owner.id } },
       order: { createdAt: 'DESC' },
       skip: pagination.offset,
@@ -32,20 +32,20 @@ export class TodoService {
     });
   }
 
-  getTodo(id: number): Promise<Todo> {
-    return this.repo.findOneOrFail({
+  getTodo(id: Todo['id']): Promise<Todo> {
+    return this.todoRepository.findOneOrFail({
       where: { id },
       loadRelationIds: true,
     });
   }
 
   updateTodo(todo: Todo, updates: TodoUpdate): Promise<Todo> {
-    this.repo.merge(todo, updates);
+    this.todoRepository.merge(todo, updates);
 
-    return this.repo.save(todo);
+    return this.todoRepository.save(todo);
   }
 
   removeTodo(todo: Todo): Promise<Todo> {
-    return this.repo.remove(todo);
+    return this.todoRepository.remove(todo);
   }
 }

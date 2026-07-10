@@ -5,7 +5,7 @@ info:
 
 http:
   method: POST
-  url: "{{API_URL}}/todo"
+  url: "{{BASE_URL}}/todo"
   body:
     type: json
     data: |-

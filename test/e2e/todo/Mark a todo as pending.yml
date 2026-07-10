@@ -5,7 +5,7 @@ info:
 
 http:
   method: PATCH
-  url: "{{API_URL}}/todo/{{TODO_ID}}/done"
+  url: "{{BASE_URL}}/todo/{{TODO_ID}}/done"
   auth: inherit
 
 runtime:

@@ -1,0 +1,48 @@
+{
+  "name": "nest-api-example",
+  "dockerComposeFile": ["compose.yaml"],
+  "service": "workspace",
+  "workspaceFolder": "/workspace",
+  "runServices": ["postgres", "aspire"],
+  "postCreateCommand": "sudo chown -R node:node /home/node/.local ; git clone --depth 1 https://github.com/powerline/fonts.git ~/fonts && ~/fonts/install.sh && rm -rf ~/fonts; wget -qO ~/.gitconfig https://gist.githubusercontent.com/leosuncin/7fb12809933571729e9ff3f6f8837fd0/raw/930532e442c6963bed4fa2d4af94e99c8fcf93db/.gitconfig",
+  "postStartCommand": "mise trust --all && mise install",
+  "shutdownAction": "stopCompose",
+  "remoteUser": "node",
+  "forwardPorts": [5432, 3000, 18888],
+  "features": {
+    "ghcr.io/devcontainers/features/common-utils:2.5.9": {
+      "configureZshAsDefaultShell": true
+    },
+    "ghcr.io/devcontainers-extra/features/zsh-plugins:0.0.5": {
+      "plugins": "zsh-autosuggestions zsh-syntax-highlighting git mise",
+      "omzPlugins": "https://github.com/zsh-users/zsh-autosuggestions.git https://github.com/zsh-users/zsh-syntax-highlighting.git"
+    },
+    "ghcr.io/devcontainers/features/docker-in-docker:3.0.1": { "moby": false },
+    "ghcr.io/eitsupi/devcontainer-features/jq-likes:2.1.1": {},
+    "ghcr.io/devcontainers-extra/features/mise:1.0.0": {}
+  },
+  "containerEnv": {
+    "ZSH_THEME": "amuse",
+    "PNPM_HOME": "/home/node/.local/share/pnpm",
+    "PNPM_CONFIG_STORE_DIR": "/home/node/.local/share/pnpm/store",
+    "MISE_EXPERIMENTAL": "1",
+    "MISE_AGE_STRICT": "0",
+    "HK_MISE": "1",
+    "POSTGRES_PASSWORD": "${localEnv:POSTGRES_PASSWORD}",
+    "DATABASE_URL": "postgres://postgres:${localEnv:POSTGRES_PASSWORD}@localhost:5432/postgres",
+    "APP_SECRET": "${localEnv:APP_SECRET}"
+  },
+  "remoteEnv": {
+    "POSTGRES_PASSWORD": "${containerEnv:POSTGRES_PASSWORD}",
+    "APP_SECRET": "${containerEnv:APP_SECRET}",
+    "OTEL_EXPORTER_OTLP_PROTOCOL": "grpc",
+    "OTEL_EXPORTER_OTLP_ENDPOINT": "http://localhost:18889",
+    "OTEL_SERVICE_NAME": "nest-auth-example"
+  },
+  "mounts": [
+    "type=bind,source=${localEnv:HOME}${localEnv:USERPROFILE}/.config/mise/age.txt,target=/home/node/.config/mise/age.txt,readonly",
+    "type=bind,source=${localEnv:HOME}${localEnv:USERPROFILE}/.ssh,target=/home/node/.ssh,readonly",
+    "type=cache,target=/home/node/.local/share/mise/installs",
+    "type=cache,target=/home/node/.local/share/pnpm"
+  ]
+}

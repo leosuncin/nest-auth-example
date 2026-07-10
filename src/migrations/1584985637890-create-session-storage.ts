@@ -1,6 +1,8 @@
 import type { MigrationInterface, QueryRunner } from 'typeorm';
 
 export class CreateSessionStorage1584985637890 implements MigrationInterface {
+  name = 'CreateSessionStorage1584985637890';
+
   async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
       /* sql */ `CREATE TABLE "session" (

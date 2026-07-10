@@ -5,7 +5,7 @@ info:
 
 http:
   method: GET
-  url: "{{API_URL}}/todo/{{TODO_ID}}"
+  url: "{{BASE_URL}}/todo/{{TODO_ID}}"
   auth: inherit
 
 runtime:

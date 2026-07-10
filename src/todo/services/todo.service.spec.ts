@@ -1,8 +1,9 @@
 import { getRepositoryToken } from '@nestjs/typeorm';
-import type { Mocked } from '@suites/doubles.jest';
+import type { Mocked } from '@suites/doubles.vitest';
 import { TestBed } from '@suites/unit';
 import { EntityNotFoundError, type Repository } from 'typeorm';
-import type { User } from '../../user/entities/user.entity';
+
+import { User } from '../../auth/entities/user.entity';
 import { PaginationQuery } from '../dtos/pagination-query.dto';
 import type { TodoCreate } from '../dtos/todo-create.dto';
 import type { TodoUpdate } from '../dtos/todo-update.dto';
@@ -17,14 +18,12 @@ describe('TodoService', () => {
     const { unit, unitRef } = await TestBed.solitary(TodoService).compile();
 
     service = unit;
-    mockedTodoRepository = unitRef.get(getRepositoryToken(Todo) as string);
+    mockedTodoRepository = unitRef.get(
+      getRepositoryToken(Todo) as string
+    ) as unknown as Mocked<Repository<Todo>>;
   });
 
-  it('should be an instanceof TodoService', () => {
-    expect(service).toBeInstanceOf(TodoService);
-  });
-
-  it('should create a new todo', async () => {
+  it('given the createTodo is called when the data is passed then it creates a todo', async () => {
     const newTodo: TodoCreate = {
       text: 'Make an appointment',
       owner: {} as User,
@@ -41,8 +40,8 @@ describe('TodoService', () => {
     expect(todo).toHaveProperty('done', false);
   });
 
-  it('should list all todo', async () => {
-    const owner = { id: 1 } as User;
+  it('given the listTodo is called when the data is the default then it returns todos and count', async () => {
+    const owner = new User({ id: 'ef5559a5-c6aa-4433-9394-52d190331db1' });
     mockedTodoRepository.findAndCount.mockResolvedValueOnce([[], 0]);
     const [todos, count] = await service.listTodo(new PaginationQuery(), owner);
 
@@ -50,19 +49,22 @@ describe('TodoService', () => {
     expect(count).toEqual(expect.any(Number));
   });
 
-  it('should get one todo', async () => {
-    const id = 1;
+  it('given getTodo is called when an existing todo id is passed then it returns the todo', async () => {
+    const id = 'ed2dc10f-b23c-4e3d-8bd2-4e9162b3f5a8';
 
-    mockedTodoRepository.findOneOrFail.mockResolvedValueOnce({
-      owner: 1,
-    } as Todo);
+    mockedTodoRepository.findOneOrFail.mockResolvedValueOnce(
+      new Todo({
+        id,
+        owner: 'ef5559a5-c6aa-4433-9394-52d190331db1',
+      })
+    );
     const todo = await service.getTodo(id);
 
     expect(todo).toBeDefined();
   });
 
-  it('should throw on get one when the todo not exist', async () => {
-    const id = 0;
+  it('given getTodo is called when a non-existing todo id is passed then it throws', async () => {
+    const id = 'a0ebdb41-b962-4f01-a2c5-4a9bfe4ae6e9';
 
     mockedTodoRepository.findOneOrFail.mockRejectedValueOnce(
       new EntityNotFoundError(Todo, {
@@ -74,8 +76,8 @@ describe('TodoService', () => {
     await expect(service.getTodo(id)).rejects.toThrow(EntityNotFoundError);
   });
 
-  it('should update one todo', async () => {
-    const todo = {} as Todo;
+  it('given updateTodo is called when the todo exists and the changes are passed then it returns the updated todo', async () => {
+    const todo = new Todo();
     const updates: TodoUpdate = {
       done: true,
     };
@@ -87,7 +89,7 @@ describe('TodoService', () => {
     );
   });
 
-  it('should remove a todo', async () => {
+  it('given removeTodo is called when the todo exists then it removes and returns the todo', async () => {
     const todo = {} as Todo;
 
     mockedTodoRepository.remove.mockResolvedValueOnce(todo);

@@ -1,0 +1,38 @@
+[tools]
+dagger = "latest"
+hk = { version = "latest", postinstall = "hk install --mise", depends = "pkl" }
+k6 = "latest"
+node = { version = "latest", postinstall = "npx corepack enable" }
+"npm:@usebruno/cli" = "latest"
+"npm:pnpm" = "latest"
+"npm:sort-package-json" = "latest"
+pkl = "latest"
+
+[hooks]
+postinstall = { task = "pnpm-install" }
+
+[settings]
+experimental = true
+env_shell_expand = true
+
+[env]
+POSTGRES_PASSWORD = { age = "YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBJdGVtTmF0cnV6Y1hPU1lqRU9Kd1ROejRUSkU0U1hPT1F3dTlidXQ4RFJZCjNuTXhTRTAyZWd3dlh0d21VeDFmSDd1UlBXRUV3TnIyT1VwaUdqaEpMUEEKLT4gc3NoLWVkMjU1MTkgMlJ2c2t3IDJqbUJpb0JablhETXIvS1hJMTNNb1A1NklHWXdmNk9jQ3o4c1FuWlE5RjAKbWM4a0xhWjlFWXBXR1dKTU5mbEEzVTBBQlhhRkZuWThQQm5oaldSOWNUYwotPiB8LWdyZWFzZSAycmklMSxaSApLRys0UGgvOXBVaW9VMlNYR25TRmVrQjcvcXFzejVqMDR4M3NFcWNpVk1semhYb0hrenRDYUZxbWJBCi0tLSB3TVJXc2dQa21ydmd0NVlKb1J0RnJkVnpNNFE4OEsvSWNFZEV0dVpCWWkwClP3fHSx6y2De/aURvDyYBxkBe11r6hJe5h6uqL81R+sTSCoZpfRHqz7XCI1iSt8IQ" }
+NODE_ENV = "development"
+PORT = 3000
+DATABASE_URL = "postgres://postgres:$POSTGRES_PASSWORD@localhost:5432/postgres"
+PACTUM_REQUEST_BASE_URL = "http://localhost:$PORT"
+_.file = ".env"
+_.path = ["{{config_root}}/node_modules/.bin"]
+HK_MISE = 1
+APP_SECRET = { age = "YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBPelYrTzVzc2FXK04vaHFwTERDcG1nZHVPZmNnMWhNeko4YVFMbHZFWXkwCnpaa0pkdkZ1ZHlhcUREOE1MbkU4WFhxNklsUHNhU0tFamJnR0dkTCtLcE0KLT4gWDI1NTE5IHZwZmdweUFwalFNdG4ydEhMejA2cTFzVWE1eUdoZUVpQmNYZTVMd091M3MKTHk4Y2tsRm5lV3Z1alBXb1p4R3J2YXhqVVR6Uno1RG15cjZ5c1VXQ0hMOAotPiBzc2gtZWQyNTUxOSBWQi93QXcgRXpveWxublQzSVU4MlNiOTJuUnRMeUNvemg1MGVPSmhEMmRrRHZZczBSNApRMWUzdy9UTnpTcUROdkE4Y3hGMHFITnVFQkxTOWNraHJqOTNlenFZdWM4Ci0+IHF8QmdvLWdyZWFzZSB5PFV1RVo+fiBMNWpRezVMVSBNWwovcVZmMVdQMitSSTBpeEh4SVBrNjdMWWkKLS0tIExEYVRIM2RuS2V3d2Y2NE5yUElPMnVKWFJtUTg2MXlHTjdYclE5VWFiNXMKskvdqmd+mhdNC0R1MdMZuJ9Qz7SGaMleu8oQ6R1tdMXl7bc+KLmtaVQRLCUPc3qibtbhJRXciudjzGnO3wBmTV6f4C8JW66QneYAog" }
+
+[tasks.pnpm-install]
+description = "Installs dependencies with pnpm"
+run = "pnpm install"
+sources = ["package.json", "pnpm-lock.yaml", "pnpm-workspace.yaml", "mise.toml"]
+outputs = ["node_modules/.pnpm/lock.yaml"]
+
+[tasks.test-e2e]
+description = "Runs end-to-end tests"
+run = "bru run --env-file environments/$NODE_ENV.yml"
+dir = "{{ config_root }}/test/e2e"

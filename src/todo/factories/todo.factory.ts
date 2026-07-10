@@ -1,11 +1,21 @@
+import { faker } from '@faker-js/faker';
+import { FactoryBuilder } from 'factory.io';
 import { setSeederFactory } from 'typeorm-extension';
 
 import { Todo } from '../entities/todo.entity';
 
-export const todoFactory = setSeederFactory(Todo, (faker) => {
-  const todo = new Todo();
-  todo.text = faker.lorem.sentence();
-  todo.done = faker.datatype.boolean();
+export const TodoFactory = FactoryBuilder.of(Todo)
+  .props({
+    text: () => faker.lorem.sentence(),
+    done: () => faker.datatype.boolean(),
+  })
+  .build();
 
-  return todo;
-});
+export const todoFactory = setSeederFactory(
+  Todo,
+  (faker) =>
+    new Todo({
+      text: faker.lorem.sentence(),
+      done: faker.datatype.boolean(),
+    })
+);

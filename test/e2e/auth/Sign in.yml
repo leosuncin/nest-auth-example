@@ -5,7 +5,7 @@ info:
 
 http:
   method: POST
-  url: "{{API_URL}}/auth/login"
+  url: "{{BASE_URL}}/auth/login"
   headers:
     - name: Content-Type
       value: application/x-www-form-urlencoded
@@ -13,7 +13,7 @@ http:
     type: form-urlencoded
     data:
       - name: email
-        value: john@doe.me
+        value: "{{USER_EMAIL}}"
       - name: password
         value: Pa$$w0rd
   auth: inherit
@@ -63,7 +63,7 @@ settings:
 examples:
   - name: Missing credentials
     request:
-      url: "{{API_URL}}/auth/login"
+      url: "{{BASE_URL}}/auth/login"
       method: POST
       headers:
         - name: Content-Type
@@ -72,7 +72,7 @@ examples:
         type: form-urlencoded
         data:
           - name: email
-            value: john@doe.me
+            value: "{{USER_EMAIL}}"
           - name: password
             value: Pa$$w0rd
             disabled: true

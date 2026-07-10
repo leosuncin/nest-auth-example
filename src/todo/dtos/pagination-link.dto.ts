@@ -6,7 +6,7 @@ export class PaginationLink {
    */
   @IsDefined()
   @IsString()
-  readonly first: string;
+  readonly first!: string;
   /**
    * a link to the "previous" page
    */

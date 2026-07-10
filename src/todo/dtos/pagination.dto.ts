@@ -1,4 +1,5 @@
 import { IsArray, IsDefined, IsObject } from 'class-validator';
+
 import type { PaginationLink } from './pagination-link.dto';
 import type { PaginationMeta } from './pagination-meta.dto';
 
@@ -8,19 +9,19 @@ export class Pagination<Item> {
    */
   @IsDefined()
   @IsArray()
-  readonly items: Item[];
+  readonly items!: Item[];
   /**
    * The associated meta information
    */
   @IsDefined()
   @IsObject()
-  readonly meta: PaginationMeta;
+  readonly meta!: PaginationMeta;
   /**
    * associated links
    */
   @IsDefined()
   @IsObject()
-  readonly links: PaginationLink;
+  readonly links!: PaginationLink;
 
   static [Symbol.hasInstance](instance: unknown): boolean {
     return (

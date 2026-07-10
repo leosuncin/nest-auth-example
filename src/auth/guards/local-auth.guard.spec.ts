@@ -9,16 +9,22 @@ import {
 import { APP_GUARD } from '@nestjs/core';
 import { PassportModule } from '@nestjs/passport';
 import { Test } from '@nestjs/testing';
-import { mock } from '@suites/doubles.jest';
+import { type Mocked, mock } from '@suites/doubles.vitest';
 import type { Request as Req } from 'express';
 import session from 'express-session';
 import request from 'supertest';
 
-import type { User } from '../../user/entities/user.entity';
-import { AuthService } from '../auth.service';
+import type { User } from '../entities/user.entity';
+import { AuthService } from '../services/auth.service';
 import { SessionSerializer } from '../session.serializer';
 import { LocalStrategy } from '../strategies/local.strategy';
 import { LocalAuthGuard } from './local-auth.guard';
+
+declare module 'express' {
+  interface Request {
+    user?: User;
+  }
+}
 
 @Controller()
 class TestController {
@@ -30,7 +36,7 @@ class TestController {
 
 describe('LocalAuthGuard', () => {
   let app: INestApplication;
-  let mockedAuthService: jest.Mocked<AuthService>;
+  let mockedAuthService: Mocked<AuthService>;
 
   beforeEach(async () => {
     const module = await Test.createTestingModule({
@@ -63,10 +69,10 @@ describe('LocalAuthGuard', () => {
     await app.init();
   });
 
-  it('should authenticate using email and password', async () => {
+  it('given a guarded route when valid email and password are provided then it authenticates', async () => {
     mockedAuthService.login.mockResolvedValueOnce({
       email: 'john@doe.me',
-      id: 1,
+      id: '0117ea43-9de9-4c09-b3e5-9f8c44b082bc',
       name: 'John Doe ',
     } as User);
 
@@ -81,7 +87,7 @@ describe('LocalAuthGuard', () => {
       });
   });
 
-  it('should not authenticate when email and password are missing', async () => {
+  it('given a guarded route when missing email and password are provided then it rejects authentication', async () => {
     mockedAuthService.login.mockRejectedValueOnce(new UnauthorizedException());
 
     await request(app.getHttpServer()).get('/').expect(HttpStatus.UNAUTHORIZED);

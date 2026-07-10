@@ -1,6 +1,9 @@
+import { randomUUID } from 'node:crypto';
+
 import { ExecutionContextHost } from '@nestjs/core/helpers/execution-context-host';
 import { createMocks } from 'node-mocks-http';
 import { lastValueFrom, of } from 'rxjs';
+
 import type { Pagination } from '../dtos/pagination.dto';
 import { PaginationQuery } from '../dtos/pagination-query.dto';
 import type { Todo } from '../entities/todo.entity';
@@ -12,24 +15,20 @@ function range(min: number, max: number, step = 1) {
   const array: Partial<Todo>[] = [];
 
   for (let id = min; id <= max; id += step) {
-    array.push({ id });
+    array.push({ id: randomUUID() });
   }
 
   return array;
 }
 
 describe('PaginationInterceptor', () => {
-  it('should be defined', () => {
-    expect(new PaginationInterceptor()).toBeDefined();
-  });
-
   it.each([
     [range(1, 3), 100, undefined, undefined, 10],
     [range(4, 9), 100, defaultLimit.toString(), defaultPage.toString(), 10],
     [[], 0, undefined, undefined, 0],
     [range(11, 15), 100, defaultLimit.toString(), '2', 10],
     [range(20, 23), 40, '20', undefined, 2],
-  ])('should transform %O %i and add extra information limit=%s page=%s', async (items, totalItems, limit, page, pages) => {
+  ])('given the interceptor runs when items=%O total=%i limit=%s page=%s then it returns pagination metadata', async (items, totalItems, limit, page, pages) => {
     type Item = (typeof items)[number];
     const { req, res } = createMocks({
       path: '/api',

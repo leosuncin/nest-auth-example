@@ -1,22 +1,22 @@
 import { Injectable } from '@nestjs/common';
 import { PassportSerializer } from '@nestjs/passport';
+import { instanceToPlain, plainToInstance } from 'class-transformer';
 
-import type { User } from '../user/entities/user.entity';
+import { User } from './entities/user.entity';
 
 @Injectable()
 export class SessionSerializer extends PassportSerializer {
   serializeUser(
     user: User,
-    done: (err: Error | null, id?: User) => void
+    done: (err: Error | null, id?: Record<string, unknown>) => void
   ): void {
-    user.password = undefined;
-    done(null, user);
+    done(null, instanceToPlain(user));
   }
 
   deserializeUser(
-    payload: unknown,
-    done: (err: Error | null, payload?: unknown) => void
+    payload: Record<string, unknown>,
+    done: (err: Error | null, payload?: User) => void
   ): void {
-    done(null, payload);
+    done(null, plainToInstance(User, payload));
   }
 }

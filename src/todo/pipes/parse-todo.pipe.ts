@@ -5,9 +5,9 @@ import { TodoService } from '../services/todo.service';
 @Injectable()
 export class ParseTodoPipe implements PipeTransform {
   @Inject(TodoService)
-  private readonly todoService: TodoService;
+  private readonly todoService!: TodoService;
 
-  transform(value: number) {
+  transform(value: string) {
     return this.todoService.getTodo(value);
   }
 }

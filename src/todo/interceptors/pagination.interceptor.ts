@@ -7,6 +7,7 @@ import {
 import { plainToInstance } from 'class-transformer';
 import type { Request } from 'express';
 import { map, type Observable } from 'rxjs';
+
 import { Pagination } from '../dtos/pagination.dto';
 import { PaginationLink } from '../dtos/pagination-link.dto';
 import { PaginationMeta } from '../dtos/pagination-meta.dto';
@@ -55,7 +56,7 @@ export class PaginationInterceptor<Item>
     const { limit: defaultLimit } = new PaginationQuery();
     const url = new URL('http://localhost');
     url.protocol = request.protocol;
-    url.host = request.get('host');
+    url.host = request.get('host') ?? 'localhost';
     url.pathname = request.path;
     const plain: PartialWritable<PaginationLink> = {
       first: url.toString(),

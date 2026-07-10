@@ -2,23 +2,26 @@ import {
   IsDefined,
   IsEmail,
   IsNotEmpty,
+  MaxLength,
   MinLength,
-  Validate,
 } from 'class-validator';
-import { IsUserAlreadyExist } from '../../user/validators/is-user-already-exist.validator';
+import { IsNotEqualTo } from '../validators/is-not-equal-to.validator';
+import { IsRegistered as IsNotRegistered } from '../validators/is-registered.validator';
 
 export class SignUp {
   @IsDefined()
   @IsNotEmpty()
-  readonly name: string;
+  readonly name!: string;
 
   @IsDefined()
   @IsEmail()
-  @Validate(IsUserAlreadyExist)
-  readonly email: string;
+  @IsNotRegistered()
+  readonly email!: string;
 
   @IsDefined()
   @IsNotEmpty()
   @MinLength(8)
-  readonly password: string;
+  @MaxLength(32)
+  @IsNotEqualTo('email')
+  readonly password!: string;
 }

@@ -12,6 +12,7 @@ import passport from 'passport';
 import { AppModule } from './app.module';
 
 const splitOriginRegex = /\s*,\s*/;
+
 export function setup(app: INestApplication): INestApplication {
   app.useGlobalPipes(
     new ValidationPipe({

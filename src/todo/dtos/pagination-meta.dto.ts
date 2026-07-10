@@ -6,29 +6,29 @@ export class PaginationMeta {
    */
   @IsDefined()
   @IsPositive()
-  readonly itemCount: number;
+  readonly itemCount!: number;
   /**
    * The total amount of items
    */
   @IsDefined()
   @IsPositive()
-  readonly totalItems: number;
+  readonly totalItems!: number;
   /**
    * The amount of items that were requested per page
    */
   @IsDefined()
   @IsPositive()
-  readonly itemsPerPage: number;
+  readonly itemsPerPage!: number;
   /**
    * the total amount of pages in this paginator
    */
   @IsDefined()
   @IsPositive()
-  readonly totalPages: number;
+  readonly totalPages!: number;
   /**
    * the current page this paginator "points" to
    */
   @IsDefined()
   @IsPositive()
-  readonly currentPage: number;
+  readonly currentPage!: number;
 }

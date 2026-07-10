@@ -1,27 +1,23 @@
 import { type CallHandler, ForbiddenException } from '@nestjs/common';
 import { ExecutionContextHost } from '@nestjs/core/helpers/execution-context-host';
-import { mock } from '@suites/doubles.jest';
+import { mock } from '@suites/doubles.vitest';
 import { createMocks } from 'node-mocks-http';
 import { lastValueFrom, of } from 'rxjs';
 
-import type { User } from '../../user/entities/user.entity';
+import { User } from '../../auth/entities/user.entity';
 import type { Pagination } from '../dtos/pagination.dto';
-import type { Todo } from '../entities/todo.entity';
+import { Todo } from '../entities/todo.entity';
 import { IsOwnerInterceptor } from './is-owner.interceptor';
 
 describe('IsOwnerInterceptor', () => {
-  it('should be defined', () => {
-    expect(new IsOwnerInterceptor()).toBeDefined();
-  });
-
-  it('should check that the authenticated user is the owner of the todo', async () => {
+  it('given intercept is executed when a todo owned by the authenticated user is provided then it returns the todo', async () => {
     const { req, res } = createMocks({
       method: 'GET',
       url: '/todo/1',
-      user: mock<User>({ id: 1 }),
+      user: new User({ id: 'a4a1240a-dbfd-403a-91d8-509603491065' }),
     });
     const context = new ExecutionContextHost([req, res]);
-    const todo = { owner: 1 } as Todo;
+    const todo = { owner: 'a4a1240a-dbfd-403a-91d8-509603491065' } as Todo;
 
     const next = mock<CallHandler<Todo>>({
       handle: () => of(todo),
@@ -33,15 +29,16 @@ describe('IsOwnerInterceptor', () => {
     expect(result).toEqual(todo);
   });
 
-  it('should check that the authenticated user is not the owner of the todo', async () => {
+  it('given intercept is executed when a todo not owned by the authenticated user is provided then it throws forbidden', async () => {
     const { req, res } = createMocks({
       method: 'GET',
       url: '/todo/2',
-      user: mock<User>({ id: 1 }),
+      user: new User({ id: '2efd46c8-72c7-4755-bc44-f75ec17f0dd4' }),
     });
     const context = new ExecutionContextHost([req, res]);
     const next = mock<CallHandler<Todo>>({
-      handle: () => of({ owner: 2 } as Todo),
+      handle: () =>
+        of(new Todo({ owner: 'b6d45ae6-7514-4132-b2f6-5d7c439e8c12' })),
     });
     const interceptor = new IsOwnerInterceptor<Todo>();
 
@@ -50,11 +47,11 @@ describe('IsOwnerInterceptor', () => {
     ).rejects.toThrow(ForbiddenException);
   });
 
-  it('should check that an array of todos pass', async () => {
+  it('given intercept is executed when a paginated todo response is provided then it returns the pagination result', async () => {
     const { req, res } = createMocks({
       method: 'GET',
       url: '/todo',
-      user: mock<User>({ id: 1 }),
+      user: new User({ id: 'b65695fe-d11e-412a-9610-916a53ccf97a' }),
     });
     const context = new ExecutionContextHost([req, res]);
     const pagination: Pagination<Todo> = {
